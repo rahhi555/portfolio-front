@@ -1,19 +1,28 @@
 <template>
   <v-row>
-    <v-col class="text-center">
-      <img
-        src="/v.png"
-        alt="Vuetify.js"
-        class="mb-5"
-      >
-      <blockquote class="blockquote">
-        &#8220;First, solve the problem. Then, write the code.&#8221;
-        <footer>
-          <small>
-            <em>&mdash;John Johnson</em>
-          </small>
-        </footer>
-      </blockquote>
-    </v-col>
+    <v-btn @click="healthCheckApi">
+      health check
+    </v-btn>
   </v-row>
 </template>
+
+<script type="ts">
+import { defineComponent, useContext } from '@nuxtjs/composition-api'
+
+export default defineComponent({
+  setup() {
+    const { $axios, $config } = useContext()
+
+    // apiとserverMiddlewareの疎通確認
+    const healthCheckApi = () => {
+      $axios.$get('/health-check')
+      .then(res => console.log(res))
+      $axios.$get(`${$config.serverMiddlewareURL}/health-check`)
+      .then(res => console.log(res))
+    }
+    
+    return { healthCheckApi }
+  }
+})
+
+</script>
