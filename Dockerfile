@@ -7,8 +7,8 @@ ENV HOME=/front \
 
 WORKDIR ${HOME}
 
-COPY . ${WORKDIR}
+COPY . .
 
 RUN apk update && yarn install
 
-ENTRYPOINT [ "/front/entrypoint.sh" ]
+EXPOSE 80

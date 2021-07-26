@@ -54,7 +54,11 @@ export default {
     axios: {
       browserBaseURL: process.env.BROWSER_BASE_URL,
     },
+<<<<<<< HEAD
+    serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost/server'
+=======
     serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost:8080/server'
+>>>>>>> origin/master
   },
 
   privateRuntimeConfig: {

@@ -106,10 +106,6 @@ export default {
           title: 'Inspire',
           to: '/inspire'
         },
-        {
-          title: 'svg',
-          to: '/svg'
-        }
       ],
       miniVariant: false,
       right: true,
