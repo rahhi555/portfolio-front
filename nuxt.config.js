@@ -66,7 +66,17 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'ja'
+      name: "svg-portfolio",
+      title: "svg-portfolio",
+      'og:title': 'svg-portfolio',
+      description: 'svgを使用したポートフォリオです。',
+      'og:description': 'svgを使用したポートフォリオです。',
+      lang: 'ja',
+      theme_color: "#529b58",
+      background_color: "#bde0c0",
+      display: "standalone",
+      scope: "/",
+      start_url: "/"
     }
   },
 
