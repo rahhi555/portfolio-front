@@ -82,18 +82,20 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
+    // assetsに指定するとv-imgの際に SassError: this file is already being loaded
+    // が発生するので別ディレクトリを指定
+    customVariables: ['~/styles/variables.scss'],
+    treeShake: true,
     theme: {
-      dark: true,
       themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
+        light: {
+          primary: '#E91E63',
+          secondary: '#9C27b0',
+          accent: '#e91e63',
+          info: '#00CAE3',
+          success: '#4CAF50',
+          warning: '#FB8C00',
+          error: '#FF5252',
         }
       }
     }
