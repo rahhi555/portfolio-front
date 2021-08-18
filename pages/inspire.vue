@@ -15,10 +15,12 @@ export default defineComponent({
 
     // apiとserverMiddlewareの疎通確認
     const healthCheckApi = () => {
+      window.$nuxt.$loading.start()
       $axios.$get('/health-check')
       .then(res => console.log(res))
       $axios.$get(`${$config.serverMiddlewareURL}/health-check`)
       .then(res => console.log(res))
+      window.$nuxt.$loading.finish()
     }
     
     return { healthCheckApi }

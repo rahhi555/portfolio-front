@@ -1,34 +1,15 @@
 <template>
-  <v-container
-    id="register-view"
-    class="fill-height"
-    tag="section"
-  >
+  <v-container id="register-view" class="fill-height" tag="section">
     <v-row justify="center">
-      <v-col
-        cols="12"
-        md="9"
-      >
+      <v-col cols="12" md="9">
         <v-slide-y-transition appear>
-          <v-card
-            class="pa-3 pa-md-10 mx-sm-auto"
-            light
-          >
-            <h1 class="text-center text-h2 font-weight-light">
-              Register
-            </h1>
+          <v-card class="pa-3 pa-md-10 mx-sm-auto" light>
+            <h1 class="text-center text-h2 font-weight-light">Register</h1>
 
             <v-row>
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <v-row no-gutters>
-                  <v-col
-                    v-for="(section, i) in sections"
-                    :key="i"
-                    cols="12"
-                  >
+                  <v-col v-for="(section, i) in sections" :key="i" cols="12">
                     <v-list-item three-line>
                       <v-list-item-icon class="mr-4 mt-5 mt-md-4">
                         <v-icon
@@ -54,73 +35,150 @@
                 </v-row>
               </v-col>
 
-              <v-col
-                cols="12"
-                md="6"
-              >
+              <v-col cols="12" md="6">
                 <div class="text-center">
-                  <v-btn
-                    v-for="(social, i) in socials"
-                    :key="i"
-                    :color="social.iconColor"
-                    class="my-2 mr-1"
-                    dark
-                    depressed
-                    fab
-                    small
-                  >
-                    <v-icon v-text="social.icon" />
+                  <v-btn class="my-2 mr-1" dark depressed>
+                    かんたんログイン
                   </v-btn>
 
                   <div class="my-2" />
 
                   <div class="text-center text-h4">
-                    or be classical
+                    or be Email and Password
                   </div>
 
-                  <v-text-field
-                    color="secondary"
-                    placeholder="First Name..."
-                    prepend-icon="mdi-face"
-                  />
+                  <ValidationObserver v-slot="{ invalid }">
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      rules="max:50|required"
+                      name="名前"
+                    >
+                      <v-text-field
+                        v-model="registerValues.name"
+                        color="secondary"
+                        placeholder="Nick Name..."
+                        :prepend-icon="
+                          errors.length == 0 && registerValues.name.length >= 1
+                            ? 'mdi-emoticon-kiss-outline'
+                            : 'mdi-emoticon-neutral'
+                        "
+                        required
+                        :error-messages="errors[0]"
+                        counter="50"
+                      />
+                    </ValidationProvider>
 
-                  <v-text-field
-                    color="secondary"
-                    placeholder="Email..."
-                    prepend-icon="mdi-email"
-                  />
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      rules="email|required"
+                      name="メールアドレス"
+                    >
+                      <v-text-field
+                        v-model="registerValues.email"
+                        color="secondary"
+                        placeholder="Email..."
+                        :prepend-icon="
+                          errors.length == 0 && registerValues.email.length >= 1
+                            ? 'mdi-email-outline'
+                            : 'mdi-email-open'
+                        "
+                        required
+                        :error-messages="errors[0]"
+                      />
+                    </ValidationProvider>
 
-                  <v-text-field
-                    class="mb-8"
-                    color="secondary"
-                    placeholder="Password..."
-                    prepend-icon="mdi-lock-outline"
-                  />
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      rules="min:8|required|alpha_dash"
+                      name="パスワード"
+                    >
+                      <v-text-field
+                        v-model="registerValues.password"
+                        color="secondary"
+                        placeholder="Password..."
+                        :prepend-icon="
+                          errors.length == 0 &&
+                          registerValues.password.length >= 1
+                            ? 'mdi-lock-outline'
+                            : 'mdi-lock-off'
+                        "
+                        :append-icon="
+                          isShowPassword ? 'mdi-eye' : 'mdi-eye-off'
+                        "
+                        :type="isShowPassword ? 'text' : 'password'"
+                        :error-messages="errors[0]"
+                        required
+                        counter
+                        @click:append="isShowPassword = !isShowPassword"
+                      />
+                    </ValidationProvider>
 
-                  <v-checkbox
-                    :input-value="true"
-                    color="secondary"
-                  >
-                    <template #label>
-                      <span class="text-no-wrap">I agree to the</span>
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      rules="password:@パスワード"
+                      name="パスワード(確認)"
+                    >
+                      <v-text-field
+                        v-model="registerValues.passwordConfirm"
+                        color="secondary"
+                        placeholder="Password Confirm..."
+                        :prepend-icon="
+                          errors.length == 0 &&
+                          registerValues.passwordConfirm.length >= 1
+                            ? 'mdi-lock-check-outline'
+                            : 'mdi-lock-off'
+                        "
+                        :type="isShowPassword ? 'text' : 'password'"
+                        :error-messages="errors[0]"
+                        required
+                      />
+                    </ValidationProvider>
 
-                      <a
-                        class="secondary--text ml-6 ml-sm-1 d-inline-block"
-                        href="#"
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      :rules="{ required:0 }"
+                      name="利用規約"
+                    >
+                      <v-checkbox
+                        v-model="isCheckToS"
+                        color="secondary"
+                        :error-messages="errors[0]"
                       >
-                        terms and conditions
-                      </a>.
-                    </template>
-                  </v-checkbox>
+                        <template #label>
+                          <v-dialog v-model="isShowDialog" width="800">
+                            <template v-slot:activator="{ on, attrs }">
+                              <a
+                                class="
+                                  secondary--text
+                                  ml-6 ml-sm-1
+                                  d-inline-block
+                                "
+                                href="#"
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                利用規約
+                              </a>
+                            </template>
+                            <TearmsOfService></TearmsOfService>
+                          </v-dialog>
 
-                  <v-btn
-                    color="secondary"
-                    depressed
-                    min-width="140"
-                    rounded
-                  >
-                    Get Started
-                  </v-btn>
+                          <span class="text-no-wrap">に同意します</span>
+                        </template>
+                      </v-checkbox>
+                    </ValidationProvider>
+
+                    <v-btn
+                      color="secondary"
+                      depressed
+                      min-width="140"
+                      rounded
+                      :disabled="invalid"
+                      @click="EmailAndPasswordRegister"
+                    >
+                      Get Started
+                    </v-btn>
+                  </ValidationObserver>
                 </div>
               </v-col>
             </v-row>
@@ -131,51 +189,89 @@
   </v-container>
 </template>
 
-<script>
-  export default {
-    name: 'RegisterView',
-    layout: 'unProtected',
-    data: () => ({
-      sections: [
-        {
-          icon: 'mdi-chart-timeline-variant',
-          iconColor: 'primary',
-          title: 'Marketing',
-          text: 'We\'ve created the marketing campaign of the website. It was a very interesting collaboration.',
-        },
-        {
-          icon: 'mdi-code-tags',
-          iconColor: 'secondary',
-          title: 'Fully Coded in HTML5',
-          text: 'We\'ve developed the website with HTML5 and CSS3. The client has access to the code using GitHub.',
-        },
-        {
-          icon: 'mdi-account-multiple',
-          iconColor: 'cyan',
-          title: 'Built Audience',
-          text: 'There is also a Fully Customizable CMS Admin Dashboard for this product.',
-        },
-      ],
-      socials: [
-        {
-          href: '#',
-          icon: 'mdi-twitter',
-          iconColor: '#1DA1F2',
-        },
-        {
-          href: '#',
-          icon: 'mdi-github',
-          iconColor: '#24292E',
-        },
-        {
-          href: '#',
-          icon: 'mdi-facebook',
-          iconColor: '#3B5998',
-        },
+<script lang="ts">
+import {
+  defineComponent,
+  reactive,
+  useContext,
+  useRouter,
+} from '@nuxtjs/composition-api'
+import firebase from '~/plugins/firebase'
+import TearmsOfService from '~/components/unProtected/TermsOfService.vue'
 
-      ],
-    }),
-  }
+export default defineComponent({
+  components: {
+    TearmsOfService,
+  },
+  layout: 'unProtected',
+  setup() {
+    const { $axios } = useContext()
+    const router = useRouter()
+
+    const sections = [
+      {
+        icon: 'mdi-map',
+        iconColor: 'primary',
+        title: '簡単に平面図を作成',
+        text: '使用する図形は長方形のみ！細かい設定が無くシンプルなので、サクッと平面図を作成できます。',
+      },
+      {
+        icon: 'mdi-calendar-check',
+        iconColor: 'secondary',
+        title: '平面図とタスクをリンク',
+        text: '作成した平面図にタスクを設定することができ、進行状況を視覚的に共有することができます。',
+      },
+      {
+        icon: 'mdi-comment-flash',
+        iconColor: 'cyan',
+        title: '高いリアルタイム性',
+        text: 'タスクはリアルタイムに通知され、さらにピン立てやマーカーを引くことも可能です。',
+      },
+    ]
+
+    const registerValues = reactive({
+      name: '',
+      email: '',
+      password: '',
+      passwordConfirm: ''
+    })
+
+    const EmailAndPasswordRegister = (): void => {
+      window.$nuxt.$loading.start()
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(
+          registerValues.email,
+          registerValues.password
+        )
+        .then(async (res) => {
+          const token = await res.user?.getIdToken()
+          $axios.defaults.headers.common.Authorization = `Bearer ${token}`
+          $axios
+            .post('/api/v1/users', { user: { name: registerValues.name } })
+            .then(() => {
+              router.push('/')
+            })
+            .finally(() => {
+              window.$nuxt.$loading.finish()
+            })
+        })
+    }
+
+    const isShowPassword = false
+    const isShowDialog = false
+    const isCheckToS = false
+
+    return {
+      sections,
+      registerValues,
+      EmailAndPasswordRegister,
+      isShowPassword,
+      isShowDialog,
+      isCheckToS
+    }
+  },
+})
 </script>
 
 <style scoped lang="sass">
