@@ -13,39 +13,57 @@
           :class="[$vuetify.breakpoint.mdAndUp && 'fill-height']"
           class="d-block d-md-flex"
         >
+          <AppBar />
 
-        <AppBar />
+          <MaterialSnackbar
+            v-model="snackbar"
+            :type="'info'"
+            timeout="-1"
+            v-bind="{
+              center: true,
+              top: true,
+            }"
+          >
+            Welcome to
+            <span class="font-weight-bold"
+              >&nbsp;MATERIAL DASHBOARD PRO&nbsp;</span
+            >
+            — a beautiful admin panel for every web developer.
+          </MaterialSnackbar>
 
-        <Nuxt />
+          <Nuxt />
 
-        <Footer />
+          <Footer />
         </div>
       </v-img>
-   </v-main>
+    </v-main>
   </v-app>
 </template>
 
 <script>
 import AppBar from '~/components/unProtected/AppBar.vue'
 import Footer from '~/components/unProtected/Footer.vue'
+import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 
-  export default {
-    components: {
-      AppBar,
-      Footer
+export default {
+  components: {
+    AppBar,
+    Footer,
+    MaterialSnackbar,
+  },
+
+  data: () => ({
+    srcs: {
+      '/auth/login': 'login.jpg',
+      '/auth/register': 'register.jpg',
     },
+    snackbar: true
+  }),
 
-    data: () => ({
-      srcs: {
-        '/auth/login': 'login.jpg',
-        '/auth/register': 'register.jpg',
-      },
-    }),
-
-    computed: {
-      src () {
-        return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
-      },
+  computed: {
+    src() {
+      return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
     },
-  }
+  },
+}
 </script>

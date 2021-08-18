@@ -1,8 +1,6 @@
 <template>
   <v-row>
-    <v-btn @click="healthCheckApi">
-      health check
-    </v-btn>
+    <v-btn @click="healthCheckApi"> health check </v-btn>
   </v-row>
 </template>
 
@@ -22,9 +20,8 @@ export default defineComponent({
       .then(res => console.log(res))
       window.$nuxt.$loading.finish()
     }
-    
+
     return { healthCheckApi }
   }
 })
-
 </script>
