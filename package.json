@@ -19,6 +19,7 @@
     "express": "^4.17.1",
     "firebase": "^8.9.1",
     "nuxt": "^2.15.7",
+    "vee-validate": "^3.4.11",
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
