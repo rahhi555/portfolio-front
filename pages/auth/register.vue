@@ -136,7 +136,7 @@
 
                     <ValidationProvider
                       v-slot="{ errors }"
-                      :rules="{ required:0 }"
+                      :rules="{ required: 0 }"
                       name="利用規約"
                     >
                       <v-checkbox
@@ -198,6 +198,8 @@ import {
 } from '@nuxtjs/composition-api'
 import firebase from '~/plugins/firebase'
 import TearmsOfService from '~/components/unProtected/TermsOfService.vue'
+import { SnackbarStore } from '~/store'
+import Snackbar, { Payload } from '~/store/snackbar'
 
 export default defineComponent({
   components: {
@@ -233,8 +235,10 @@ export default defineComponent({
       name: '',
       email: '',
       password: '',
-      passwordConfirm: ''
+      passwordConfirm: '',
     })
+
+    let payload: Payload = { color: 'info', message: '' }
 
     const EmailAndPasswordRegister = (): void => {
       window.$nuxt.$loading.start()
@@ -250,11 +254,28 @@ export default defineComponent({
           $axios
             .post('/api/v1/users', { user: { name: registerValues.name } })
             .then(() => {
+              payload = { color: 'success', message: 'ユーザー登録に成功しました' }
               router.push('/')
             })
-            .finally(() => {
+            .catch(() => {
+              payload = { color: 'error', message: 'ユーザー作成に失敗しました' }
+              const user = firebase.auth().currentUser
+              user?.delete()
               window.$nuxt.$loading.finish()
+              SnackbarStore.visibleAction(payload)
             })
+        })
+        .catch((e) => {
+          switch (e.code) {
+            case 'auth/email-already-in-use':
+              payload = { color: 'error', message: 'すでにそのメールアドレスは使用されています' }
+              break
+            default:
+              payload = { color: 'error', message: 'ユーザー登録に失敗しました' }
+              break
+          }
+          window.$nuxt.$loading.finish()
+          SnackbarStore.visibleAction(payload)
         })
     }
 
@@ -268,7 +289,7 @@ export default defineComponent({
       EmailAndPasswordRegister,
       isShowPassword,
       isShowDialog,
-      isCheckToS
+      isCheckToS,
     }
   },
 })

@@ -65,7 +65,14 @@
                   />
                 </ValidationProvider>
 
-                <v-btn :disabled="invalid" color="accent" rounded text large @click="login">
+                <v-btn
+                  :disabled="invalid"
+                  color="accent"
+                  rounded
+                  text
+                  large
+                  @click="login"
+                >
                   Let's Go
                 </v-btn>
               </v-card-text>
@@ -80,10 +87,12 @@
 <script lang="ts">
 import { defineComponent, reactive, useRouter } from '@nuxtjs/composition-api'
 import firebase from '~/plugins/firebase'
+import { SnackbarStore } from '~/store'
+import { Payload } from '~/store/snackbar'
 
 export default defineComponent({
   layout: 'unProtected',
-  setup(){
+  setup() {
     const router = useRouter()
 
     const authValues = reactive({
@@ -93,15 +102,38 @@ export default defineComponent({
 
     const isShowPassword = false
 
+    let payload: Payload = { color: 'info', message: '' }
+
     const login = (): void => {
       window.$nuxt.$loading.start()
       firebase
         .auth()
         .signInWithEmailAndPassword(authValues.email, authValues.password)
         .then(() => {
+          payload = { color: 'success', message: 'ログインに成功しました' }
           router.push('/')
         })
+        .catch((e) => {
+          switch (e.code) {
+            case 'auth/invalid-email':
+              payload = { color: 'error', message: '無効なメールアドレスです' }
+              break
+            case 'auth/user-disabled':
+              payload = { color: 'error', message: '無効なユーザーです' }
+              break
+            case 'auth/user-not-found':
+              payload = { color: 'error', message: 'ユーザーが存在しません' }
+              break
+            case 'auth/wrong-password':
+              payload = { color: 'error', message: '無効なパスワードです' }
+              break
+            default:
+              payload = { color: 'error', message: '認証に失敗しました' }
+              break
+          }
+        })
         .finally(() => {
+          SnackbarStore.visibleAction(payload)
           window.$nuxt.$loading.finish()
         })
     }
@@ -109,8 +141,8 @@ export default defineComponent({
     return {
       authValues,
       isShowPassword,
-      login
+      login,
     }
-  }
+  },
 })
 </script>

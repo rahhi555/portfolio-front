@@ -22,7 +22,7 @@
 
 <script>
   import MaterialAlert from '~/components/MaterialAlert.vue'
-
+  import { SnackbarStore } from '~/store'
   export default {
     name: 'MaterialSnackbar',
     components: {
@@ -40,24 +40,16 @@
       value: Boolean,
     },
 
-    data () {
-      return {
-        internalValue: this.value,
+    computed: {
+      internalValue: {
+        get() {
+          return SnackbarStore.getParams.isVisible
+        },
+        set() {
+          SnackbarStore.hiddenAction()
+        }
       }
-    },
-
-    watch: {
-      internalValue (val, oldVal) {
-        if (val === oldVal) return
-
-        this.$emit('input', val)
-      },
-      value (val, oldVal) {
-        if (val === oldVal) return
-
-        this.internalValue = val
-      },
-    },
+    }
   }
 </script>
 

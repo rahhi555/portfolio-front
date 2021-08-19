@@ -16,19 +16,14 @@
           <AppBar />
 
           <MaterialSnackbar
-            v-model="snackbar"
-            :type="'info'"
-            timeout="-1"
+            :type="snackParams.color"
+            timeout="4000"
             v-bind="{
               center: true,
               top: true,
             }"
           >
-            Welcome to
-            <span class="font-weight-bold"
-              >&nbsp;MATERIAL DASHBOARD PRO&nbsp;</span
-            >
-            — a beautiful admin panel for every web developer.
+            {{ snackParams.message }}
           </MaterialSnackbar>
 
           <Nuxt />
@@ -44,6 +39,7 @@
 import AppBar from '~/components/unProtected/AppBar.vue'
 import Footer from '~/components/unProtected/Footer.vue'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
+import { SnackbarStore } from '~/store'
 
 export default {
   components: {
@@ -57,13 +53,20 @@ export default {
       '/auth/login': 'login.jpg',
       '/auth/register': 'register.jpg',
     },
-    snackbar: true
   }),
 
   computed: {
     src() {
       return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
     },
+    snackParams: {
+      get() {
+        return SnackbarStore.getParams
+      },
+      set() {
+        SnackbarStore.hiddenAction()
+      }
+    }
   },
 }
 </script>
