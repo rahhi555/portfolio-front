@@ -37,7 +37,7 @@
 
               <v-col cols="12" md="6">
                 <div class="text-center">
-                  <v-btn class="my-2 mr-1" dark depressed>
+                  <v-btn class="my-2 mr-1" dark depressed @click="signInAnonymouly">
                     かんたんログイン
                   </v-btn>
 
@@ -199,7 +199,7 @@ import {
 import firebase from '~/plugins/firebase'
 import TearmsOfService from '~/components/unProtected/TermsOfService.vue'
 import { SnackbarStore } from '~/store'
-import Snackbar, { Payload } from '~/store/snackbar'
+import { Payload } from '~/store/snackbar'
 
 export default defineComponent({
   components: {
@@ -279,6 +279,22 @@ export default defineComponent({
         })
     }
 
+    const signInAnonymouly = () => {
+      window.$nuxt.$loading.start()
+      firebase.auth().signInAnonymously()
+        .then(() => {
+          payload = { color: 'success', message: '匿名ユーザーとしてログインしました' }
+          router.push('/')
+        })
+        .catch(() => {
+          payload = { color: 'error', message: 'ログインに失敗しました' }
+        })
+        .finally(() => {
+          window.$nuxt.$loading.finish()
+          SnackbarStore.visibleAction(payload)
+        })
+    }
+
     const isShowPassword = false
     const isShowDialog = false
     const isCheckToS = false
@@ -287,6 +303,7 @@ export default defineComponent({
       sections,
       registerValues,
       EmailAndPasswordRegister,
+      signInAnonymouly,
       isShowPassword,
       isShowDialog,
       isCheckToS,

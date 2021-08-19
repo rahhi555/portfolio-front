@@ -49,7 +49,7 @@
   export default { name: 'MaterialAlert' }
 </script>
 
-<style lang="sass">
+<style scoped lang="sass">
   .v-alert--material
     margin-top: 32px
 

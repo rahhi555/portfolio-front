@@ -53,7 +53,7 @@
   }
 </script>
 
-<style lang="sass">
+<style scoped lang="sass">
   .v-snackbar--material
     margin-top: 32px
     margin-bottom: 32px
