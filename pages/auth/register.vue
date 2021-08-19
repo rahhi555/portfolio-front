@@ -261,6 +261,8 @@ export default defineComponent({
               payload = { color: 'error', message: 'ユーザー作成に失敗しました' }
               const user = firebase.auth().currentUser
               user?.delete()
+            })
+            .finally(() => {
               window.$nuxt.$loading.finish()
               SnackbarStore.visibleAction(payload)
             })
