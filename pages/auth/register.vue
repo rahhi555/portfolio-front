@@ -37,7 +37,12 @@
 
               <v-col cols="12" md="6">
                 <div class="text-center">
-                  <v-btn class="my-2 mr-1" dark depressed>
+                  <v-btn
+                    class="my-2 mr-1"
+                    dark
+                    depressed
+                    @click="signInAnonymouly"
+                  >
                     かんたんログイン
                   </v-btn>
 
@@ -47,138 +52,14 @@
                     or be Email and Password
                   </div>
 
-                  <ValidationObserver v-slot="{ invalid }">
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      rules="max:50|required"
-                      name="名前"
-                    >
-                      <v-text-field
-                        v-model="registerValues.name"
-                        color="secondary"
-                        placeholder="Nick Name..."
-                        :prepend-icon="
-                          errors.length == 0 && registerValues.name.length >= 1
-                            ? 'mdi-emoticon-kiss-outline'
-                            : 'mdi-emoticon-neutral'
-                        "
-                        required
-                        :error-messages="errors[0]"
-                        counter="50"
-                      />
-                    </ValidationProvider>
-
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      rules="email|required"
-                      name="メールアドレス"
-                    >
-                      <v-text-field
-                        v-model="registerValues.email"
-                        color="secondary"
-                        placeholder="Email..."
-                        :prepend-icon="
-                          errors.length == 0 && registerValues.email.length >= 1
-                            ? 'mdi-email-outline'
-                            : 'mdi-email-open'
-                        "
-                        required
-                        :error-messages="errors[0]"
-                      />
-                    </ValidationProvider>
-
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      rules="min:8|required|alpha_dash"
-                      name="パスワード"
-                    >
-                      <v-text-field
-                        v-model="registerValues.password"
-                        color="secondary"
-                        placeholder="Password..."
-                        :prepend-icon="
-                          errors.length == 0 &&
-                          registerValues.password.length >= 1
-                            ? 'mdi-lock-outline'
-                            : 'mdi-lock-off'
-                        "
-                        :append-icon="
-                          isShowPassword ? 'mdi-eye' : 'mdi-eye-off'
-                        "
-                        :type="isShowPassword ? 'text' : 'password'"
-                        :error-messages="errors[0]"
-                        required
-                        counter
-                        @click:append="isShowPassword = !isShowPassword"
-                      />
-                    </ValidationProvider>
-
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      rules="password:@パスワード"
-                      name="パスワード(確認)"
-                    >
-                      <v-text-field
-                        v-model="registerValues.passwordConfirm"
-                        color="secondary"
-                        placeholder="Password Confirm..."
-                        :prepend-icon="
-                          errors.length == 0 &&
-                          registerValues.passwordConfirm.length >= 1
-                            ? 'mdi-lock-check-outline'
-                            : 'mdi-lock-off'
-                        "
-                        :type="isShowPassword ? 'text' : 'password'"
-                        :error-messages="errors[0]"
-                        required
-                      />
-                    </ValidationProvider>
-
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      :rules="{ required:0 }"
-                      name="利用規約"
-                    >
-                      <v-checkbox
-                        v-model="isCheckToS"
-                        color="secondary"
-                        :error-messages="errors[0]"
-                      >
-                        <template #label>
-                          <v-dialog v-model="isShowDialog" width="800">
-                            <template v-slot:activator="{ on, attrs }">
-                              <a
-                                class="
-                                  secondary--text
-                                  ml-6 ml-sm-1
-                                  d-inline-block
-                                "
-                                href="#"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                利用規約
-                              </a>
-                            </template>
-                            <TearmsOfService></TearmsOfService>
-                          </v-dialog>
-
-                          <span class="text-no-wrap">に同意します</span>
-                        </template>
-                      </v-checkbox>
-                    </ValidationProvider>
-
-                    <v-btn
-                      color="secondary"
-                      depressed
-                      min-width="140"
-                      rounded
-                      :disabled="invalid"
-                      @click="EmailAndPasswordRegister"
-                    >
-                      Get Started
-                    </v-btn>
-                  </ValidationObserver>
+                  <register-form
+                    :name.sync="registerValues.name"
+                    :email.sync="registerValues.email"
+                    :password.sync="registerValues.password"
+                    :passwordConfirm.sync="registerValues.passwordConfirm"
+                    @registerHandle="emailAndPasswordRegister"
+                  >
+                  </register-form>
                 </div>
               </v-col>
             </v-row>
@@ -193,21 +74,15 @@
 import {
   defineComponent,
   reactive,
-  useContext,
-  useRouter,
 } from '@nuxtjs/composition-api'
-import firebase from '~/plugins/firebase'
-import TearmsOfService from '~/components/unProtected/TermsOfService.vue'
+import RegisterForm from '~/components/unProtected/RegisterForm.vue'
 
 export default defineComponent({
   components: {
-    TearmsOfService,
+    RegisterForm,
   },
   layout: 'unProtected',
   setup() {
-    const { $axios } = useContext()
-    const router = useRouter()
-
     const sections = [
       {
         icon: 'mdi-map',
@@ -233,29 +108,19 @@ export default defineComponent({
       name: '',
       email: '',
       password: '',
-      passwordConfirm: ''
+      passwordConfirm: '',
     })
 
-    const EmailAndPasswordRegister = (): void => {
-      window.$nuxt.$loading.start()
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(
-          registerValues.email,
-          registerValues.password
-        )
-        .then(async (res) => {
-          const token = await res.user?.getIdToken()
-          $axios.defaults.headers.common.Authorization = `Bearer ${token}`
-          $axios
-            .post('/api/v1/users', { user: { name: registerValues.name } })
-            .then(() => {
-              router.push('/')
-            })
-            .finally(() => {
-              window.$nuxt.$loading.finish()
-            })
-        })
+    const emailAndPasswordRegister = () => {
+      import('~/utils/auth').then((module) => {
+        module.emailAndPasswordRegister(registerValues)
+      })
+    }
+
+    const signInAnonymouly = () => {
+      import('~/utils/auth').then((module) => {
+        module.signInAnonymouly()
+      })
     }
 
     const isShowPassword = false
@@ -265,10 +130,11 @@ export default defineComponent({
     return {
       sections,
       registerValues,
-      EmailAndPasswordRegister,
+      emailAndPasswordRegister,
+      signInAnonymouly,
       isShowPassword,
       isShowDialog,
-      isCheckToS
+      isCheckToS,
     }
   },
 })

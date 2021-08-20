@@ -13,39 +13,60 @@
           :class="[$vuetify.breakpoint.mdAndUp && 'fill-height']"
           class="d-block d-md-flex"
         >
+          <AppBar />
 
-        <AppBar />
+          <MaterialSnackbar
+            :type="snackParams.color"
+            timeout="4000"
+            v-bind="{
+              center: true,
+              top: true,
+            }"
+          >
+            {{ snackParams.message }}
+          </MaterialSnackbar>
 
-        <Nuxt />
+          <Nuxt />
 
-        <Footer />
+          <Footer />
         </div>
       </v-img>
-   </v-main>
+    </v-main>
   </v-app>
 </template>
 
 <script>
 import AppBar from '~/components/unProtected/AppBar.vue'
 import Footer from '~/components/unProtected/Footer.vue'
+import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
+import { SnackbarStore } from '~/store'
 
-  export default {
-    components: {
-      AppBar,
-      Footer
+export default {
+  components: {
+    AppBar,
+    Footer,
+    MaterialSnackbar,
+  },
+
+  data: () => ({
+    srcs: {
+      '/auth/login': 'login.jpg',
+      '/auth/register': 'register.jpg',
     },
+  }),
 
-    data: () => ({
-      srcs: {
-        '/auth/login': 'login.jpg',
-        '/auth/register': 'register.jpg',
-      },
-    }),
-
-    computed: {
-      src () {
-        return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
-      },
+  computed: {
+    src() {
+      return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
     },
-  }
+    snackParams: {
+      get() {
+        return SnackbarStore.getParams
+      },
+      set() {
+        SnackbarStore.hiddenAction()
+      }
+    }
+  },
+}
 </script>
