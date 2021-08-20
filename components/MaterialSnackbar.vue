@@ -43,10 +43,10 @@
     computed: {
       internalValue: {
         get() {
-          return SnackbarStore.getParams.isVisible
+          return SnackbarStore.snackParams.isVisible
         },
         set() {
-          SnackbarStore.hiddenAction()
+          SnackbarStore.hidden()
         }
       }
     }

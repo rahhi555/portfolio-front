@@ -17,35 +17,35 @@ interface SnackParams extends Payload {
   namespaced: true,
 })
 export default class Snackbar extends VuexModule {
-  private snackParams: SnackParams = {
+  private snackState: SnackParams = {
     isVisible: false,
     color: 'info',
     message: ''
   }
 
-  public get getParams() {
-    return this.snackParams
+  public get snackParams() {
+    return this.snackState
   }
 
   @Mutation
-  private visible(payload: Payload) {
-    this.snackParams.isVisible = true
-    this.snackParams.color = payload.color
-    this.snackParams.message = payload.message
+  private visibleMutaion(payload: Payload) {
+    this.snackState.isVisible = true
+    this.snackState.color = payload.color
+    this.snackState.message = payload.message
   }
 
   @Mutation
-  private hidden() {
-    this.snackParams.isVisible = false
+  private hiddenMutation() {
+    this.snackState.isVisible = false
   }
 
   @Action({ rawError: true })
-  public visibleAction(payload: Payload) {
-    this.visible(payload)
+  public visible(payload: Payload) {
+    this.visibleMutaion(payload)
   }
 
   @Action({ rawError: true })
-  public hiddenAction() {
-    this.hidden()
+  public hidden() {
+    this.hiddenMutation()
   }
 }

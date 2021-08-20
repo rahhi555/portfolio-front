@@ -1,5 +1,5 @@
 import firebase from '~/plugins/firebase'
-import { SnackbarStore } from '~/store'
+import { SnackbarStore, UserStore } from '~/store'
 import { Payload } from '~/store/snackbar'
 
 let payload: Payload = { color: 'info', message: '' }
@@ -22,11 +22,13 @@ const $router = window.$nuxt.$router
 // finallyの共通処理。ローディング画面の停止およびスナックバーの表示
 const finallyFunc = () => {
   window.$nuxt.$loading.finish()
-  SnackbarStore.visibleAction(payload)
+  SnackbarStore.visible(payload)
 }
 
 // apiのユーザー作成リクエスト
-const createUserApi = (payloadName: string | null | undefined) => {
+const createUserApi = async (payloadName: string | null | undefined) => {
+  const token = await firebase.auth().currentUser?.getIdToken()
+  $axios.defaults.headers.common.Authorization = `Bearer ${token}`
   $axios
     .post('/api/v1/users', { user: { name: payloadName } })
     .then(() => {
@@ -34,6 +36,7 @@ const createUserApi = (payloadName: string | null | undefined) => {
         color: 'success',
         message: 'ユーザー登録に成功しました',
       }
+      UserStore.setUser()
       $router.push('/')
     })
     .catch(() => {
@@ -98,9 +101,7 @@ export const emailAndPasswordRegister = (
       registerValues.email,
       registerValues.password
     )
-    .then(async (res) => {
-      const token = await res.user?.getIdToken()
-      $axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    .then(() => {
       createUserApi(registerValues.name)
     })
     .catch((e) => {
@@ -118,6 +119,7 @@ export const emailAndPasswordLogin = (authValues: AuthValues): void => {
     .auth()
     .signInWithEmailAndPassword(authValues.email, authValues.password)
     .then(() => {
+      UserStore.setUser()
       payload = { color: 'success', message: 'ログインに成功しました' }
       $router.push('/')
     })
@@ -140,6 +142,7 @@ export const signInAnonymouly = () => {
         color: 'success',
         message: '匿名ユーザーとしてログインしました',
       }
+      UserStore.setUser()
       $router.push('/')
     })
     .catch((e) => {
@@ -156,14 +159,14 @@ export const googleLogin = (): void => {
   firebase
     .auth()
     .signInWithPopup(provider)
-    .then(async (res) => {
+    .then((res) => {
       if (res.additionalUserInfo?.isNewUser) {
         window.$nuxt.$loading.start()
 
-        const token = await res.user?.getIdToken()
-        $axios.defaults.headers.common.Authorization = `Bearer ${token}`
+        /* @ts-ignore */
         createUserApi(res.additionalUserInfo?.profile?.name)
       } else {
+        UserStore.setUser()
         payload = { color: 'success', message: 'ログインに成功しました' }
         $router.push('/')
       }
@@ -185,7 +188,7 @@ export const emailAndPasswordCredential = (registerValues: RegisterValues) => {
       color: 'error',
       message: '仮ユーザー情報を取得できませんでした',
     }
-    SnackbarStore.visibleAction(payload)
+    SnackbarStore.visible(payload)
     return
   }
 
@@ -196,10 +199,8 @@ export const emailAndPasswordCredential = (registerValues: RegisterValues) => {
 
   anonymousUser
     .linkWithCredential(credential)
-    .then(async (res) => {
+    .then(() => {
       window.$nuxt.$loading.start()
-      const token = await res.user?.getIdToken()
-      $axios.defaults.headers.common.Authorization = `Bearer ${token}`
       createUserApi(registerValues.name)
     })
     .catch((e) => {
@@ -217,7 +218,7 @@ export const googleCredential = () => {
       color: 'error',
       message: '仮ユーザー情報を取得できませんでした',
     }
-    SnackbarStore.visibleAction(payload)
+    SnackbarStore.visible(payload)
     return
   }
 
@@ -225,10 +226,9 @@ export const googleCredential = () => {
 
   anonymousUser
     .linkWithPopup(provider)
-    .then(async (res) => {
+    .then((res) => {
       window.$nuxt.$loading.start()
-      const token = await res.user?.getIdToken()
-      $axios.defaults.headers.common.Authorization = `Bearer ${token}`
+      /* @ts-ignore */
       createUserApi(res.additionalUserInfo?.profile?.name)
     })
     .catch((e) => {

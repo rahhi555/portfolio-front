@@ -1,6 +1,7 @@
 <template>
   <v-row>
     <v-btn @click="healthCheckApi"> health check </v-btn>
+    <v-btn @click="me"> me </v-btn>
   </v-row>
 </template>
 
@@ -21,7 +22,11 @@ export default defineComponent({
       window.$nuxt.$loading.finish()
     }
 
-    return { healthCheckApi }
+    const me = () => {
+      $axios.$get('api/v1/users/me').then(res => {console.log(res)})
+    }
+
+    return { healthCheckApi, me }
   }
 })
 </script>
