@@ -1,4 +1,6 @@
-export default ({ $axios }) => {
+import { defineNuxtPlugin } from '@nuxtjs/composition-api'
+
+export default defineNuxtPlugin(({ $axios }) => {
   // 開発環境のみログを出力する
   if (process.env.NODE_ENV === 'development') {
     // リクエストログ
@@ -14,4 +16,4 @@ export default ({ $axios }) => {
       console.error('[AXIOS ERROR] :', e.response)
     })
   }
-}
+})
