@@ -117,7 +117,7 @@
       depressed
       min-width="140"
       rounded
-      
+      :disabled="invalid"
       @click="$emit('registerHandle')"
     >
       Get Started

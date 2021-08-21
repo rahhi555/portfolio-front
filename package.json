@@ -15,10 +15,13 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/composition-api": "^0.25.0",
     "@nuxtjs/pwa": "^3.3.5",
+    "cookieparser": "^0.1.0",
     "core-js": "^3.15.1",
     "express": "^4.17.1",
     "firebase": "^8.9.1",
+    "jwt-decode": "^3.1.2",
     "nuxt": "^2.15.7",
+    "universal-cookie": "^4.0.4",
     "vee-validate": "^3.4.11",
     "vuetify": "^2.5.5"
   },

@@ -114,10 +114,10 @@ export default {
   computed: {
     snackParams: {
       get() {
-        return SnackbarStore.getParams
+        return SnackbarStore.snackParams
       },
       set() {
-        SnackbarStore.hiddenAction()
+        SnackbarStore.hidden()
       }
     }
   },
