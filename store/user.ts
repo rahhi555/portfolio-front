@@ -1,5 +1,4 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-
 import Cookie from 'universal-cookie'
 import firebase from '~/plugins/firebase'
 
@@ -53,10 +52,7 @@ export default class User extends VuexModule {
   @Action
   public async setUser() {
     const currentUser = firebase.auth().currentUser
-    console.log('current user', currentUser)
     const token = await currentUser?.getIdToken()
-    
-    window.$nuxt.$axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
     if (currentUser?.isAnonymous) {
       this.setUserMutation({
@@ -65,6 +61,7 @@ export default class User extends VuexModule {
         name: 'お試しユーザー',
       })
     } else {
+      window.$nuxt.$axios.defaults.headers.common.Authorization = `Bearer ${token}`
       const user = (await window.$nuxt.$axios
         .$get('/api/v1/users/me')
         .then((user) => {

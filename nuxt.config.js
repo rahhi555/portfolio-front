@@ -49,14 +49,14 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://localhost:3000'
+    baseURL: 'http://api:3000',
   },
 
   publicRuntimeConfig: {
     axios: {
-      browserBaseURL: process.env.BROWSER_BASE_URL,
-    },
-    serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost/server'
+      serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost/server',
+      browserBaseURL: process.env.BROWSER_BASE_URL || 'http://localhost:3000',
+    }
   },
 
   privateRuntimeConfig: {

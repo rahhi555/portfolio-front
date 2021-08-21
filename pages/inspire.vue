@@ -7,6 +7,7 @@
 
 <script type="ts">
 import { defineComponent, useContext } from '@nuxtjs/composition-api'
+import { UserStore } from '~/store'
 
 export default defineComponent({
   setup() {
@@ -17,13 +18,13 @@ export default defineComponent({
       window.$nuxt.$loading.start()
       $axios.$get('/health-check')
       .then(res => console.log(res))
-      $axios.$get(`${$config.serverMiddlewareURL}/health-check`)
+      $axios.$get(`${$config.axios.serverMiddlewareURL}/health-check`)
       .then(res => console.log(res))
       window.$nuxt.$loading.finish()
     }
 
     const me = () => {
-      $axios.$get('api/v1/users/me').then(res => {console.log(res)})
+      UserStore.removeUser()
     }
 
     return { healthCheckApi, me }
