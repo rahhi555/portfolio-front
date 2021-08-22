@@ -25,19 +25,22 @@ const finallyFunc = () => {
   SnackbarStore.visible(payload)
 }
 
+// 認証後に飛ばされるページ
+const PUSH_PAGE = '/dashboard'
+
 // apiのユーザー作成リクエスト
 const createUserApi = async (payloadName: string | null | undefined) => {
   const token = await firebase.auth().currentUser?.getIdToken()
   $axios.defaults.headers.common.Authorization = `Bearer ${token}`
   $axios
     .post('/api/v1/users', { user: { name: payloadName } })
-    .then(() => {
+    .then(async () => {
       payload = {
         color: 'success',
         message: 'ユーザー登録に成功しました',
       }
-      UserStore.setUser()
-      $router.push('/')
+      await UserStore.setUser()
+      $router.push(PUSH_PAGE)
     })
     .catch(() => {
       payload = {
@@ -118,10 +121,10 @@ export const emailAndPasswordLogin = (authValues: AuthValues): void => {
   firebase
     .auth()
     .signInWithEmailAndPassword(authValues.email, authValues.password)
-    .then(() => {
-      UserStore.setUser()
+    .then(async () => {
+      await UserStore.setUser()
       payload = { color: 'success', message: 'ログインに成功しました' }
-      $router.push('/')
+      $router.push(PUSH_PAGE)
     })
     .catch((e) => {
       errorPayload(e.code)
@@ -137,13 +140,13 @@ export const signInAnonymouly = () => {
   firebase
     .auth()
     .signInAnonymously()
-    .then(() => {
+    .then(async () => {
       payload = {
         color: 'success',
         message: '匿名ユーザーとしてログインしました',
       }
-      UserStore.setUser()
-      $router.push('/')
+      await UserStore.setUser()
+      $router.push(PUSH_PAGE)
     })
     .catch((e) => {
       errorPayload(e.code)
@@ -159,16 +162,16 @@ export const googleLogin = (): void => {
   firebase
     .auth()
     .signInWithPopup(provider)
-    .then((res) => {
+    .then(async (res) => {
       if (res.additionalUserInfo?.isNewUser) {
         window.$nuxt.$loading.start()
 
         /* @ts-ignore */
         createUserApi(res.additionalUserInfo?.profile?.name)
       } else {
-        UserStore.setUser()
+        await UserStore.setUser()
         payload = { color: 'success', message: 'ログインに成功しました' }
-        $router.push('/')
+        $router.push(PUSH_PAGE)
       }
     })
     .catch((e) => {
@@ -235,4 +238,11 @@ export const googleCredential = () => {
       errorPayload(e.code)
       finallyFunc()
     })
+}
+
+// ログアウト
+export const logout = () => {
+  UserStore.removeUser()
+  SnackbarStore.visible({ color: 'success', message: 'ログアウトしました' })
+  window.$nuxt.$router.push('/')
 }

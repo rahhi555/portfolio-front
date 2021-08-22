@@ -1,5 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
-
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -24,7 +22,7 @@ export default {
   plugins: [
     '~/plugins/axios.ts',
     '~/plugins/firebase.ts',
-    '~/plugins/vee-validate.js'
+    '~/plugins/vee-validate.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

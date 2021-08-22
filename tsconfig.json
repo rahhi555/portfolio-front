@@ -15,6 +15,7 @@
     "noEmit": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
+    "forceConsistentCasingInFileNames": false,
     "paths": {
       "~/*": [
         "./*"

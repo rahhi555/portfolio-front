@@ -21,7 +21,6 @@ export const actions: ActionTree<any, any> = {
     server: Context
   ) => {
     // nuxtServerInitの処理
-    console.log(server.$config)
     if (process.server && process.static) return
     if (!server.req.headers.cookie) return
     

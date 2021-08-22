@@ -91,7 +91,6 @@ import {
 } from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  layout: 'unProtected',
   setup() {
     const authValues = reactive({
       email: '',

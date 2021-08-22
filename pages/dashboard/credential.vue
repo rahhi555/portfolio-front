@@ -19,7 +19,7 @@
           :name.sync="registerValues.name"
           :email.sync="registerValues.email"
           :password.sync="registerValues.password"
-          :passwordConfirm.sync="registerValues.passwordConfirm"
+          :password-confirm.sync="registerValues.passwordConfirm"
           @registerHandle="emailAndPasswordCredential"
         >
         </register-form>
@@ -30,13 +30,15 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from '@nuxtjs/composition-api'
-import RegisterForm from '~/components/unProtected/RegisterForm.vue'
-import firebase from '~/plugins/firebase'
+import RegisterForm from '~/components/default/RegisterForm.vue'
 
 export default defineComponent({
   components: {
     RegisterForm,
   },
+
+  layout: 'protected',
+
   setup() {
     const registerValues = reactive({
       name: '',
@@ -56,8 +58,6 @@ export default defineComponent({
         module.googleCredential()
       })
     }
-
-    console.log(firebase.auth().currentUser)
 
     return {
       registerValues,

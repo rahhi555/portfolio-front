@@ -94,7 +94,7 @@
       >
         <template #label>
           <v-dialog v-model="isShowDialog" width="800">
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <a
                 class="secondary--text ml-6 ml-sm-1 d-inline-block"
                 href="#"
@@ -127,7 +127,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import TearmsOfService from '~/components/unProtected/TermsOfService.vue'
+import TearmsOfService from '~/components/default/TermsOfService.vue'
 
 export default defineComponent({
   components: {

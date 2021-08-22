@@ -4,7 +4,7 @@
     class="v-snackbar--material"
     v-bind="{
       ...$attrs,
-      'color': 'transparent'
+      color: 'transparent',
     }"
   >
     <material-alert
@@ -21,54 +21,65 @@
 </template>
 
 <script>
-  import MaterialAlert from '~/components/MaterialAlert.vue'
-  import { SnackbarStore } from '~/store'
-  export default {
-    name: 'MaterialSnackbar',
-    components: {
-      MaterialAlert
-    },
-    props: {
-      dismissible: {
-        type: Boolean,
-        default: true,
-      },
-      type: {
-        type: String,
-        default: '',
-      },
-      value: Boolean,
-    },
+import Cookies from 'universal-cookie'
+import MaterialAlert from '~/components/MaterialAlert.vue'
+import { SnackbarStore } from '~/store'
 
-    computed: {
-      internalValue: {
-        get() {
-          return SnackbarStore.snackParams.isVisible
-        },
-        set() {
-          SnackbarStore.hidden()
-        }
-      }
-    }
-  }
+export default {
+  name: 'MaterialSnackbar',
+  components: {
+    MaterialAlert,
+  },
+  props: {
+    dismissible: {
+      type: Boolean,
+      default: true,
+    },
+    type: {
+      type: String,
+      default: '',
+    },
+    value: Boolean,
+  },
+
+  computed: {
+    internalValue: {
+      get() {
+        return SnackbarStore.snackParams.isVisible
+      },
+      set() {
+        SnackbarStore.hidden()
+      },
+    },
+  },
+
+  mounted() {
+    const cookie = new Cookies()
+    const payload = cookie.get('snackbar')
+
+    if (!payload) return
+    SnackbarStore.visible(payload)
+    cookie.remove('snackbar', { path: '/' })
+  },
+}
 </script>
 
 <style scoped lang="sass">
-  .v-snackbar--material
-    margin-top: 32px
-    margin-bottom: 32px
+.v-snackbar--material
+  margin-top: 32px
+  margin-bottom: 32px
 
-    .v-alert
-      padding: 32px 16px
+  .v-alert
+    padding: 32px 16px
 
-    .v-alert--material,
-    .v-snack__wrapper
-      border-radius: 4px
+  .v-alert--material,
+  .v-snack__wrapper
+    border-radius: 4px
 
-    .v-snack__content
-      overflow: visible
-      padding: 0
+  .v-snack__content
+    overflow: visible
+    padding: 0
 
-    .v-snack__action
-      display: none
+  .v-snack__action
+    display: none
 </style>
