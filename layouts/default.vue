@@ -82,6 +82,10 @@ export default {
     MaterialSnackbar
   },
 
+  middleware: [
+    'authenticated'
+  ],
+
   data() {
     return {
       clipped: false,
@@ -121,5 +125,6 @@ export default {
       }
     }
   },
+
 }
 </script>

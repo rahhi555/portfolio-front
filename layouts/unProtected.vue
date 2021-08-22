@@ -48,6 +48,10 @@ export default {
     MaterialSnackbar,
   },
 
+  middleware: [
+    'handle-login-route'
+  ],
+
   data: () => ({
     srcs: {
       '/auth/login': 'login.jpg',

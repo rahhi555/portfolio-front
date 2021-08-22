@@ -57,8 +57,6 @@ export default defineComponent({
       })
     }
 
-    console.log(firebase.auth().currentUser)
-
     return {
       registerValues,
       emailAndPasswordCredential,
