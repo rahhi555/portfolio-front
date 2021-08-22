@@ -1,121 +1,68 @@
 <template>
-  <v-app dark>
-    <MaterialSnackbar
-      :type="snackParams.color"
-      timeout="4000"
-      v-bind="{
-        center: true,
-        top: true,
-      }"
-    >
-      {{ snackParams.message }}
-    </MaterialSnackbar>
-
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-app-bar>
+  <v-app>
     <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
+      <v-img
+        :key="src"
+        :src="require(`@/assets/${src}`)"
+        dark
+        gradient="to top, #00000080, #00000080"
+        min-height="100vh"
+        :height="$vuetify.breakpoint.mdAndUp ? '100vh' : undefined"
+      >
+        <div
+          :class="[$vuetify.breakpoint.mdAndUp && 'fill-height']"
+          class="d-block d-md-flex"
+        >
+          <AppBar />
+
+          <MaterialSnackbar
+            :type="snackParams.color"
+            timeout="4000"
+            v-bind="{
+              center: true,
+              top: true,
+            }"
+          >
+            {{ snackParams.message }}
+          </MaterialSnackbar>
+
+          <Nuxt />
+
+          <Footer />
+        </div>
+      </v-img>
     </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light> mdi-repeat </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
+import AppBar from '~/components/default/AppBar.vue'
+import Footer from '~/components/default/Footer.vue'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import { SnackbarStore } from '~/store'
 
 export default {
   components: {
-    MaterialSnackbar
+    AppBar,
+    Footer,
+    MaterialSnackbar,
   },
 
   middleware: [
-    'authenticated'
+    'handle-login-route'
   ],
 
-  data() {
-    return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Credential',
-          to: '/credential',
-        },
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js',
-    }
-  },
-  
+  data: () => ({
+    srcs: {
+      '/auth/login': 'login.jpg',
+      '/auth/register': 'register.jpg',
+    },
+  }),
+
   computed: {
+    src() {
+      return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
+    },
     snackParams: {
       get() {
         return SnackbarStore.snackParams
@@ -125,6 +72,5 @@ export default {
       }
     }
   },
-
 }
 </script>

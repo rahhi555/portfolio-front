@@ -10,6 +10,8 @@ import { defineComponent, useContext } from '@nuxtjs/composition-api'
 import { UserStore } from '~/store'
 
 export default defineComponent({
+  layout: 'protected',
+
   setup() {
     const { $axios, $config } = useContext()
 

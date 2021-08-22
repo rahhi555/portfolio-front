@@ -76,8 +76,8 @@ export default class User extends VuexModule {
 
   @Action
   public removeUser() {
+    this.removeUserMutation()
     const cookies = new Cookie()
     cookies.remove('access_token', { path: '/' })
-    this.removeUserMutation()
   }
 }

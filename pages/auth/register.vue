@@ -56,7 +56,7 @@
                     :name.sync="registerValues.name"
                     :email.sync="registerValues.email"
                     :password.sync="registerValues.password"
-                    :passwordConfirm.sync="registerValues.passwordConfirm"
+                    :password-confirm.sync="registerValues.passwordConfirm"
                     @registerHandle="emailAndPasswordRegister"
                   >
                   </register-form>
@@ -75,13 +75,12 @@ import {
   defineComponent,
   reactive,
 } from '@nuxtjs/composition-api'
-import RegisterForm from '~/components/unProtected/RegisterForm.vue'
+import RegisterForm from '~/components/default/RegisterForm.vue'
 
 export default defineComponent({
   components: {
     RegisterForm,
   },
-  layout: 'unProtected',
   setup() {
     const sections = [
       {
