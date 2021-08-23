@@ -1,10 +1,12 @@
 <template>
   <v-navigation-drawer
-    :mini-variant="miniVariant"
+    v-model="drawer"
+    :mini-variant.sync="miniVariant"
     fixed
     app
     dark
     :src="require('~/assets/login_gray.png')"
+    mini-variant-width="80"
   >
     <div>
       <drawer-header />
@@ -36,20 +38,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, inject } from '@nuxtjs/composition-api'
 import DrawerHeader from './DrawerHeader.vue'
 import AccountSettings from './DrawerAccountSettings.vue'
+import { DrawerKey, MiniVariantKey } from '~/types/injection-key'
 
 export default defineComponent({
   components: {
     DrawerHeader,
     AccountSettings
-  },
-
-  props: {
-    miniVariant: {
-      type: Boolean,
-    },
   },
 
   setup() {
@@ -71,8 +68,13 @@ export default defineComponent({
       },
     ]
 
+    const miniVariant = inject(MiniVariantKey)
+    const drawer = inject(DrawerKey)
+
     return {
       items,
+      miniVariant,
+      drawer
     }
   },
 })
