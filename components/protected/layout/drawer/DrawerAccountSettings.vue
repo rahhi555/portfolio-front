@@ -2,9 +2,9 @@
   <v-list>
     <v-list-group v-for="item in items" :key="item.icon">
       <template #activator>
-        <v-list-item-icon>
-          <v-icon>mdi-account</v-icon>
-        </v-list-item-icon>
+        <v-list-item-avatar>
+          <v-img :src="`https://i.pravatar.cc/180?img=1`" size="40"></v-img>
+        </v-list-item-avatar>
 
         <v-list-item-content>
           <v-list-item-title>{{ name }}</v-list-item-title>

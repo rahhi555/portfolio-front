@@ -10,6 +10,11 @@
     height="70"
     flat
   >
+    <v-app-bar-nav-icon
+      class="hidden-md-and-up"
+      @click="drawer = !drawer"
+    />
+
     <drawer-toggle class="hidden-sm-and-down" />
 
     <v-toolbar-title class="font-weight-light text-h5" v-text="name" />
@@ -27,13 +32,15 @@
 </template>
 
 <script>
+import { defineComponent, inject } from '@nuxtjs/composition-api'
 import DrawerToggle from './AppBarDrawerToggle.vue'
 import Search from './AppBarSearch.vue'
 import GoHome from './AppBarGoHome.vue'
 import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
+import { DrawerKey } from '~/types/injection-key'
 
-export default {
+export default defineComponent({
   components: {
     DrawerToggle,
     Search,
@@ -42,11 +49,19 @@ export default {
     Account,
   },
 
+  setup(){
+    const drawer = inject(DrawerKey)
+
+    return {
+      drawer
+    }
+  },
+
   computed: {
     name() {
       const routeName = this.$route.name.replace(/.*-/g, '')
       return routeName.charAt(0).toUpperCase() + routeName.slice(1)
     },
   },
-}
+})
 </script>

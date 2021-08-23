@@ -43,7 +43,7 @@ jobs:
     needs: ECR-deploy
     runs-on: ubuntu-latest
     environment: production
-    if: contains(github.event.pull_request.title,'[skip ecs]') == false
+    if: contains(github.event.head_commit.message,'[skip ecs]') == false
 
     steps:
     - name: Checkout

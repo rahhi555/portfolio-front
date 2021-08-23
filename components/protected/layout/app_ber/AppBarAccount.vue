@@ -9,9 +9,9 @@
   >
     <template v-slot:activator="{ attrs, on }">
       <v-btn class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
-        <v-list-item-avatar>
-          <v-img :src="`https://i.pravatar.cc/180?img=1`" size="40"></v-img>
-        </v-list-item-avatar>
+        <v-list-item-icon>
+          <v-icon>mdi-account</v-icon>
+        </v-list-item-icon>
       </v-btn>
     </template>
 
