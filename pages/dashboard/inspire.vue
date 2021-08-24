@@ -7,13 +7,12 @@
 
 <script type="ts">
 import { defineComponent, useContext } from '@nuxtjs/composition-api'
-import { UserStore } from '~/store'
 
 export default defineComponent({
   layout: 'protected',
 
   setup() {
-    const { $axios, $config } = useContext()
+    const { $axios, $config, $auth } = useContext()
 
     // apiとserverMiddlewareの疎通確認
     const healthCheckApi = () => {
@@ -26,7 +25,7 @@ export default defineComponent({
     }
 
     const me = () => {
-      UserStore.removeUser()
+      $auth.emailAndPasswordRegister()
     }
 
     return { healthCheckApi, me }

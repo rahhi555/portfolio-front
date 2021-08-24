@@ -88,10 +88,13 @@
 import {
   defineComponent,
   reactive,
+  useContext
 } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   setup() {
+    const { $auth } = useContext()
+
     const authValues = reactive({
       email: '',
       password: '',
@@ -100,15 +103,12 @@ export default defineComponent({
     const isShowPassword = false
 
     const emailAndPasswordLogin = (): void => {
-      import('~/utils/auth').then((module) => {
-        module.emailAndPasswordLogin(authValues)
-      })
+      $auth.emailAndPasswordLogin(authValues)
     }
 
     const googleLogin = (): void => {
-      import('~/utils/auth').then((module) => {
-        module.googleLogin()
-      })
+      $auth.googleLogin()
+      
     }
 
     return {

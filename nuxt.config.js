@@ -23,6 +23,7 @@ export default {
     '~/plugins/axios.ts',
     '~/plugins/firebase.ts',
     '~/plugins/vee-validate.js',
+    '~/plugins/auth.client.ts'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
