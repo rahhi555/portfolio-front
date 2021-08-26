@@ -63,7 +63,7 @@ export default class User extends VuexModule {
     } else {
       window.$nuxt.$axios.defaults.headers.common.Authorization = `Bearer ${token}`
       const user = (await window.$nuxt.$axios
-        .$get('/api/v1/users/me')
+        .$get('/api/v1/me')
         .then((user) => {
           return { id: user.id, name: user.name, uid: user.uid }
         })) as UserParams

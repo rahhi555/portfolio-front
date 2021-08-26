@@ -32,6 +32,7 @@
                 >
                   <v-text-field
                     v-model="authValues.email"
+                    class="email-form"
                     color="secondary"
                     placeholder="Email..."
                     :error-messages="errors[0]"
@@ -50,7 +51,7 @@
                 >
                   <v-text-field
                     v-model="authValues.password"
-                    class="mb-8"
+                    class="mb-8 password-form"
                     color="secondary"
                     placeholder="Password..."
                     :error-messages="errors[0]"
@@ -67,6 +68,7 @@
 
                 <v-btn
                   :disabled="invalid"
+                  class="login-button"
                   color="accent"
                   rounded
                   text

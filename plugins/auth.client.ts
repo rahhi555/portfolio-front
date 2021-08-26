@@ -3,14 +3,14 @@ import firebase from '~/plugins/firebase'
 import { SnackbarStore, UserStore } from '~/store'
 import { Payload } from '~/store/snackbar'
 
-interface RegisterValues {
+export interface RegisterValues {
   name: string
   email: string
   password: string
   passwordConfirm: string
 }
 
-interface AuthValues {
+export interface AuthValues {
   email: string
   password: string
 }

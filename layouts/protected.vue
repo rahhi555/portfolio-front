@@ -54,7 +54,7 @@ export default defineComponent({
     const miniVariant = ref(false)
     provide(MiniVariantKey, miniVariant)
     
-    const drawer = ref(true)
+    const drawer = ref(false)
     provide(DrawerKey, drawer)
 
     return {

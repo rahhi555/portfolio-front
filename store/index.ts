@@ -39,7 +39,7 @@ export const actions: ActionTree<any, any> = {
     } else {
       server.$axios.defaults.headers.common.Authorization = `Bearer ${token}`
       await server.$axios
-        .$get('/api/v1/users/me')
+        .$get('/api/v1/me')
         .then((user) => {
           context.commit('user/setUserMutation', { id: user.id, name: user.name, uid: user.uid } )
         })
