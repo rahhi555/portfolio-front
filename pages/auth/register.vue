@@ -74,6 +74,7 @@
 import {
   defineComponent,
   reactive,
+  useContext
 } from '@nuxtjs/composition-api'
 import RegisterForm from '~/components/default/RegisterForm.vue'
 
@@ -82,6 +83,8 @@ export default defineComponent({
     RegisterForm,
   },
   setup() {
+    const { $auth } = useContext()
+
     const sections = [
       {
         icon: 'mdi-map',
@@ -111,15 +114,11 @@ export default defineComponent({
     })
 
     const emailAndPasswordRegister = () => {
-      import('~/utils/auth').then((module) => {
-        module.emailAndPasswordRegister(registerValues)
-      })
+      $auth.emailAndPasswordRegister(registerValues)
     }
 
     const signInAnonymouly = () => {
-      import('~/utils/auth').then((module) => {
-        module.signInAnonymouly()
-      })
+      $auth.signInAnonymouly()
     }
 
     const isShowPassword = false

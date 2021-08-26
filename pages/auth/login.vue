@@ -32,6 +32,7 @@
                 >
                   <v-text-field
                     v-model="authValues.email"
+                    class="email-form"
                     color="secondary"
                     placeholder="Email..."
                     :error-messages="errors[0]"
@@ -50,7 +51,7 @@
                 >
                   <v-text-field
                     v-model="authValues.password"
-                    class="mb-8"
+                    class="mb-8 password-form"
                     color="secondary"
                     placeholder="Password..."
                     :error-messages="errors[0]"
@@ -67,6 +68,7 @@
 
                 <v-btn
                   :disabled="invalid"
+                  class="login-button"
                   color="accent"
                   rounded
                   text
@@ -88,10 +90,13 @@
 import {
   defineComponent,
   reactive,
+  useContext
 } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   setup() {
+    const { $auth } = useContext()
+
     const authValues = reactive({
       email: '',
       password: '',
@@ -100,15 +105,12 @@ export default defineComponent({
     const isShowPassword = false
 
     const emailAndPasswordLogin = (): void => {
-      import('~/utils/auth').then((module) => {
-        module.emailAndPasswordLogin(authValues)
-      })
+      $auth.emailAndPasswordLogin(authValues)
     }
 
     const googleLogin = (): void => {
-      import('~/utils/auth').then((module) => {
-        module.googleLogin()
-      })
+      $auth.googleLogin()
+      
     }
 
     return {

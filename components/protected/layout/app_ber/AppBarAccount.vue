@@ -19,9 +19,11 @@
       <template v-for="(p, i) in profile">
         <v-divider v-if="p.divider" :key="`divider-${i}`" class="mb-2 mt-2" />
 
-        <app-bar-item v-else-if="p.title === 'Log out'" :key="`item-${i}`">
-          <v-list-item-title @click="logout" v-text="p.title" />
-        </app-bar-item>
+        <div v-else-if="p.title === 'Log out'" :key="`item-${i}`" @click="logout">
+          <app-bar-item>
+            <v-list-item-title v-text="p.title" />
+          </app-bar-item>
+        </div>
 
         <app-bar-item v-else :key="`item-${i}`" to="/">
           <v-list-item-title v-text="p.title" />
@@ -32,10 +34,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   setup() {
+    const { $auth } = useContext()
+
     const profile = [
       { title: 'Profile' },
       { title: 'Settings' },
@@ -44,9 +48,7 @@ export default defineComponent({
     ]
 
     const logout = () => {
-      import('~/utils/auth').then((module) => {
-        module.logout()
-      })
+      $auth.logout()
     }
 
     return {

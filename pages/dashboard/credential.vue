@@ -7,7 +7,7 @@
   >
     
     <v-card-subtitle class="my-3 mb-1 pb-0">Googleアカウントで登録</v-card-subtitle>
-    <v-btn class="ml-2" color="blue" @click="googleLogin">
+    <v-btn class="ml-2" color="blue" @click="googleCredential">
       <v-icon color="white" left> mdi-google </v-icon
       ><span class="white--text">Google</span>
     </v-btn>
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from '@nuxtjs/composition-api'
+import { defineComponent, reactive, useContext } from '@nuxtjs/composition-api'
 import RegisterForm from '~/components/default/RegisterForm.vue'
 
 export default defineComponent({
@@ -40,6 +40,8 @@ export default defineComponent({
   layout: 'protected',
 
   setup() {
+    const { $auth } = useContext()
+
     const registerValues = reactive({
       name: '',
       email: '',
@@ -48,21 +50,17 @@ export default defineComponent({
     })
 
     const emailAndPasswordCredential = () => {
-      import('~/utils/auth').then((module) => {
-        module.emailAndPasswordCredential(registerValues)
-      })
+      $auth.emailAndPasswordCredential(registerValues)
     }
 
-    const googleLogin = () => {
-      import('~/utils/auth').then((module) => {
-        module.googleCredential()
-      })
+    const googleCredential = () => {
+      $auth.googleCredential()
     }
 
     return {
       registerValues,
       emailAndPasswordCredential,
-      googleLogin
+      googleCredential
     }
   },
 })

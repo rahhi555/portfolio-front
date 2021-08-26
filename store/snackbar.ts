@@ -19,8 +19,8 @@ interface SnackParams extends Payload {
 export default class Snackbar extends VuexModule {
   private snackState: SnackParams = {
     isVisible: false,
-    color: 'info',
-    message: ''
+    color: 'success',
+    message: 'info'
   }
 
   public get snackParams() {

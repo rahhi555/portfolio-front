@@ -90,3 +90,7 @@ sw.*
 *.swp
 
 .ash_history
+
+cypress/videos
+
+cypress/screenshots
