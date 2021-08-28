@@ -10,14 +10,17 @@
     height="70"
     flat
   >
-    <v-app-bar-nav-icon
-      class="hidden-md-and-up"
-      @click="drawer = !drawer"
-    />
+    <v-app-bar-nav-icon class="hidden-md-and-up" @click="drawer = !drawer" />
 
     <drawer-toggle class="hidden-sm-and-down" />
 
     <v-toolbar-title class="font-weight-light text-h5" v-text="name" />
+
+    <v-spacer />
+
+    <template v-slot:extension>
+      <tab />
+    </template>
 
     <v-spacer />
 
@@ -38,6 +41,7 @@ import Search from './AppBarSearch.vue'
 import GoHome from './AppBarGoHome.vue'
 import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
+import Tab from './AppBarTab.vue'
 import { DrawerKey } from '~/types/injection-key'
 
 export default defineComponent({
@@ -47,13 +51,14 @@ export default defineComponent({
     GoHome,
     Notifications,
     Account,
+    Tab
   },
 
-  setup(){
+  setup() {
     const drawer = inject(DrawerKey)
 
     return {
-      drawer
+      drawer,
     }
   },
 

@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from '@nuxtjs/composition-api'
+import Cookies from 'universal-cookie'
 
 export default defineNuxtPlugin(({ $axios }) => {
   // 開発環境のみログを出力する
@@ -15,5 +16,11 @@ export default defineNuxtPlugin(({ $axios }) => {
     $axios.onError((e) => {
       console.error('[AXIOS ERROR] :', e.response)
     })
+  }
+
+  if (process.client) {
+    const cookie = new Cookies()
+    const token = cookie.get('access_token')
+    $axios.defaults.headers.common.Authorization ||= `Bearer ${token}`
   }
 })

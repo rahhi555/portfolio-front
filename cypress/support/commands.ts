@@ -25,7 +25,7 @@ Cypress.Commands.add('userClear', () => {
   }
   user.getIdToken().then((token) => {
     cy.request({
-      url: 'http://localhost:3000/api/v1/users',
+      url: 'http://localhost:3000/api/v1/me',
       method: 'DELETE',
       auth: {
         bearer: token,

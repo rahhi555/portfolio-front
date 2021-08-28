@@ -43,8 +43,7 @@ export const actions: ActionTree<any, any> = {
         .then((user) => {
           context.commit('user/setUserMutation', { id: user.id, name: user.name, uid: user.uid } )
         })
-        .catch((e) => {
-          console.error(e)
+        .catch(() => {
           context.dispatch('user/removeUser')
         })
     }
