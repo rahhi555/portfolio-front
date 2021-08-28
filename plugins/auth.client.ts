@@ -25,7 +25,7 @@ export default defineNuxtPlugin((ctx, inject) => {
   }
 
   // 認証後に飛ばされるページ
-  const PUSH_PAGE = '/dashboard'
+  const PUSH_PAGE = '/dashboard/plans'
 
   // apiのユーザー作成リクエスト
   const createUserApi = async (payloadName: string | null | undefined) => {
@@ -247,10 +247,22 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // ユーザー退会
   const unRegister = () => {
-    firebase.auth().currentUser?.delete()
-    UserStore.removeUser()
-    SnackbarStore.visible({ color: 'success', message: '退会しました' })
-    ctx.app.router?.push('/')
+    const user = firebase.auth().currentUser
+
+    if(!user) {
+      SnackbarStore.visible({ color: 'error', message: '現在のユーザーを取得できませんでした' })
+      return  
+    }
+    
+    ctx.$axios.$delete('/api/v1/me').then(() => {
+      user.delete()
+      UserStore.removeUser()
+      SnackbarStore.visible({ color: 'success', message: '退会しました' })
+      ctx.app.router?.push('/')
+    })
+    .catch(() => {
+      SnackbarStore.visible({ color: 'error', message: '退会処理に失敗しました' })
+    })
   }
 
   // $auth.メソッド()のようにアクセスできるようにする

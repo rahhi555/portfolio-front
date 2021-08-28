@@ -53,13 +53,13 @@ export default defineComponent({
     const items = [
       {
         icon: 'mdi-apps',
-        title: 'Welcome',
-        to: '/dashboard',
+        title: '計画一覧',
+        to: '/dashboard/plans',
       },
       {
         icon: 'mdi-chart-bubble',
         title: 'Inspire',
-        to: '/dashboard/inspire',
+        to: '/dashboard',
       },
       {
         icon: 'mdi-chart-bubble',
