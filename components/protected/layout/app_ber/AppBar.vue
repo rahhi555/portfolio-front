@@ -18,7 +18,7 @@
 
     <v-spacer />
 
-    <template v-slot:extension>
+    <template #extension>
       <tab />
     </template>
 

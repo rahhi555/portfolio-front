@@ -20,7 +20,7 @@ describe('認証系', () => {
       cy.visit('/auth/register')
       cy.get('button').contains('かんたんログイン').click()
       cy.url().should('include', '/dashboard')
-      cy.contains('匿名ユーザーとしてログインしました')
+      cy.contains('ユーザー登録に成功しました')
       cy.visit('/dashboard/credential')
       cy.emailRegister(registerValue)
     })
