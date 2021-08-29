@@ -40,6 +40,7 @@ export default class User extends VuexModule {
   public get isAuthenticated() {
     let hasAllGetted = true
     for(const value in this.userState ) {
+      // @ts-ignore
       if(!!this.userState[value] === false) hasAllGetted = false 
     }
     return hasAllGetted && !!this.tokenState
