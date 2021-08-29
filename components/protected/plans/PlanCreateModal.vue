@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <app-btn
         color="secondary"
         class="mr-2 mb-2 float-left"
