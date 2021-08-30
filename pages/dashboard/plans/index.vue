@@ -7,7 +7,10 @@
       title="計画一覧"
     >
       <v-card-text>
-        <plan-create-modal @input-handle="planParams.name = $event" @create-handle="createPlan" />
+        <plan-create-modal
+          @input-handle="planParams.name = $event"
+          @create-handle="createPlan"
+        />
 
         <v-text-field
           v-model="search"
@@ -28,8 +31,9 @@
           :sort-by="['name', 'office']"
           :sort-desc="[false, true]"
           multi-sort
+          :loading="loading"
         >
-          <template #item.actions>
+          <template #item.actions="{ item }">
             <app-btn
               v-for="(action, i) in actions"
               :key="i"
@@ -39,6 +43,7 @@
               min-width="0"
               small
               text
+              @click="action.method(item)"
             >
               <v-icon v-text="action.icon" />
             </app-btn>
@@ -50,23 +55,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, useContext, useAsync, ref } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  reactive,
+  useContext,
+  useAsync,
+  ref,
+  computed,
+} from '@nuxtjs/composition-api'
 import PlanCreateModal from '~/components/protected/plans/PlanCreateModal.vue'
 import { SnackbarStore } from '~/store'
 import { Payload } from '~/store/snackbar'
 
 interface Member {
-  id: number,
-  user: string,
+  id: number
+  user: string
   role: string
 }
 
 interface Plan {
-  id: number,
-  name: string,
-  member: Member,
-  author: string,
-  createdAt: Date,
+  id: number
+  name: string
+  member: Member
+  author: string
+  createdAt: Date
   updatedAt: Date
 }
 
@@ -87,33 +99,58 @@ export default defineComponent({
       })
     })
 
-    const search = undefined
-
     const planParams = reactive({
-      name: ''
+      name: '',
     })
 
-    let payload: Payload;
+    let payload: Payload
 
     const createPlan = () => {
       window.$nuxt.$loading.start()
-      $axios.$post('/api/v1/plans', { plan: planParams }).then((res: Plan) => {
-        payload = { color: 'success', message: '計画を追加しました' }
-        items.value.push(res)
-      })
-      .catch(() => {
-        payload = { color: 'error', message: '計画の追加に失敗しました' }
-      })
-      .finally(() => {
-        window.$nuxt.$loading.finish()
-        SnackbarStore.visible(payload)
-      })
+      $axios
+        .$post('/api/v1/plans', { plan: planParams })
+        .then((res: Plan) => {
+          payload = { color: 'success', message: '計画を追加しました' }
+          items.value.push(res)
+        })
+        .catch(() => {
+          payload = { color: 'error', message: '計画の追加に失敗しました' }
+        })
+        .finally(() => {
+          window.$nuxt.$loading.finish()
+          SnackbarStore.visible(payload)
+        })
     }
 
+    const deletePlan = (item: Plan) => {
+      window.$nuxt.$loading.start()
+      $axios
+        .delete(`/api/v1/plans/${item.id}`)
+        .then(() => {
+          payload = { color: 'success', message: '計画の削除に成功しました' }
+          items.value = items.value?.filter((i) => {
+            return i.id !== item.id
+          })
+        })
+        .catch(() => {
+          payload = { color: 'error', message: '計画の削除に失敗しました' }
+        })
+        .finally(() => {
+          window.$nuxt.$loading.finish()
+          SnackbarStore.visible(payload)
+        })
+    }
+
+    const search = undefined
+
+    const loading = computed(() => {
+      return !items.value.length
+    })
+
     const actions = [
-      { color: 'info', icon: 'mdi-heart' },
-      { color: 'success', icon: 'mdi-monitor-dashboard' },
-      { color: 'error', icon: 'mdi-close' },
+      { color: 'info', icon: 'mdi-heart', method: '' },
+      { color: 'success', icon: 'mdi-monitor-dashboard', method: '' },
+      { color: 'error', icon: 'mdi-close', method: deletePlan },
     ]
 
     const headers = [
@@ -151,6 +188,8 @@ export default defineComponent({
       search,
       planParams,
       createPlan,
+      deletePlan,
+      loading,
     }
   },
 })
