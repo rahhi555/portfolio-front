@@ -24,7 +24,7 @@
 
     <v-spacer />
 
-    <search class="hidden-sm-and-down" />
+    <!-- <search class="hidden-sm-and-down" /> -->
 
     <go-home />
 

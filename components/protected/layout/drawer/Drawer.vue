@@ -19,7 +19,7 @@
 
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in visibleItems"
           :key="i"
           :to="item.to"
           router
@@ -38,43 +38,54 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from '@nuxtjs/composition-api'
+import { defineComponent, inject, computed, ref } from '@nuxtjs/composition-api'
 import DrawerHeader from './DrawerHeader.vue'
 import AccountSettings from './DrawerAccountSettings.vue'
 import { DrawerKey, MiniVariantKey } from '~/types/injection-key'
+import { UserStore } from '~/store'
 
 export default defineComponent({
   components: {
     DrawerHeader,
-    AccountSettings
+    AccountSettings,
   },
 
   setup() {
-    const items = [
+    const items = ref([
       {
         icon: 'mdi-apps',
         title: '計画一覧',
         to: '/dashboard/plans',
+        visible: true,
       },
       {
         icon: 'mdi-chart-bubble',
         title: 'Inspire',
         to: '/dashboard',
+        visible: true,
       },
       {
         icon: 'mdi-chart-bubble',
         title: 'Credential',
         to: '/dashboard/credential',
+        visible: UserStore.isAnonymous,
       },
-    ]
+    ])
+
+    const visibleItems = computed(() => {
+      return items.value.filter((item) => {
+        return item.visible
+      })
+    })
 
     const miniVariant = inject(MiniVariantKey)
     const drawer = inject(DrawerKey)
 
     return {
-      items,
+      visibleItems,
       miniVariant,
-      drawer
+      drawer,
+      items
     }
   },
 })

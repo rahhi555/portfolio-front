@@ -8,7 +8,8 @@
     >
       <v-card-text>
         <plan-create-modal
-          @input-handle="planParams.name = $event"
+          :name.sync="planParams.name"
+          :published.sync="planParams.published"
           @create-handle="createPlan"
         />
 
@@ -34,19 +35,7 @@
           :loading="loading"
         >
           <template #item.actions="{ item }">
-            <app-btn
-              v-for="(action, i) in actions"
-              :key="i"
-              :color="action.color"
-              class="px-2 ml-1"
-              elevation="0"
-              min-width="0"
-              small
-              text
-              @click="action.method(item)"
-            >
-              <v-icon v-text="action.icon" />
-            </app-btn>
+            <plan-table-button :item="item" @delete-handle="deletePlan(item)"></plan-table-button>
           </template>
         </v-data-table>
       </v-card-text>
@@ -63,28 +52,16 @@ import {
   ref,
   computed,
 } from '@nuxtjs/composition-api'
+import { Plan } from 'interface'
 import PlanCreateModal from '~/components/protected/plans/PlanCreateModal.vue'
+import PlanTableButton from '~/components/protected/plans/PlanTableButton.vue'
 import { SnackbarStore } from '~/store'
 import { Payload } from '~/store/snackbar'
-
-interface Member {
-  id: number
-  user: string
-  role: string
-}
-
-interface Plan {
-  id: number
-  name: string
-  member: Member
-  author: string
-  createdAt: Date
-  updatedAt: Date
-}
 
 export default defineComponent({
   components: {
     PlanCreateModal,
+    PlanTableButton
   },
 
   layout: 'protected',
@@ -101,6 +78,7 @@ export default defineComponent({
 
     const planParams = reactive({
       name: '',
+      published: false
     })
 
     let payload: Payload
@@ -123,6 +101,10 @@ export default defineComponent({
     }
 
     const deletePlan = (item: Plan) => {
+      if (!window.confirm('計画を削除してもよろしいですか？')) {
+        window.alert('キャンセルしました')
+        return
+      }
       window.$nuxt.$loading.start()
       $axios
         .delete(`/api/v1/plans/${item.id}`)
@@ -146,12 +128,6 @@ export default defineComponent({
     const loading = computed(() => {
       return !items.value.length
     })
-
-    const actions = [
-      { color: 'info', icon: 'mdi-heart', method: '' },
-      { color: 'success', icon: 'mdi-monitor-dashboard', method: '' },
-      { color: 'error', icon: 'mdi-close', method: deletePlan },
-    ]
 
     const headers = [
       {
@@ -182,7 +158,6 @@ export default defineComponent({
     ]
 
     return {
-      actions,
       headers,
       items,
       search,
