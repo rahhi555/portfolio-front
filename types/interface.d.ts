@@ -16,4 +16,21 @@ declare module 'interface' {
   export interface SVGRectKeyboardEvent extends KeyboardEvent {
     target: SVGRectElement
   }
+
+  export interface Member {
+    id: number
+    user: string
+    role: string
+  }
+  
+  export interface Plan {
+    id: number
+    userId: number
+    name: string
+    member: Member
+    author: string
+    published: boolean
+    createdAt: string
+    updatedAt: string
+  }
 }

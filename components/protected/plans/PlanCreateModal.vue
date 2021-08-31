@@ -27,12 +27,26 @@
                   name="名前"
                 >
                   <v-text-field
-                    v-model="name"
+                    :value="name"
                     label="Name..."
                     required
                     :error-messages="errors[0]"
-                    @input="$emit('input-handle', name)"
+                    @input="$emit('update:name', $event)"
                   ></v-text-field>
+                </ValidationProvider>
+
+                <ValidationProvider
+                  v-slot="{ errors }"
+                  rules="required"
+                  name="公開設定"
+                >
+                  <v-checkbox
+                    :value="published"
+                    label="チェックを付けると公開します"
+                    :error-messages="errors[0]"
+                    required
+                    @click="$emit('update:published', !published)"
+                  ></v-checkbox>
                 </ValidationProvider>
               </v-col>
             </v-row>
@@ -47,7 +61,10 @@
             color="blue darken-1"
             :disabled="invalid"
             text
-            @click="dialog = false; $emit('create-handle');"
+            @click="
+              dialog = false
+              $emit('create-handle')
+            "
           >
             Create
           </v-btn>
@@ -58,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
+import { defineComponent, ref } from '@nuxtjs/composition-api'
 import AppBtn from '~/components/app/Btn.vue'
 
 export default defineComponent({
@@ -66,17 +83,22 @@ export default defineComponent({
     AppBtn,
   },
 
+  props: {
+    name: {
+      type: String,
+      default: '',
+    },
+    published: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
   setup() {
     const dialog = ref(false)
-    const name = ref('')
-
-    watch(dialog, () => {
-      name.value = ''
-    })
 
     return {
       dialog,
-      name,
     }
   },
 })

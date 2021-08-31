@@ -41,7 +41,7 @@ export default defineComponent({
 
   setup() {
     const { $auth } = useContext()
-
+    
     const registerValues = reactive({
       name: '',
       email: '',
