@@ -16,6 +16,9 @@ module.exports = {
   rules: {
     "vue/valid-v-slot": ["error", {
       "allowModifiers": true
+    }],
+    "no-unused-vars": ["error", {
+      "varsIgnorePattern": "^_"
     }]
   }
 }

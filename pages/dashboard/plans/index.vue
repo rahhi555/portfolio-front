@@ -1,46 +1,47 @@
 <template>
-  <v-container id="data-tables-view" fluid tag="section">
-    <material-card
-      icon="mdi-map-legend"
-      icon-small
-      color="accent"
-      title="計画一覧"
-    >
-      <v-card-text>
-        <plan-create-modal
-          :name.sync="planParams.name"
-          :published.sync="planParams.published"
-          @create-handle="createPlan"
-        />
+  <material-card
+    icon="mdi-map-legend"
+    icon-small
+    color="accent"
+    title="計画一覧"
+  >
+    <v-card-text>
+      <plan-create-modal
+        :name.sync="planParams.name"
+        :published.sync="planParams.published"
+        @create-handle="createPlan"
+      />
 
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          class="ml-auto"
-          hide-details
-          label="Search records"
-          single-line
-          style="max-width: 250px"
-        />
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        class="ml-auto"
+        hide-details
+        label="Search records"
+        single-line
+        style="max-width: 250px"
+      />
 
-        <v-divider class="mt-3" />
+      <v-divider class="mt-3" />
 
-        <v-data-table
-          :headers="headers"
-          :items="items"
-          :search.sync="search"
-          :sort-by="['name', 'office']"
-          :sort-desc="[false, true]"
-          multi-sort
-          :loading="loading"
-        >
-          <template #item.actions="{ item }">
-            <plan-table-button :item="item" @delete-handle="deletePlan(item)"></plan-table-button>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </material-card>
-  </v-container>
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :search.sync="search"
+        :sort-by="['name', 'office']"
+        :sort-desc="[false, true]"
+        multi-sort
+        :loading="loading"
+      >
+        <template #[`item.actions`]="{ item }">
+          <plan-table-button
+            :item="item"
+            @delete-handle="deletePlan(item)"
+          ></plan-table-button>
+        </template>
+      </v-data-table>
+    </v-card-text>
+  </material-card>
 </template>
 
 <script lang="ts">
@@ -51,17 +52,20 @@ import {
   useAsync,
   ref,
   computed,
+  inject,
+  watch
 } from '@nuxtjs/composition-api'
 import { Plan } from 'interface'
 import PlanCreateModal from '~/components/protected/plans/PlanCreateModal.vue'
 import PlanTableButton from '~/components/protected/plans/PlanTableButton.vue'
-import { SnackbarStore } from '~/store'
+import { SnackbarStore, UserStore } from '~/store'
 import { Payload } from '~/store/snackbar'
+import { AppBarTabKey } from '~/types/injection-key'
 
 export default defineComponent({
   components: {
     PlanCreateModal,
-    PlanTableButton
+    PlanTableButton,
   },
 
   layout: 'protected',
@@ -78,7 +82,7 @@ export default defineComponent({
 
     const planParams = reactive({
       name: '',
-      published: false
+      published: false,
     })
 
     let payload: Payload
@@ -123,12 +127,6 @@ export default defineComponent({
         })
     }
 
-    const search = undefined
-
-    const loading = computed(() => {
-      return !items.value.length
-    })
-
     const headers = [
       {
         text: '名前',
@@ -156,6 +154,23 @@ export default defineComponent({
         value: 'actions',
       },
     ]
+
+    const loading = computed(() => {
+      return !items.value.length
+    })
+
+    const search = ref('')
+
+    const appBarTab = inject(AppBarTabKey)
+
+    watch(appBarTab!.value, () => {
+      const selectTab = appBarTab!.value.find(tab => tab.selected)
+      if(selectTab?.name === '全計画') {
+        search.value = ''
+      } else if(selectTab?.name === 'マイ計画') {
+        search.value = UserStore.currentUser.name
+      }
+    })
 
     return {
       headers,

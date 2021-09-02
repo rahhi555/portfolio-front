@@ -29,14 +29,15 @@
 import {
   defineComponent,
   provide,
-  ref
+  ref,
 } from '@nuxtjs/composition-api'
+import { AppBarTab } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
 import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import Footer from '~/components/protected/layout/Footer.vue'
 import { SnackbarStore } from '~/store'
-import { MiniVariantKey, DrawerKey } from '~/types/injection-key'
+import { MiniVariantKey, DrawerKey, AppBarTabKey } from '~/types/injection-key'
 
 export default defineComponent({
   components: {
@@ -53,9 +54,12 @@ export default defineComponent({
 
     const miniVariant = ref(false)
     provide(MiniVariantKey, miniVariant)
-    
+
     const drawer = ref(false)
     provide(DrawerKey, drawer)
+
+    const appBarTab = ref<AppBarTab[]>([])
+    provide(AppBarTabKey, appBarTab)
 
     return {
       fixed,

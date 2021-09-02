@@ -33,4 +33,10 @@ declare module 'interface' {
     createdAt: string
     updatedAt: string
   }
+
+  export interface AppBarTab {
+    name?: string
+    link?: string
+    selected?: boolean
+  }
 }
