@@ -31,13 +31,14 @@ import {
   provide,
   ref,
 } from '@nuxtjs/composition-api'
-import { AppBarTab } from 'interface'
+import { Function } from 'cypress/types/lodash'
+import { AppBarTab, AppBarFunc } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
 import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import Footer from '~/components/protected/layout/Footer.vue'
 import { SnackbarStore } from '~/store'
-import { MiniVariantKey, DrawerKey, AppBarTabKey } from '~/types/injection-key'
+import { MiniVariantKey, DrawerKey, AppBarTabKey, AppBarFuncKey } from '~/types/injection-key'
 
 export default defineComponent({
   components: {
@@ -60,6 +61,9 @@ export default defineComponent({
 
     const appBarTab = ref<AppBarTab[]>([])
     provide(AppBarTabKey, appBarTab)
+
+    const appBarFunc = ref<AppBarFunc | null>(null)
+    provide(AppBarFuncKey, appBarFunc)
 
     return {
       fixed,

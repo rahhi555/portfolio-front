@@ -14,13 +14,13 @@ if(!firebase.apps.length){
   firebase.initializeApp(firebaseConfig)
 }
 
-if (process.env.NODE_ENV !== "production") {
-  const auth = firebase.auth()
-  auth.useEmulator('http://localhost:9099')
-  
-  firebase.auth().onAuthStateChanged((user) => {
-    console.log('current user', user)
-  })
-}
+
+const auth = firebase.auth()
+auth.useEmulator('http://localhost:9099')
+
+firebase.auth().onAuthStateChanged((user) => {
+  console.log('current user', user)
+})
+
 
 export default firebase

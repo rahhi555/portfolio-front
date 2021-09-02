@@ -10,9 +10,9 @@ const tabRoutes: TabRoutes = {
     { name: 'マイ計画', link: '', selected: false },
   ],
   dashboardPlansId: [
-    { name: 'ホーム', link: '/dashboard/plans/:id'},
-    { name: 'メンバー一覧', link: '/dashboard/plans/:id/member' },
-    { name: 'マップ編集', link: '' },
+    { name: 'ホーム', link: '/dashboard/plans/:id', selected: false},
+    { name: 'メンバー一覧', link: '/dashboard/plans/:id/member', selected: false },
+    { name: 'マップ編集', link: '', selected: false },
   ],
 }
 
@@ -24,14 +24,24 @@ const routePear = {
 
 export const getPear = () => {
   if(process.server) return
-  const routeName = window.$nuxt.$route.name 
+  const routeName = window.$nuxt.$route.name
+  const routePath = window.$nuxt.$route.path
   const paramsId = window.$nuxt.$route.params.id
 
+  console.log('routePath', routePath)
+
+  // アクセスしたパス名とlinkが同じならselectedをtrueにする
   // :idを実際のidに置換する
   if(paramsId) {
     for(const tab in tabRoutes) {
       for(const values of tabRoutes[tab]) {
         values.link = values.link?.replace(/:id/, paramsId)
+
+        if(values.link === routePath) {
+          values.selected = true
+        } else if(values.link) {
+          values.selected = false
+        }
       }
     }
   }

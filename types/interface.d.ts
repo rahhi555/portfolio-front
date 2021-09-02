@@ -39,4 +39,9 @@ declare module 'interface' {
     link?: string
     selected?: boolean
   }
+
+  export interface AppBarFunc {
+    func: Function
+    name: string
+  }
 }
