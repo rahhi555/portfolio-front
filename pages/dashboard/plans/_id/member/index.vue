@@ -5,29 +5,37 @@
         <member-card></member-card>
       </v-col>
     </v-row>
+
+    <role-base-modal></role-base-modal>
   </v-sheet>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from '@nuxtjs/composition-api'
+import { defineComponent, inject, useContext, provide, ref } from '@nuxtjs/composition-api'
 import MemberCard from '~/components/protected/members/MemberCard.vue'
+import RoleBaseModal from '~/components/protected/roles/RoleBaseModal.vue'
 import { AppBarFuncKey } from '~/types/injection-key'
 
 export default defineComponent({
   components: {
-    MemberCard
+    MemberCard,
+    RoleBaseModal
   },
 
   layout: 'protected',
 
   setup(){
-    const test = () => {
-      console.log('test')
-      return 'test'
+    const { $axios } = useContext()
+
+    const dialog = ref(false)
+    provide('dialog', dialog)
+
+    const visibleRoleModal = () => {
+      dialog.value = true
     }
 
     const appBarFunc = inject(AppBarFuncKey)
-    appBarFunc!.value = { func: test, name: 'testFunc' }
+    appBarFunc!.value = { func: visibleRoleModal, name: 'ロール一覧' }
   }
 })
 </script>

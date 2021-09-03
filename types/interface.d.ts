@@ -34,10 +34,17 @@ declare module 'interface' {
     updatedAt: string
   }
 
+  interface Role {
+    id: number
+    planId: number
+    name: string
+    description: string
+  }
+
   export interface AppBarTab {
-    name?: string
-    link?: string
-    selected?: boolean
+    name: string
+    link: string
+    selected: boolean
   }
 
   export interface AppBarFunc {

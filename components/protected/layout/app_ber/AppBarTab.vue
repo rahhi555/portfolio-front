@@ -1,5 +1,5 @@
 <template>
-  <v-tabs v-model="activeTab" align-with-title>
+  <v-tabs :value="activeTab" align-with-title>
     <v-tab
       v-for="(tab, index) in appBarTab"
       :key="index"

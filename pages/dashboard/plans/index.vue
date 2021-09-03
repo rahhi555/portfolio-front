@@ -162,7 +162,6 @@ export default defineComponent({
     const search = ref('')
 
     const appBarTab = inject(AppBarTabKey)
-
     watch(appBarTab!.value, () => {
       const selectTab = appBarTab!.value.find(tab => tab.selected)
       if(selectTab?.name === '全計画') {

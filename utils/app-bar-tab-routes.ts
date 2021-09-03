@@ -11,8 +11,8 @@ const tabRoutes: TabRoutes = {
   ],
   dashboardPlansId: [
     { name: 'ホーム', link: '/dashboard/plans/:id', selected: false},
-    { name: 'メンバー一覧', link: '/dashboard/plans/:id/member', selected: false },
     { name: 'マップ編集', link: '', selected: false },
+    { name: 'メンバー一覧', link: '/dashboard/plans/:id/member', selected: false },
   ],
 }
 
@@ -27,8 +27,6 @@ export const getPear = () => {
   const routeName = window.$nuxt.$route.name
   const routePath = window.$nuxt.$route.path
   const paramsId = window.$nuxt.$route.params.id
-
-  console.log('routePath', routePath)
 
   // アクセスしたパス名とlinkが同じならselectedをtrueにする
   // :idを実際のidに置換する
