@@ -10,6 +10,8 @@ interface RoleParams {
   planId?: number
 }
 
+const MODEL = 'ロール'
+
 @Module({
   name: 'roles',
   stateFactory: true,
@@ -51,7 +53,6 @@ export default class Roles extends VuexModule {
     const target = this.rolesState?.find((value) => value.id === id)
     target!.name = name
     target!.description = description
-    console.log('updated', this.rolesState)
   }
 
   @Action({ rawError: true })
@@ -66,38 +67,18 @@ export default class Roles extends VuexModule {
     const role = { name, description }
     await $axios
       .$post(`/api/v1/plans/${planId}/roles`, { role })
-      .then((res) => {
-        this.addRoleMutation(res)
-        SnackbarStore.visible({
-          color: 'success',
-          message: 'ロールを作成しました',
-        })
-      })
-      .catch(() => {
-        SnackbarStore.visible({
-          color: 'error',
-          message: 'ロールの作成に失敗しました',
-        })
-      })
+      .then(res => this.addRoleMutation(res))
+      .catch(() => SnackbarStore.catchError())
+      .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'create' }))
   }
 
   @Action({ rawError: true })
   public async deleteRole(id: number) {
     await $axios
       .$delete(`/api/v1/roles/${id}`)
-      .then(() => {
-        this.deleteRoleMutation(id)
-        SnackbarStore.visible({
-          color: 'success',
-          message: 'ロールを削除しました',
-        })
-      })
-      .catch(() => {
-        SnackbarStore.visible({
-          color: 'error',
-          message: 'ロールの削除に失敗しました',
-        })
-      })
+      .then(() => this.deleteRoleMutation(id))
+      .catch(() => SnackbarStore.catchError())
+      .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'delete' }))
   }
 
   @Action({ rawError: true })
@@ -105,18 +86,8 @@ export default class Roles extends VuexModule {
     const role = { name, description }
     await $axios
       .$patch(`/api/v1/roles/${id}`, { role })
-      .then((res) => {
-        this.updateRoleMutation(res)
-        SnackbarStore.visible({
-          color: 'success',
-          message: 'ロールを更新しました',
-        })
-      })
-      .catch(() => {
-        SnackbarStore.visible({
-          color: 'error',
-          message: 'ロールの更新に失敗しました',
-        })
-      })
+      .then(res => this.updateRoleMutation(res))
+      .catch(() => SnackbarStore.catchError())
+      .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'update' }))    
   }
 }
