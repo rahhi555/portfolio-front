@@ -33,7 +33,7 @@ export const getPear = () => {
   if(paramsId) {
     for(const tab in tabRoutes) {
       for(const values of tabRoutes[tab]) {
-        values.link = values.link?.replace(/:id/, paramsId)
+        values.link = values.link?.replace(/:id|\d+/, paramsId)
 
         if(values.link === routePath) {
           values.selected = true

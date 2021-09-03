@@ -1,30 +1,32 @@
 <template>
-  <v-dialog v-model="dialog" max-width="800px">
+  <v-dialog v-model="dialog" max-width="1000px">
     <v-container>
       <v-row>
-        <v-col>
+        <v-col :md="isMyPlan ? 7 : 12">
           <v-simple-table>
             <template #default>
               <thead>
                 <tr>
-                  <th class="text-left">ロール名</th>
-                  <th class="text-left">説明</th>
+                  <th width="30%" class="text-left">ロール名</th>
+                  <th width="45%"  class="text-left">説明</th>
+                  <th v-if="isMyPlan" width="25%"  class="text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="role in roles"
-                  :key="role.name"
-                >
+                <tr v-for="role in roles" :key="role.name">
                   <td>{{ role.name }}</td>
                   <td>{{ role.description }}</td>
+                  <td v-if="isMyPlan">
+                    <role-modal-button :role="role"
+                    ></role-modal-button>
+                  </td>
                 </tr>
               </tbody>
             </template>
           </v-simple-table>
         </v-col>
 
-        <v-col>
+        <v-col v-if="isMyPlan" md="5">
           <v-card>
             <v-card-title>
               <span class="text-h5">ロール作成</span>
@@ -57,7 +59,7 @@
                 </v-btn>
                 <v-btn
                   color="blue darken-1"
-                  :disabled="invalid && isMyPlan()"
+                  :disabled="invalid"
                   text
                   @click="createRole"
                 >
@@ -73,16 +75,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, useFetch, ref, computed } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  inject,
+  useFetch,
+  ref,
+  computed,
+} from '@nuxtjs/composition-api'
 import { RolesStore, UserStore, PlansStore } from '~/store'
+import RoleModalButton from '~/components/protected/roles/RoleModalButton.vue'
 
 export default defineComponent({
-  setup() {
-    let planId: string
+  components: {
+    RoleModalButton,
+  },
 
-    useFetch( async ({ $route }) => {
-      if(RolesStore.roles) return
-      planId = $route.params.id
+  setup() {
+    let planId: number
+
+    const { fetch } = useFetch(async ({ $route }) => {
+      planId = Number.parseInt($route.params.id)
+      if (RolesStore.roles && RolesStore.currentPlanId === planId) return
       await RolesStore.indexRoles(planId)
     })
 
@@ -91,18 +104,15 @@ export default defineComponent({
       description: '',
     })
 
-    const createRole = () => {
+    const createRole = async () => {
+      if (!planId) fetch()
       const { name, description } = roleParams.value
-      RolesStore.createRole({
+      await RolesStore.createRole({
         planId,
         name,
-        description
+        description,
       })
-    }
-
-    const isMyPlan = () => {
-      if(!PlansStore.plan) { PlansStore.setPlan(planId) }
-      return PlansStore.plan?.userId === UserStore.currentUser.id
+      roleParams.value = { name: '', description: '' }
     }
 
     return {
@@ -110,7 +120,9 @@ export default defineComponent({
       createRole,
       dialog: inject('dialog'),
       roles: computed(() => RolesStore.roles),
-      isMyPlan
+      isMyPlan: computed(() => {
+        return PlansStore.plan?.userId === UserStore.currentUser.id
+      }),
     }
   },
 })

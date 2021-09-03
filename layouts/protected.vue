@@ -17,7 +17,7 @@
 
     <v-main>
       <v-container>
-        <Nuxt keep-alive :keep-alive-props="{ exclude: /dashboard\/plans\/.*\/member/, max: 5 }" />
+        <Nuxt  />
       </v-container>
     </v-main>
 

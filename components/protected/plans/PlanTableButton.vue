@@ -35,7 +35,7 @@
     </app-btn>
 
     <app-btn
-      v-if="isVisible(item)"
+      v-if="isMyPlan(item)"
       color="error"
       class="px-2 ml-1"
       elevation="0"
@@ -69,7 +69,7 @@ export default defineComponent({
 
     const currentUserId = UserStore.currentUser.id
 
-    const isVisible = (item: Plan) => {
+    const isMyPlan = (item: Plan) => {
       return item.userId === currentUserId
     }
 
@@ -78,7 +78,7 @@ export default defineComponent({
     }
 
     return {
-      isVisible,
+      isMyPlan,
       editPlan,
     }
   },

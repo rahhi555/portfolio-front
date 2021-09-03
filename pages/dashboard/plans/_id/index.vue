@@ -17,7 +17,7 @@ export default defineComponent({
     MapBase,
   },
 
-  layout: 'protected',
+  layout: 'protected',  
 
   setup() {
     useFetch( async ({ $route }) => {

@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
 
-    <role-base-modal></role-base-modal>
+    <role-modal></role-modal>
   </v-sheet>
 </template>
 
@@ -19,14 +19,14 @@ import {
   useFetch,
 } from '@nuxtjs/composition-api'
 import MemberCard from '~/components/protected/members/MemberCard.vue'
-import RoleBaseModal from '~/components/protected/roles/RoleBaseModal.vue'
+import RoleModal from '~/components/protected/roles/RoleModal.vue'
 import { AppBarFuncKey } from '~/types/injection-key'
 import { PlansStore } from '~/store'
 
 export default defineComponent({
   components: {
     MemberCard,
-    RoleBaseModal,
+    RoleModal,
   },
 
   layout: 'protected',

@@ -34,7 +34,7 @@ declare module 'interface' {
     updatedAt: string
   }
 
-  interface Role {
+  export interface Role {
     id: number
     planId: number
     name: string
