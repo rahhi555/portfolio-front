@@ -59,7 +59,7 @@ import { Plan } from 'interface'
 import PlanCreateModal from '~/components/protected/plans/PlanCreateModal.vue'
 import PlanTableButton from '~/components/protected/plans/PlanTableButton.vue'
 import { SnackbarStore, UserStore } from '~/store'
-import { Payload } from '~/store/snackbar'
+import { Payload } from '~/store/ui/snackbar'
 import { AppBarTabKey } from '~/types/injection-key'
 
 export default defineComponent({

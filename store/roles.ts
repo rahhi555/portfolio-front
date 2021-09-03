@@ -31,17 +31,17 @@ export default class Roles extends VuexModule {
     this.rolesState?.push(role)
   }
 
-  @Action({ rawError: true })
-  public indexRoles(planId: string) {
-    $axios.$get(`/api/v1/plans/${planId}/roles`).then(roles => {
+  @Action ({ rawError: true })
+  public async indexRoles(planId: string) {
+    await $axios.$get(`/api/v1/plans/${planId}/roles`).then(roles => {
       this.setRolesMutation(roles)
     })
   }
 
   @Action({ rawError: true })
-  public createRole({ planId, name, description }: RoleParams) {
+  public async createRole({ planId, name, description }: RoleParams) {
     const role = { name, description }
-    $axios.$post(`/api/v1/plans/${planId}/roles`, { role }).then(res => {
+    await $axios.$post(`/api/v1/plans/${planId}/roles`, { role }).then(res => {
       this.addRoleMutation(res)
     })
   }

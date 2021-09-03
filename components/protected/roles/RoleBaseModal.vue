@@ -57,7 +57,7 @@
                 </v-btn>
                 <v-btn
                   color="blue darken-1"
-                  :disabled="invalid"
+                  :disabled="invalid && isMyPlan()"
                   text
                   @click="createRole"
                 >
@@ -74,17 +74,17 @@
 
 <script lang="ts">
 import { defineComponent, inject, useFetch, ref, computed } from '@nuxtjs/composition-api'
-import { RolesStore } from '~/store'
+import { RolesStore, UserStore, PlansStore } from '~/store'
 
 export default defineComponent({
   setup() {
     let planId: string
 
-    const { fetch } = useFetch(({ $route }) => {
+    useFetch( async ({ $route }) => {
+      if(RolesStore.roles) return
       planId = $route.params.id
-      RolesStore.indexRoles(planId)
+      await RolesStore.indexRoles(planId)
     })
-    fetch()
 
     const roleParams = ref({
       name: '',
@@ -100,11 +100,17 @@ export default defineComponent({
       })
     }
 
+    const isMyPlan = () => {
+      if(!PlansStore.plan) { PlansStore.setPlan(planId) }
+      return PlansStore.plan?.userId === UserStore.currentUser.id
+    }
+
     return {
       roleParams,
       createRole,
       dialog: inject('dialog'),
-      roles: computed(() => RolesStore.roles)
+      roles: computed(() => RolesStore.roles),
+      isMyPlan
     }
   },
 })

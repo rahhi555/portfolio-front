@@ -31,7 +31,7 @@ import {
 } from '@nuxtjs/composition-api'
 import { AppBarTab } from 'interface'
 import { AppBarTabKey, AppBarFuncKey } from '~/types/injection-key'
-import { getPear } from '~/utils/app-bar-tab-routes'
+import { getPear } from '~/utils/ui/app-bar-tab-routes'
 
 export default defineComponent({
   setup() {

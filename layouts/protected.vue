@@ -17,7 +17,7 @@
 
     <v-main>
       <v-container>
-        <Nuxt />
+        <Nuxt keep-alive :keep-alive-props="{ exclude: /dashboard\/plans\/.*\/member/, max: 5 }" />
       </v-container>
     </v-main>
 
@@ -31,7 +31,6 @@ import {
   provide,
   ref,
 } from '@nuxtjs/composition-api'
-import { Function } from 'cypress/types/lodash'
 import { AppBarTab, AppBarFunc } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'

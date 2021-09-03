@@ -11,22 +11,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, useContext, provide, ref } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+  inject,
+  provide,
+  ref,
+  useFetch,
+} from '@nuxtjs/composition-api'
 import MemberCard from '~/components/protected/members/MemberCard.vue'
 import RoleBaseModal from '~/components/protected/roles/RoleBaseModal.vue'
 import { AppBarFuncKey } from '~/types/injection-key'
+import { PlansStore } from '~/store'
 
 export default defineComponent({
   components: {
     MemberCard,
-    RoleBaseModal
+    RoleBaseModal,
   },
 
   layout: 'protected',
 
-  setup(){
-    const { $axios } = useContext()
-
+  setup() {
+    
+    useFetch(async ({ $route }) => {
+      if (PlansStore.plan) return
+      const planId = $route.params.id
+      await PlansStore.setPlan(planId)
+    })
+    
     const dialog = ref(false)
     provide('dialog', dialog)
 
@@ -36,6 +48,6 @@ export default defineComponent({
 
     const appBarFunc = inject(AppBarFuncKey)
     appBarFunc!.value = { func: visibleRoleModal, name: 'ロール一覧' }
-  }
+  },
 })
 </script>

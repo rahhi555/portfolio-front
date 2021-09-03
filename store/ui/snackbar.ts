@@ -12,7 +12,7 @@ interface SnackParams extends Payload {
 }
 
 @Module({
-  name: 'snackbar',
+  name: 'ui/snackbar',
   stateFactory: true,
   namespaced: true,
 })
