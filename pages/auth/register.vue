@@ -84,7 +84,7 @@ export default defineComponent({
   },
   setup() {
     const { $auth } = useContext()
-
+    
     const sections = [
       {
         icon: 'mdi-map',

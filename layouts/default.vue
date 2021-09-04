@@ -26,7 +26,7 @@
             {{ snackParams.message }}
           </MaterialSnackbar>
 
-          <Nuxt />
+          <Nuxt keep-alive />
 
           <Footer />
         </div>

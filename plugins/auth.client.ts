@@ -1,7 +1,7 @@
 import { defineNuxtPlugin } from '@nuxtjs/composition-api'
 import firebase from '~/plugins/firebase'
 import { SnackbarStore, UserStore } from '~/store'
-import { Payload } from '~/store/snackbar'
+import { Payload } from '~/store/ui/snackbar'
 
 export interface RegisterValues {
   name: string

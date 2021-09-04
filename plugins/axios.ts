@@ -1,7 +1,9 @@
 import { defineNuxtPlugin } from '@nuxtjs/composition-api'
 import Cookies from 'universal-cookie'
+import { initializeAxios } from '~/utils/axios-accessor'
 
 export default defineNuxtPlugin(({ $axios }) => {
+  initializeAxios($axios)
   // 開発環境のみログを出力する
   if (process.env.NODE_ENV === 'development') {
     // リクエストログ

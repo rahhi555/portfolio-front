@@ -25,10 +25,16 @@ export default defineComponent({
       window.$nuxt.$loading.finish()
     }
 
-    const me = () => {
+    const me = async () => {
       console.log(firebase.auth().currentUser)
       console.log($axios.defaults.headers.common)
-      $axios.$get('/api/v1/me').then(res => {
+      await $axios.$get('/api/v1/me').then(res => {
+        console.log(res)
+      }).catch(e => {
+        console.error(e)
+      })
+
+      $axios.$get('api/v1/roles').then(res => {
         console.log(res)
       }).catch(e => {
         console.error(e)

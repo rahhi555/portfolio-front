@@ -1,6 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import Cookie from 'universal-cookie'
 import firebase from '~/plugins/firebase'
+import { $axios } from '~/utils/axios-accessor'
 
 interface UserParams {
   id: number
@@ -72,8 +73,8 @@ export default class User extends VuexModule {
     const currentUser = firebase.auth().currentUser
     const token = await currentUser?.getIdToken()
 
-    window.$nuxt.$axios.defaults.headers.common.Authorization = `Bearer ${token}`
-    const user = (await window.$nuxt.$axios
+    $axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    const user = (await $axios
       .$get('/api/v1/me')
       .then((user) => {
         return { id: user.id, name: user.name, uid: user.uid , provider: user.provider}
