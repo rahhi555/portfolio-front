@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from '@nuxtjs/composition-api'
+import { defineComponent, ref, reactive, watch } from '@nuxtjs/composition-api'
 import { Role } from 'interface'
 import { RolesStore, SnackbarStore } from '~/store'
 
@@ -105,6 +105,10 @@ export default defineComponent({
 
     const roleParams = Object.assign({}, props.role)
     reactive(roleParams)
+    watch(dialog, () => {
+      roleParams.name = props.role.name
+      roleParams.description = props.role.description
+    })
 
     const updateRole = async () => {
       const { id, name, description } = roleParams
