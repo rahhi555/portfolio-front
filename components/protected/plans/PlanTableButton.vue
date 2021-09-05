@@ -35,6 +35,24 @@
     </app-btn>
 
     <app-btn
+      v-if="!isMyPlan(item)"
+      color="success"
+      class="px-2 ml-1"
+      elevation="0"
+      min-width="0"
+      small
+      text
+      @click="joinRequest(item)"
+    >
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <v-icon v-bind="attrs" v-on="on" v-text="'mdi-import'" />
+        </template>
+        <span>参加リクエスト</span>
+      </v-tooltip>
+    </app-btn>    
+
+    <app-btn
       v-if="isMyPlan(item)"
       color="error"
       class="px-2 ml-1"
@@ -55,9 +73,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useRouter } from '@nuxtjs/composition-api'
+import { defineComponent, useRouter, useContext } from '@nuxtjs/composition-api'
 import { Plan } from 'interface'
-import { UserStore } from '~/store'
+import { UserStore, SnackbarStore } from '~/store'
 
 export default defineComponent({
   props: {
@@ -66,6 +84,7 @@ export default defineComponent({
 
   setup() {
     const router = useRouter()
+    const { $axios } = useContext()
 
     const currentUserId = UserStore.currentUser.id
 
@@ -77,9 +96,24 @@ export default defineComponent({
       router.push(`/dashboard/plans/${item.id}`)
     }
 
+    const joinRequest = (item: Plan) => {
+      if(!confirm('参加リクエストを送信してよろしいですか？')) {
+        alert('参加リクエストをキャンセルしました')
+        return
+      }
+
+      const member = { user_id: currentUserId, accept: false }
+
+      $axios
+        .$post(`/api/v1/plans/${item.id}/members`, { member })
+        .catch(() => SnackbarStore.catchError())
+        .finally(() => SnackbarStore.CRUDvisible({ model: '参加リクエスト', crud: 'create' }))
+    }
+
     return {
       isMyPlan,
       editPlan,
+      joinRequest
     }
   },
 })

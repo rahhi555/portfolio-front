@@ -19,8 +19,12 @@ declare module 'interface' {
 
   export interface Member {
     id: number
-    user: string
-    role: string
+    userId: number
+    roleId: number
+    planId: number
+    accept: boolean
+    userName: string
+    roleName: string
   }
   
   export interface Plan {
