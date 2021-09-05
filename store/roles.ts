@@ -4,10 +4,10 @@ import { $axios } from '~/utils/axios-accessor'
 import { SnackbarStore } from '~/store'
 
 interface RoleParams {
-  id?: number
+  id?: number | string
   name: string
   description: string
-  planId?: number
+  planId?: number | string
 }
 
 const MODEL = 'ロール'
@@ -56,7 +56,8 @@ export default class Roles extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public async indexRoles(planId: number) {
+  public async indexRoles(planId: string) {
+    if(this.currentPlanId === Number.parseInt(planId)) return
     await $axios.$get(`/api/v1/plans/${planId}/roles`).then((roles) => {
       this.setRolesMutation(roles)
     })

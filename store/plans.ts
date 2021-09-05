@@ -21,6 +21,7 @@ export default class Plans extends VuexModule {
 
   @Action({ rawError: true })
   public async setPlan(planId: string) {
+    if(this.planState?.id === Number.parseInt(planId)) return
     const plan = await $axios.$get(`/api/v1/plans/${planId}`)
     this.setPlanMutation(plan)
   }

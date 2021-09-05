@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="1000px">
+  <v-dialog v-model="dialog" max-width="1000px" class="pa-4">
     <v-container>
       <v-row>
         <v-col :md="isMyPlan ? 7 : 12">
@@ -83,6 +83,7 @@ import {
   computed,
 } from '@nuxtjs/composition-api'
 import { RolesStore, UserStore, PlansStore } from '~/store'
+import { AppBarDialogKey } from '~/types/injection-key'
 import RoleModalButton from '~/components/protected/roles/RoleModalButton.vue'
 
 export default defineComponent({
@@ -91,11 +92,10 @@ export default defineComponent({
   },
 
   setup() {
-    let planId: number
+    let planId: string
 
     const { fetch } = useFetch(async ({ $route }) => {
-      planId = Number.parseInt($route.params.id)
-      if (RolesStore.roles && RolesStore.currentPlanId === planId) return
+      planId = $route.params.id
       await RolesStore.indexRoles(planId)
     })
 
@@ -118,7 +118,7 @@ export default defineComponent({
     return {
       roleParams,
       createRole,
-      dialog: inject('dialog'),
+      dialog: inject(AppBarDialogKey),
       roles: computed(() => RolesStore.roles),
       isMyPlan: computed(() => {
         return PlansStore.plan?.userId === UserStore.currentUser.id

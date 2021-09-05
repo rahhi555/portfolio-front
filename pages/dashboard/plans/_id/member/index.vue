@@ -23,7 +23,7 @@ import {
 } from '@nuxtjs/composition-api'
 import MemberCard from '~/components/protected/members/MemberCard.vue'
 import RoleModal from '~/components/protected/roles/RoleModal.vue'
-import { AppBarFuncKey } from '~/types/injection-key'
+import { AppBarFuncKey, AppBarDialogKey } from '~/types/injection-key'
 import { PlansStore, MembersStore } from '~/store'
 
 export default defineComponent({
@@ -36,16 +36,15 @@ export default defineComponent({
 
   setup() {
     useFetch(async ({ $route }) => {
-      if (PlansStore.plan) return
       const planId = $route.params.id
       await Promise.all([
         PlansStore.setPlan(planId),
-        MembersStore.setMembers(planId),
+        MembersStore.indexMembers(planId),
       ])
     })
 
     const dialog = ref(false)
-    provide('dialog', dialog)
+    provide(AppBarDialogKey, dialog)
 
     const visibleRoleModal = () => {
       dialog.value = true
