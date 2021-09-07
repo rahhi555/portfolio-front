@@ -48,18 +48,16 @@
 import {
   defineComponent,
   reactive,
-  useContext,
-  useAsync,
   ref,
   computed,
   inject,
-  watch
+  watch,
+  useFetch
 } from '@nuxtjs/composition-api'
 import { Plan } from 'interface'
 import PlanCreateModal from '~/components/protected/plans/PlanCreateModal.vue'
 import PlanTableButton from '~/components/protected/plans/PlanTableButton.vue'
-import { SnackbarStore, UserStore } from '~/store'
-import { Payload } from '~/store/ui/snackbar'
+import { UserStore, PlansStore } from '~/store'
 import { AppBarTabKey } from '~/types/injection-key'
 
 export default defineComponent({
@@ -71,13 +69,8 @@ export default defineComponent({
   layout: 'protected',
 
   setup() {
-    const { $axios } = useContext()
-    // 並び替え等で配列のメソッドが自動実行されるため、初期値で配列を入れておかないとエラーになる
-    const items = ref<Plan[]>([])
-    useAsync(() => {
-      $axios.$get('/api/v1/plans').then((res: Plan[]) => {
-        items.value = res
-      })
+    useFetch(async () => {
+      await PlansStore.indexPlans()
     })
 
     const planParams = reactive({
@@ -85,46 +78,13 @@ export default defineComponent({
       published: false,
     })
 
-    let payload: Payload
-
     const createPlan = () => {
-      window.$nuxt.$loading.start()
-      $axios
-        .$post('/api/v1/plans', { plan: planParams })
-        .then((res: Plan) => {
-          payload = { color: 'success', message: '計画を追加しました' }
-          items.value.push(res)
-        })
-        .catch(() => {
-          payload = { color: 'error', message: '計画の追加に失敗しました' }
-        })
-        .finally(() => {
-          window.$nuxt.$loading.finish()
-          SnackbarStore.visible(payload)
-        })
+      const { name, published } = planParams
+      PlansStore.createPlan({ name, published })
     }
 
     const deletePlan = (item: Plan) => {
-      if (!window.confirm('計画を削除してもよろしいですか？')) {
-        window.alert('キャンセルしました')
-        return
-      }
-      window.$nuxt.$loading.start()
-      $axios
-        .delete(`/api/v1/plans/${item.id}`)
-        .then(() => {
-          payload = { color: 'success', message: '計画の削除に成功しました' }
-          items.value = items.value?.filter((i) => {
-            return i.id !== item.id
-          })
-        })
-        .catch(() => {
-          payload = { color: 'error', message: '計画の削除に失敗しました' }
-        })
-        .finally(() => {
-          window.$nuxt.$loading.finish()
-          SnackbarStore.visible(payload)
-        })
+      PlansStore.deletePlan(item)
     }
 
     const headers = [
@@ -134,7 +94,7 @@ export default defineComponent({
       },
       {
         text: '参加人数',
-        value: 'members_count',
+        value: 'members.length',
       },
       {
         text: '作成者',
@@ -155,10 +115,6 @@ export default defineComponent({
       },
     ]
 
-    const loading = computed(() => {
-      return !items.value.length
-    })
-
     const search = ref('')
 
     const appBarTab = inject(AppBarTabKey)
@@ -173,12 +129,12 @@ export default defineComponent({
 
     return {
       headers,
-      items,
+      items: computed(() => { return PlansStore.plans }),
       search,
       planParams,
       createPlan,
       deletePlan,
-      loading,
+      loading: computed(() => { return !PlansStore.plans }),
     }
   },
 })

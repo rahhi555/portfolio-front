@@ -22,7 +22,7 @@ export default defineComponent({
   setup() {
     useFetch( async ({ $route }) => {
       const planId = $route.params.id
-      await PlansStore.setPlan(planId)
+      await PlansStore.setCurrentPlan(planId)
     })
 
     return {

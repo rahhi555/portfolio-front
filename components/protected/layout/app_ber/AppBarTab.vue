@@ -10,16 +10,17 @@
 
     <v-btn
       v-if="!!appBarTab && !!appBarFunc"
-      absolute
-      right
       height="35"
-      min-width="130"
       color="secondary"
-      class="my-2"
+      class="mt-2"
+      :absolute="!$nuxt.context.$vuetify.breakpoint.xs"
+      :right="!$nuxt.context.$vuetify.breakpoint.xs"
+      min-width="130"
+      outlined
       @click="appBarFunc.func"
       >{{ appBarFunc.name }}</v-btn
     >
-  </v-tabs>
+  </v-tabs>  
 </template>
 
 <script lang="ts">
@@ -64,7 +65,7 @@ export default defineComponent({
       appBarTab,
       clickTab,
       appBarFunc,
-      activeTab,
+      activeTab
     }
   },
 })
