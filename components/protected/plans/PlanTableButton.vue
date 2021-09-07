@@ -1,7 +1,7 @@
 <template>
   <span>
     <app-btn
-      v-if="item.published"
+      v-if="item.published || isMyPlan(item)"
       color="success"
       class="px-2 ml-1"
       elevation="0"
@@ -12,9 +12,13 @@
     >
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
-          <v-icon v-bind="attrs" v-on="on" v-text="'mdi-eye-outline'" />
+          <v-icon v-if="isMyPlan(item) && item.published" v-bind="attrs" v-on="on" v-text="'mdi-eye'" />
+          <v-icon v-else-if="isMyPlan(item) && !item.published" v-bind="attrs" v-on="on" v-text="'mdi-eye-remove'" />
+          <v-icon v-else v-bind="attrs" v-on="on" v-text="'mdi-eye-outline'" />
         </template>
-        <span>公開</span>
+        <span v-if="isMyPlan(item) && item.published">マイ計画：公開</span>
+        <span v-else-if="isMyPlan(item) && !item.published">マイ計画：非公開</span>
+        <span v-else>公開</span>
       </v-tooltip>
     </app-btn>
     <app-btn
@@ -69,6 +73,7 @@
         <span>削除</span>
       </v-tooltip>
     </app-btn>
+    {{isMyMember(item)}}
   </span>
 </template>
 
@@ -110,10 +115,16 @@ export default defineComponent({
         .finally(() => SnackbarStore.CRUDvisible({ model: '参加リクエスト', crud: 'create' }))
     }
 
+    const isMyMember = (item: Plan) => {
+      const { members } = item
+      return members.filter(member => member.userId === UserStore.currentUser.id)
+    }
+
     return {
       isMyPlan,
       editPlan,
-      joinRequest
+      joinRequest,
+      isMyMember
     }
   },
 })

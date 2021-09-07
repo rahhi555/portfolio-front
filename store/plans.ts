@@ -8,21 +8,38 @@ import { $axios } from '~/utils/axios-accessor'
   namespaced: true,
 })
 export default class Plans extends VuexModule {
-  private planState: Plan | null = null
+  private currentPlanState: Plan | null = null
 
-  public get plan() {
-    return this.planState
+  private plansState: Plan[] | null = null
+
+  public get currentPlan() {
+    return this.currentPlanState
+  }
+
+  public get plans() {
+    return this.plansState
+  }  
+
+  @Mutation
+  private setCurrentPlanMutation(plan: Plan) {
+    this.currentPlanState = plan
   }
 
   @Mutation
-  private setPlanMutation(plan: Plan) {
-    this.planState = plan
+  private setPlansMutation(plans: Plan[]) {
+    this.plansState = plans
   }
 
   @Action({ rawError: true })
-  public async setPlan(planId: string) {
-    if(this.planState?.id === Number.parseInt(planId)) return
+  public async setCurrentPlan(planId: string) {
+    if(this.currentPlanState?.id === Number.parseInt(planId)) return
     const plan = await $axios.$get(`/api/v1/plans/${planId}`)
-    this.setPlanMutation(plan)
+    this.setCurrentPlanMutation(plan)
+  }
+
+  @Action({ rawError: true })
+  public async setPlans() {
+    const plans = await $axios.$get(`/api/v1/plans`)
+    this.setPlansMutation(plans)
   }
 }

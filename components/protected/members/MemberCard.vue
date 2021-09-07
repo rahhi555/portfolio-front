@@ -1,5 +1,34 @@
 <template>
   <v-card tile elevation="3">
+    <v-tooltip v-if="member.accept" bottom>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          color="success"
+          large
+          class="accept-icon"
+          v-bind="attrs"
+          v-on="on"
+          @click="acceptToggle(member)"
+          >mdi-account</v-icon
+        >
+      </template>
+      <span>承認済み</span>
+    </v-tooltip>
+    <v-tooltip v-else bottom>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          color="error"
+          large
+          class="accept-icon"
+          v-bind="attrs"
+          v-on="on"
+          @click="acceptToggle(member)"
+          >mdi-account-alert</v-icon
+        >
+      </template>
+      <span>未承認</span>
+    </v-tooltip>
+
     <v-avatar size="100%" tile>
       <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
     </v-avatar>
@@ -40,8 +69,14 @@
               <td>{{ role.name }}</td>
               <td>{{ role.description }}</td>
               <td>
-                <v-icon v-if="member.roleId === role.id">mdi-checkbox-marked</v-icon>
-                <v-icon v-else @click="updateMember(member.id, role.id)">mdi-checkbox-blank-outline</v-icon>
+                <v-icon
+                  v-if="member.roleId === role.id"
+                  @click="updateMember(member.id, null)"
+                  >mdi-checkbox-marked</v-icon
+                >
+                <v-icon v-else @click="updateMember(member.id, role.id)"
+                  >mdi-checkbox-blank-outline</v-icon
+                >
               </td>
             </tr>
           </tbody>
@@ -53,7 +88,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from '@nuxtjs/composition-api'
-import { MembersStore, RolesStore } from '~/store'
+import { Member } from 'interface'
+import { MembersStore, PlansStore, RolesStore, UserStore } from '~/store'
 
 export default defineComponent({
   props: {
@@ -74,7 +110,16 @@ export default defineComponent({
     }
 
     const updateMember = (id: number, roleId: number) => {
-      MembersStore.updateMember({id, roleId})
+      MembersStore.updateMember({ id, roleId })
+    }
+
+    const acceptToggle = (member: Member) => {
+      if (PlansStore.currentPlan?.userId !== UserStore.currentUser.id) {
+        alert('承認および承認解除は作成者しか実行できません')
+        return
+      }
+      const accept = !member.accept
+      MembersStore.updateMember({ id: member.id, accept })
     }
 
     return {
@@ -83,8 +128,16 @@ export default defineComponent({
       roles: computed(() => {
         return RolesStore.roles
       }),
-      updateMember
+      updateMember,
+      acceptToggle,
     }
   },
 })
 </script>
+
+<style scoped lang="sass">
+.accept-icon
+  position: absolute
+  right: 0
+  z-index: 1
+</style>

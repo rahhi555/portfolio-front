@@ -134,7 +134,7 @@ export default defineComponent({
       },
       {
         text: '参加人数',
-        value: 'members_count',
+        value: 'members.length',
       },
       {
         text: '作成者',

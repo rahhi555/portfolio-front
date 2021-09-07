@@ -38,7 +38,7 @@ export default defineComponent({
     useFetch(async ({ $route }) => {
       const planId = $route.params.id
       await Promise.all([
-        PlansStore.setPlan(planId),
+        PlansStore.setCurrentPlan(planId),
         MembersStore.indexMembers(planId),
       ])
     })

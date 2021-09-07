@@ -121,7 +121,7 @@ export default defineComponent({
       dialog: inject(AppBarDialogKey),
       roles: computed(() => RolesStore.roles),
       isMyPlan: computed(() => {
-        return PlansStore.plan?.userId === UserStore.currentUser.id
+        return PlansStore.currentPlan?.userId === UserStore.currentUser.id
       }),
     }
   },

@@ -31,7 +31,7 @@ declare module 'interface' {
     id: number
     userId: number
     name: string
-    member: Member
+    members: Member[]
     author: string
     published: boolean
     createdAt: string
