@@ -46,10 +46,7 @@ export default class Plans extends VuexModule {
   @Mutation
   public addMember({id, member}: {id:number, member:Member}) {
     const index = this.plansState!.findIndex(plan => plan.id === id)
-    console.log('index', index)
-    console.log('target', this.plansState[index])
-    this.plansState[index].members.push(member)
-    console.log('target', this.plansState[index])
+    this.plansState![index].members.push(member)
   }
 
   @Mutation

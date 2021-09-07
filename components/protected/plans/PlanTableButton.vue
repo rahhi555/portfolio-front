@@ -77,21 +77,21 @@
             v-text="'mdi-import'"
           />
           <v-icon
-            v-if="!isMyPlan(item) && myMember(item) && !myMember(item).accept"
+            v-else-if="!isMyPlan(item) && myMember(item) && !myMember(item).accept"
             color="warning"
             v-bind="attrs"
             v-on="on"
             v-text="'mdi-import'"
           />
           <v-icon
-            v-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
+            v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
             color="success"
             v-bind="attrs"
             v-on="on"
             v-text="'mdi-import'"
           />
           <v-icon
-            v-if="isMyPlan(item)"
+            v-else
             color="error"
             v-bind="attrs"
             v-on="on"
@@ -100,15 +100,17 @@
           />
         </template>
         <span v-if="!isMyPlan(item) && !myMember(item)">承認リクエスト</span>
-        <span v-if="!isMyPlan(item) && myMember(item) && !myMember(item).accept"
+        <span v-else-if="!isMyPlan(item) && myMember(item) && !myMember(item).accept"
           >承認待ち</span
         >
-        <span v-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
+        <span v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
           >承認済み</span
         >
-        <span v-if="isMyPlan(item)">削除</span>
+        <span v-else>削除</span>
       </v-tooltip>
     </app-btn>
+
+    
   </span>
 </template>
 
