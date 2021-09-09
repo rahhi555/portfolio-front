@@ -5,12 +5,14 @@ import User from '~/store/user'
 import Roles from '~/store/roles'
 import Plans from '~/store/plans'
 import Members from '~/store/members'
+import Maps from '~/store/maps'
 
 let SnackbarStore: Snackbar
 let UserStore: User
 let RolesStore: Roles
 let PlansStore: Plans
 let MembersStore: Members
+let MapsStore: Maps
 
 function initialiseStores(store: Store<any>): void {
   SnackbarStore = getModule(Snackbar, store)
@@ -18,6 +20,15 @@ function initialiseStores(store: Store<any>): void {
   RolesStore = getModule(Roles, store)
   PlansStore = getModule(Plans, store)
   MembersStore = getModule(Members, store)
+  MapsStore = getModule(Maps, store)
 }
 
-export { initialiseStores, SnackbarStore, UserStore, RolesStore, PlansStore, MembersStore }
+export {
+  initialiseStores,
+  SnackbarStore,
+  UserStore,
+  RolesStore,
+  PlansStore,
+  MembersStore,
+  MapsStore,
+}

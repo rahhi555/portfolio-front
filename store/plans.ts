@@ -13,7 +13,7 @@ const MODEL = '計画'
 export default class Plans extends VuexModule {
   private currentPlanState: Plan | null = null
 
-  private plansState: Plan[] | null = null
+  private plansState: Plan[] = []
 
   public get currentPlan() {
     return this.currentPlanState

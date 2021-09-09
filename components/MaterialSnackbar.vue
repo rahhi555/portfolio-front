@@ -6,6 +6,7 @@
       ...$attrs,
       color: 'transparent',
     }"
+    timeout="2000"
   >
     <material-alert
       v-model="internalValue"

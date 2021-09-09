@@ -11,15 +11,16 @@ const tabRoutes: TabRoutes = {
   ],
   dashboardPlansId: [
     { name: 'ホーム', link: '/dashboard/plans/:id', selected: false},
-    { name: 'マップ編集', link: '', selected: false },
-    { name: 'メンバー一覧', link: '/dashboard/plans/:id/member', selected: false },
+    { name: 'マップ編集', link: '/dashboard/plans/:id/maps', selected: false },
+    { name: 'メンバー一覧', link: '/dashboard/plans/:id/members', selected: false },
   ],
 }
 
 const routePear = {
   'dashboard-plans': tabRoutes.dashboardPlans,
   'dashboard-plans-id': tabRoutes.dashboardPlansId,
-  'dashboard-plans-id-member': tabRoutes.dashboardPlansId
+  'dashboard-plans-id-maps': tabRoutes.dashboardPlansId,
+  'dashboard-plans-id-members': tabRoutes.dashboardPlansId,
 }
 
 export const getPear = () => {
