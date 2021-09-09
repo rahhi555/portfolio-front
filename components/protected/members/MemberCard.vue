@@ -138,6 +138,7 @@ export default defineComponent({
 <style scoped lang="sass">
 .accept-icon
   position: absolute
-  right: 0
+  right: 10px
+  top: 5px
   z-index: 1
 </style>

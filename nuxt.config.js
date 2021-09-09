@@ -112,5 +112,5 @@ export default {
     { path: '/server', handler: '~/server' }
   ],
 
-  loading: '~/components/Loading.vue'
+  loading: '~/components/Loading.vue',
 }

@@ -34,7 +34,7 @@
   </v-app-bar>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, inject } from '@nuxtjs/composition-api'
 import DrawerToggle from './AppBarDrawerToggle.vue'
 import Search from './AppBarSearch.vue'
@@ -43,6 +43,7 @@ import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { DrawerKey } from '~/types/injection-key'
+import { PlansStore } from '~/store'
 
 export default defineComponent({
   components: {
@@ -64,7 +65,12 @@ export default defineComponent({
 
   computed: {
     name() {
-      const routeName = this.$route.name.replace(/.*-/g, '')
+      const appbarName = PlansStore.currentPlan?.name
+      let routeName = this.$route.name as string
+
+      if(appbarName && routeName.includes('plans-id')) return appbarName
+
+      routeName = routeName.replace(/.*-/g, '')
       return routeName.charAt(0).toUpperCase() + routeName.slice(1)
     },
   },

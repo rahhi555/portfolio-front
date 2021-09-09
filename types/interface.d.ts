@@ -45,6 +45,12 @@ declare module 'interface' {
     description: string
   }
 
+  export interface Map {
+    id: number
+    planId: number
+    name: string
+  }
+
   export interface AppBarTab {
     name: string
     link: string

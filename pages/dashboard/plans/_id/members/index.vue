@@ -15,16 +15,13 @@
 <script lang="ts">
 import {
   defineComponent,
-  inject,
-  provide,
-  ref,
   useFetch,
   computed,
 } from '@nuxtjs/composition-api'
 import MemberCard from '~/components/protected/members/MemberCard.vue'
 import RoleModal from '~/components/protected/roles/RoleModal.vue'
-import { AppBarFuncKey, AppBarDialogKey } from '~/types/injection-key'
 import { PlansStore, MembersStore } from '~/store'
+import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
   components: {
@@ -43,15 +40,7 @@ export default defineComponent({
       ])
     })
 
-    const dialog = ref(false)
-    provide(AppBarDialogKey, dialog)
-
-    const visibleRoleModal = () => {
-      dialog.value = true
-    }
-
-    const appBarFunc = inject(AppBarFuncKey)
-    appBarFunc!.value = { func: visibleRoleModal, name: 'ロール一覧' }
+    setAppBarTabDialog('ロール一覧')
 
     return {
       members: computed(() => {
