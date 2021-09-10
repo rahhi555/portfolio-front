@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent, useFetch } from '@nuxtjs/composition-api'
-import { PlansStore } from '~/store'
+import { initializeStore } from '~/utils/helpers/store_helpers'
 import MapBase from '~/components/protected/maps/MapBase.vue'
 
 export default defineComponent({
@@ -22,7 +22,7 @@ export default defineComponent({
   setup() {
     useFetch( async ({ $route }) => {
       const planId = $route.params.id
-      await PlansStore.setCurrentPlan(planId)
+      await initializeStore(planId)
     })
 
     return {

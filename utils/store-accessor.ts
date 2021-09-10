@@ -2,10 +2,11 @@ import { Store } from 'vuex'
 import { getModule } from 'vuex-module-decorators'
 import Snackbar from '~/store/ui/snackbar'
 import User from '~/store/user'
-import Roles from '~/store/roles'
-import Plans from '~/store/plans'
-import Members from '~/store/members'
-import Maps from '~/store/maps'
+import Roles from '~/store/modules/roles'
+import Plans from '~/store/modules/plans'
+import Members from '~/store/modules/members'
+import Maps from '~/store/modules/maps'
+import Svgs from '~/store/modules/svgs'
 
 let SnackbarStore: Snackbar
 let UserStore: User
@@ -13,6 +14,7 @@ let RolesStore: Roles
 let PlansStore: Plans
 let MembersStore: Members
 let MapsStore: Maps
+let SvgsStore: Svgs
 
 function initialiseStores(store: Store<any>): void {
   SnackbarStore = getModule(Snackbar, store)
@@ -21,6 +23,7 @@ function initialiseStores(store: Store<any>): void {
   PlansStore = getModule(Plans, store)
   MembersStore = getModule(Members, store)
   MapsStore = getModule(Maps, store)
+  SvgsStore = getModule(Svgs, store)
 }
 
 export {
@@ -31,4 +34,5 @@ export {
   PlansStore,
   MembersStore,
   MapsStore,
+  SvgsStore
 }

@@ -6,9 +6,9 @@
 
     <v-col class="py-0">
       <div class="text-center d-flex justify-end align-center">
-        <template v-if="selectMap">
-          <v-chip>{{selectMap.name}}</v-chip>
-          <v-pagination v-model="select" :length="maps.length"></v-pagination>
+        <template v-if="activeMap">
+          <v-chip>{{activeMap.name}}</v-chip>
+          <v-pagination v-model="activeIndex" :length="maps.length"></v-pagination>
         </template>
         <v-chip v-else disabled>マップがありません</v-chip>
       </div>
@@ -22,10 +22,9 @@
 import {
   defineComponent,
   useFetch,
-  ref,
-  computed,
 } from '@nuxtjs/composition-api'
-import { PlansStore, MapsStore } from '~/store'
+import { MapsStore } from '~/store'
+import { initializeStore } from '~/utils/helpers/store_helpers'
 import MapBase from '~/components/protected/maps/MapBase.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
@@ -41,29 +40,30 @@ export default defineComponent({
   setup() {
     useFetch(async ({ $route }) => {
       const planId = $route.params.id
-      await Promise.all([
-        PlansStore.setCurrentPlan(planId),
-        MapsStore.indexMaps(planId),
-      ])
+      await initializeStore(planId)
     })
 
     setAppBarTabDialog('マップ作成')
 
-    const select = ref(1)
-    const selectMap = computed(() => {
-      return MapsStore.maps[select.value - 1 ]
-    })
-
     return {
-      select,
-      selectMap,
     }
   },
 
   computed: {
     maps() {
       return MapsStore.maps
+    },
+    activeMap() {
+      return MapsStore.activeMap
+    },
+    activeIndex: {
+      get(){
+        return MapsStore.activeIndex + 1
+      },
+      set(value){
+        MapsStore.setActiveIndex(value - 1)
+      }
     }
-  }
+  },
 })
 </script>
