@@ -2,6 +2,7 @@ declare module 'interface' {
   interface SvgBase {
     id: number
     mapId: number
+    type: string
     x: number
     y: number
     fill: string
@@ -24,7 +25,7 @@ declare module 'interface' {
     drawPoints: string
   }
   
-  export type SvgType = Rect | Path | Polyline
+  export type SvgType = Rect & Path & Polyline
 
   export interface SVGRectMouseEvent extends MouseEvent {
     target: SVGRectElement

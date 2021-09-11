@@ -78,7 +78,6 @@
 import {
   defineComponent,
   inject,
-  useFetch,
   ref,
   computed,
 } from '@nuxtjs/composition-api'
@@ -92,20 +91,13 @@ export default defineComponent({
   },
 
   setup() {
-    let planId: string
-
-    const { fetch } = useFetch(async ({ $route }) => {
-      planId = $route.params.id
-      await RolesStore.indexRoles(planId)
-    })
-
     const roleParams = ref({
       name: '',
       description: '',
     })
 
     const createRole = async () => {
-      if (!planId) fetch()
+      const planId = PlansStore.currentPlan?.id
       const { name, description } = roleParams.value
       await RolesStore.createRole({
         planId,

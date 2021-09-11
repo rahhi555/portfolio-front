@@ -15,13 +15,11 @@
 <script lang="ts">
 import {
   defineComponent,
-  useFetch,
   computed,
 } from '@nuxtjs/composition-api'
 import MemberCard from '~/components/protected/members/MemberCard.vue'
 import RoleModal from '~/components/protected/roles/RoleModal.vue'
 import { MembersStore } from '~/store'
-import { initializeStore } from '~/utils/helpers/store_helpers'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -32,12 +30,11 @@ export default defineComponent({
 
   layout: 'protected',
 
-  setup() {
-    useFetch(async ({ $route }) => {
-      const planId = $route.params.id
-      await initializeStore(planId)
-    })
+  middleware: [
+    'initialize-store'  
+  ],
 
+  setup() {
     setAppBarTabDialog('ロール一覧')
 
     return {

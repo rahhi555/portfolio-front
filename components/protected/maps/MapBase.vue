@@ -68,7 +68,7 @@
         </g>
       </template>
     </svg>
-    <!-- <v-btn block class="primary" @click="addRect">add</v-btn> -->
+    <v-btn block class="primary" @click="addRect">add</v-btn>
   </v-sheet>
 </template>
 
@@ -80,30 +80,23 @@ import {
   computed,
 } from '@nuxtjs/composition-api'
 import { Rect, SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
+import { SvgsStore } from '~/store'
 
 export default defineComponent({
   setup() {
-    // 四角形のオブジェクトをまとめる配列
-    const rects = ref<Rect[]>([])
-    // 移動中のrectのidを固定する変数。これがないと素早くマウスを動かした時にイベントターゲットが存在せずエラーになる。
-    const targetingId = ref<number>(0)
+    const rects = computed(() => SvgsStore.activeMapRects)
+
     // 何倍単位で移動するかの定数
     const MULTIPLE_NUMBER: number = 20
 
-    // $eventからidを取得し、targetingIdに代入する
-    const setTargetingId = (e: SVGRectMouseEvent | SVGRectKeyboardEvent) => {
+    // $eventからidを取得し、targetIdに代入する
+    const setTargetId = (e: SVGRectMouseEvent | SVGRectKeyboardEvent) => {
       const parentSVG = e.target.parentNode
       if (!(parentSVG instanceof SVGGElement)) {
         return
       }
-      targetingId.value = Number(parentSVG?.id.replace('rect-', ''))
+      SvgsStore.setTargetId(Number(parentSVG?.id.replace('rect-', '')))
     }
-    // targetingIdを元にクリックした図形を返す
-    const targetRect = computed((): Rect | undefined => {
-      return rects.value.find((rect) => {
-        return rect.id === targetingId.value
-      })
-    })
 
     // --- ドラッグ処理 ---
 
@@ -113,17 +106,17 @@ export default defineComponent({
     const gapXY = reactive<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const dragStart = (e: SVGRectMouseEvent): void => {
-      setTargetingId(e)
-      if (typeof targetRect.value === 'undefined') {
+      setTargetId(e)
+      if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
       isDragging.value = true
-      gapXY.x = e.offsetX - targetRect.value.x
-      gapXY.y = e.offsetY - targetRect.value.y
+      gapXY.x = e.offsetX - SvgsStore.targetSvg.x
+      gapXY.y = e.offsetY - SvgsStore.targetSvg.y
     }
 
     const dragMiddle = (e: MouseEvent): void => {
-      // isDragging.valueがtrueならtargetRectに中身があることは確定なので!を使用する
+      // isDragging.valueがtrueならtargetSvgに中身があることは確定なので!を使用する
       if (isDragging.value) {
         const moveX = e.offsetX - gapXY.x
         const moveY = e.offsetY - gapXY.y
@@ -131,37 +124,49 @@ export default defineComponent({
           Math.floor(moveX / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
         const multipleMoveY =
           Math.floor(moveY / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
-        targetRect.value!.x = multipleMoveX
-        targetRect.value!.y = multipleMoveY
+        SvgsStore.changeSvg({ status: 'x', value: multipleMoveX })
+        SvgsStore.changeSvg({ status: 'y', value: multipleMoveY })
       }
     }
 
     const dragStop = (): void => {
       isDragging.value = false
-      targetingId.value = 0
+      SvgsStore.setTargetId(0)
     }
 
     // 十字キーでドラッグするための処理
     const moveRectArrowKey = (e: SVGRectKeyboardEvent): void => {
-      setTargetingId(e)
-      if (typeof targetRect.value === 'undefined') {
+      setTargetId(e)
+      if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
       switch (e.key) {
         case 'ArrowUp':
-          targetRect.value.y -= MULTIPLE_NUMBER
+          SvgsStore.changeSvg({
+            status: 'y',
+            value: SvgsStore.targetSvg.y - MULTIPLE_NUMBER,
+          })
           break
         case 'ArrowDown':
-          targetRect.value.y += MULTIPLE_NUMBER
+          SvgsStore.changeSvg({
+            status: 'y',
+            value: SvgsStore.targetSvg.y + MULTIPLE_NUMBER,
+          })
           break
         case 'ArrowRight':
-          targetRect.value.x += MULTIPLE_NUMBER
+          SvgsStore.changeSvg({
+            status: 'x',
+            value: SvgsStore.targetSvg.x + MULTIPLE_NUMBER,
+          })
           break
         case 'ArrowLeft':
-          targetRect.value.x -= MULTIPLE_NUMBER
+          SvgsStore.changeSvg({
+            status: 'x',
+            value: SvgsStore.targetSvg.x - MULTIPLE_NUMBER,
+          })
           break
       }
-      targetingId.value = 0
+      SvgsStore.setTargetId(0)
     }
     // --- ドラッグ処理終わり ---
 
@@ -179,20 +184,20 @@ export default defineComponent({
     let startWidth: number = 0
 
     const resizeStart = (e: SVGRectMouseEvent): void => {
-      setTargetingId(e)
-      if (typeof targetRect.value === 'undefined') {
+      setTargetId(e)
+      if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
       isResizing.value = true
       direction = e.target.classList[0]
       switch (direction) {
         case 'top-line':
-          startY = targetRect.value.y
-          startHeight = targetRect.value.height
+          startY = SvgsStore.targetSvg.y
+          startHeight = SvgsStore.targetSvg.height
           break
         case 'left-line':
-          startX = targetRect.value.x
-          startWidth = targetRect.value.width
+          startX = SvgsStore.targetSvg.x
+          startWidth = SvgsStore.targetSvg.width
           break
       }
     }
@@ -222,26 +227,34 @@ export default defineComponent({
     const resizeMiddleTop = (e: SVGRectMouseEvent) => {
       const resizeHeight = startHeight + startY - e.offsetY
       if (resizeHeight > 0) {
-        targetRect.value!.height =
-          Math.ceil(resizeHeight / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
-        targetRect.value!.y =
-          Math.floor(e.offsetY / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
+        SvgsStore.changeSvg({
+          status: 'height',
+          value: Math.ceil(resizeHeight / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+        })
+        SvgsStore.changeSvg({
+          status: 'y',
+          value: Math.floor(e.offsetY / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+        })
       }
     }
 
     const resizeMiddleRight = (e: SVGRectMouseEvent) => {
-      const resizeWidth = e.offsetX - targetRect.value!.x
+      const resizeWidth = e.offsetX - SvgsStore.targetSvg!.x
       if (resizeWidth > 0) {
-        targetRect.value!.width =
-          Math.ceil(resizeWidth / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
+        SvgsStore.changeSvg({
+          status: 'width',
+          value: Math.ceil(resizeWidth / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+        })
       }
     }
 
     const resizeMiddleBottom = (e: SVGRectMouseEvent) => {
-      const resizeHeight = e.offsetY - targetRect.value!.y
+      const resizeHeight = e.offsetY - SvgsStore.targetSvg!.y
       if (resizeHeight > 0) {
-        targetRect.value!.height =
-          Math.ceil(resizeHeight / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
+        SvgsStore.changeSvg({
+          status: 'height',
+          value: Math.ceil(resizeHeight / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+        })
       }
     }
 
@@ -251,39 +264,23 @@ export default defineComponent({
       const resizeWidth = startWidth + startX - e.offsetX
       if (resizeWidth > 0) {
         // widthは増えるので切り上げ、xは減るので切り捨てする
-        targetRect.value!.width =
-          Math.ceil(resizeWidth / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
-        targetRect.value!.x =
-          Math.floor(e.offsetX / MULTIPLE_NUMBER) * MULTIPLE_NUMBER
+        SvgsStore.changeSvg({
+          status: 'width',
+          value: Math.ceil(resizeWidth / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+        })
+        SvgsStore.changeSvg({
+          status: 'x',
+          value: Math.floor(e.offsetX / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+        })
       }
     }
 
     const resizeStop = () => {
       isResizing.value = false
-      targetingId.value = 0
+      SvgsStore.setTargetId(0)
     }
     // --- リサイズ処理終わり ---
 
-    // 図形を追加する際の新しいidを返す
-    const nextId = computed<number>(() => {
-      const ids = rects.value.map((rect) => {
-        return rect.id
-      })
-      const nextId = Math.max(...ids) + 1
-      return nextId === -Infinity ? 1 : nextId
-    })
-    const addRect = (): void => {
-      const newRect: Rect = {
-        id: nextId.value,
-        x: 0,
-        y: 0,
-        width: 100,
-        height: 100,
-        fill: '#fff',
-        stroke: 'black',
-      }
-      rects.value.push(newRect)
-    }
 
     return {
       rects,
@@ -293,7 +290,7 @@ export default defineComponent({
       resizeStart,
       resizeMiddle,
       resizeStop,
-      addRect,
+      addRect: () => SvgsStore.addRect(),
       moveRectArrowKey,
     }
   },

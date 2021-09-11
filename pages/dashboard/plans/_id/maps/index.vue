@@ -21,10 +21,8 @@
 <script lang="ts">
 import {
   defineComponent,
-  useFetch,
 } from '@nuxtjs/composition-api'
 import { MapsStore } from '~/store'
-import { initializeStore } from '~/utils/helpers/store_helpers'
 import MapBase from '~/components/protected/maps/MapBase.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
@@ -37,12 +35,11 @@ export default defineComponent({
 
   layout: 'protected',
 
-  setup() {
-    useFetch(async ({ $route }) => {
-      const planId = $route.params.id
-      await initializeStore(planId)
-    })
+  middleware: [
+    'initialize-store'
+  ],
 
+  setup() {
     setAppBarTabDialog('マップ作成')
 
     return {

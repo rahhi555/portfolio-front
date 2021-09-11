@@ -8,8 +8,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useFetch } from '@nuxtjs/composition-api'
-import { initializeStore } from '~/utils/helpers/store_helpers'
+import { defineComponent } from '@nuxtjs/composition-api'
 import MapBase from '~/components/protected/maps/MapBase.vue'
 
 export default defineComponent({
@@ -19,12 +18,11 @@ export default defineComponent({
 
   layout: 'protected',  
 
-  setup() {
-    useFetch( async ({ $route }) => {
-      const planId = $route.params.id
-      await initializeStore(planId)
-    })
+  middleware: [
+    'initialize-store'
+  ],
 
+  setup() {
     return {
     }
   },
