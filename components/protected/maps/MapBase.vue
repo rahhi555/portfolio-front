@@ -68,7 +68,6 @@
         </g>
       </template>
     </svg>
-    <v-btn block class="primary" @click="addRect">add</v-btn>
   </v-sheet>
 </template>
 
@@ -79,7 +78,7 @@ import {
   reactive,
   computed,
 } from '@nuxtjs/composition-api'
-import { Rect, SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
+import { SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
 import { SvgsStore } from '~/store'
 
 export default defineComponent({
@@ -290,7 +289,6 @@ export default defineComponent({
       resizeStart,
       resizeMiddle,
       resizeStop,
-      addRect: () => SvgsStore.addRect(),
       moveRectArrowKey,
     }
   },

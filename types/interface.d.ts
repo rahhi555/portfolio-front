@@ -8,6 +8,8 @@ declare module 'interface' {
     fill: string
     stroke: string
     planId: string | number
+    name: string
+    isUpdated?: boolean
   }
 
   export interface Rect extends SvgBase {
