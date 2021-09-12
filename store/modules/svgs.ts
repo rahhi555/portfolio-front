@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { SvgType, Rect } from 'interface'
+import { SvgType, Rect, SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
 import { MapsStore, SnackbarStore } from '~/utils/store-accessor'
 import { $axios } from '~/utils/axios-accessor'
 
@@ -28,7 +28,16 @@ export default class Svgs extends VuexModule {
   private targetId: number = 0
 
   @Mutation
-  public setTargetId(id: number) {
+  public setTargetId(e: SVGRectMouseEvent | SVGRectKeyboardEvent | number) {
+    if(typeof(e) === 'number') { 
+      this.targetId = e 
+      return
+    }
+    const parentSVG = e.target.parentNode
+    if (!(parentSVG instanceof SVGGElement)) {
+      return
+    }
+    const id = Number(parentSVG?.id.replace('rect-', ''))
     this.targetId = id
   }
 
@@ -130,5 +139,22 @@ export default class Svgs extends VuexModule {
     .then(() => this.resetUpdated())
     .catch(() => SnackbarStore.catchError)
     .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'update' }))
+  }
+
+  // svg削除
+  @Mutation
+  private deleteSvgMutation() {
+    const index = this.svgsState.findIndex(svg => svg.id === this.targetId)
+    this.svgsState.splice(index, 1)
+  }
+
+  @Action
+  public async deleteSvg(e: SVGRectKeyboardEvent) {
+    this.setTargetId(e)
+    await $axios.$delete(`/api/v1/svgs/${this.targetId}`)
+      .then(() => { 
+        this.deleteSvgMutation() 
+      })
+    this.setTargetId(0)
   }
 }

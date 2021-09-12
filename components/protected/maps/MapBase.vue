@@ -32,6 +32,7 @@
             class="grabbable"
             @mousedown="dragStart($event)"
             @keydown="moveRectArrowKey($event)"
+            @keydown.delete="deleteSvg($event)"
           />
           <line
             x1="0"
@@ -88,15 +89,6 @@ export default defineComponent({
     // 何倍単位で移動するかの定数
     const MULTIPLE_NUMBER: number = 20
 
-    // $eventからidを取得し、targetIdに代入する
-    const setTargetId = (e: SVGRectMouseEvent | SVGRectKeyboardEvent) => {
-      const parentSVG = e.target.parentNode
-      if (!(parentSVG instanceof SVGGElement)) {
-        return
-      }
-      SvgsStore.setTargetId(Number(parentSVG?.id.replace('rect-', '')))
-    }
-
     // --- ドラッグ処理 ---
 
     // ドラッグ中ならtrueになる
@@ -105,7 +97,7 @@ export default defineComponent({
     const gapXY = reactive<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const dragStart = (e: SVGRectMouseEvent): void => {
-      setTargetId(e)
+      SvgsStore.setTargetId(e)
       if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
@@ -135,7 +127,7 @@ export default defineComponent({
 
     // 十字キーでドラッグするための処理
     const moveRectArrowKey = (e: SVGRectKeyboardEvent): void => {
-      setTargetId(e)
+      SvgsStore.setTargetId(e)
       if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
@@ -183,7 +175,7 @@ export default defineComponent({
     let startWidth: number = 0
 
     const resizeStart = (e: SVGRectMouseEvent): void => {
-      setTargetId(e)
+      SvgsStore.setTargetId(e)
       if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
@@ -280,6 +272,9 @@ export default defineComponent({
     }
     // --- リサイズ処理終わり ---
 
+    const deleteSvg = (e: SVGRectKeyboardEvent) => {
+      SvgsStore.deleteSvg(e)
+    }
 
     return {
       rects,
@@ -290,6 +285,7 @@ export default defineComponent({
       resizeMiddle,
       resizeStop,
       moveRectArrowKey,
+      deleteSvg
     }
   },
 })
