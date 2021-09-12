@@ -23,6 +23,7 @@
     "firebase": "^8.9.1",
     "jwt-decode": "^3.1.2",
     "nuxt": "^2.15.7",
+    "svg-z-order": "^1.2.1",
     "universal-cookie": "^4.0.4",
     "vee-validate": "^3.4.11",
     "vuetify": "^2.5.5"

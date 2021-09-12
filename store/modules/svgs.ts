@@ -1,7 +1,26 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { SvgType, Rect, SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
+import {
+  SvgType,
+  Rect,
+  SVGRectMouseEvent,
+  SVGRectKeyboardEvent,
+} from 'interface'
 import { MapsStore, SnackbarStore } from '~/utils/store-accessor'
 import { $axios } from '~/utils/axios-accessor'
+
+interface SVGZElement {
+  _element: SVGGElement
+  toTop: () => SVGZElement
+  toBottom: () => SVGZElement
+  moveUp: (arg?: Element | number) => SVGZElement
+  moveDown: (arg?: Element | number) => SVGZElement
+}
+
+interface Svgz {
+  element: (e: Element) => SVGZElement
+}
+
+const svgz: Svgz = require('svg-z-order')
 
 type SvgTypeKeys = keyof SvgType
 
@@ -27,22 +46,32 @@ export default class Svgs extends VuexModule {
   // 移動中のrectのidを固定する変数。これがないと素早くマウスを動かした時にイベントターゲットが存在せずエラーになる。
   private targetId: number = 0
 
+  // 操作中のsvgのElement。これを指定して表示順を操作する。
+  private targetElement: SVGGElement | null = null
+
   @Mutation
   public setTargetId(e: SVGRectMouseEvent | SVGRectKeyboardEvent | number) {
-    if(typeof(e) === 'number') { 
-      this.targetId = e 
+    if (typeof e === 'number') {
+      this.targetId = e
+      this.targetElement = null
       return
     }
     const parentSVG = e.target.parentNode
     if (!(parentSVG instanceof SVGGElement)) {
       return
     }
+    this.targetElement = parentSVG
+
     const id = Number(parentSVG?.id.replace('rect-', ''))
     this.targetId = id
   }
 
   public get targetSvg(): SvgType | undefined {
     return this.svgsState.find((svg) => svg.id === this.targetId)
+  }
+
+  public get targetElementget() {
+    return this.targetElement
   }
 
   // svg全取得
@@ -112,15 +141,15 @@ export default class Svgs extends VuexModule {
 
   @Mutation
   private resetUpdated() {
-    for(const svg of this.svgsState) {
-      if(svg.isUpdated) svg.isUpdated = false
+    for (const svg of this.svgsState) {
+      if (svg.isUpdated) svg.isUpdated = false
     }
   }
 
   @Action
   public updateSvgs() {
     Promise.all(
-      this.updatedSvgs.map(svg => {
+      this.updatedSvgs.map((svg) => {
         const svgParams = {
           type: svg.type,
           x: svg.x,
@@ -136,25 +165,47 @@ export default class Svgs extends VuexModule {
         return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg: svgParams })
       })
     )
-    .then(() => this.resetUpdated())
-    .catch(() => SnackbarStore.catchError)
-    .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'update' }))
+      .then(() => this.resetUpdated())
+      .catch(() => SnackbarStore.catchError)
+      .finally(() =>
+        SnackbarStore.CRUDvisible({ model: MODEL, crud: 'update' })
+      )
   }
 
   // svg削除
   @Mutation
   private deleteSvgMutation() {
-    const index = this.svgsState.findIndex(svg => svg.id === this.targetId)
+    const index = this.svgsState.findIndex((svg) => svg.id === this.targetId)
     this.svgsState.splice(index, 1)
   }
 
   @Action
   public async deleteSvg(e: SVGRectKeyboardEvent) {
     this.setTargetId(e)
-    await $axios.$delete(`/api/v1/svgs/${this.targetId}`)
-      .then(() => { 
-        this.deleteSvgMutation() 
-      })
+    await $axios.$delete(`/api/v1/svgs/${this.targetId}`).then(() => {
+      this.deleteSvgMutation()
+    })
     this.setTargetId(0)
+  }
+
+  // svg表示順変更
+  @Mutation
+  public changeOrder(arg: 'top' | 'bottom' | 'up' | 'down') {
+    const svgzG = svgz.element(this.targetElement!)
+
+    switch (arg) {
+      case 'top':
+        svgzG.toTop()
+        break
+      case 'bottom':
+        svgzG.toBottom()
+        break
+      case 'up':
+        svgzG.moveUp()
+        break
+      case 'down':
+        svgzG.moveDown()
+        break
+    }
   }
 }

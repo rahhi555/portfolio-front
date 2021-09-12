@@ -1,7 +1,7 @@
 <template>
   <v-sheet color="gray" elevation="6" height="50vh">
     <svg
-      id="mysvg"
+      id="mysvg-edit"
       x="0"
       y="0"
       width="100%"
@@ -101,6 +101,7 @@ export default defineComponent({
       if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
+      SvgsStore.changeOrder('up')
       isDragging.value = true
       gapXY.x = e.offsetX - SvgsStore.targetSvg.x
       gapXY.y = e.offsetY - SvgsStore.targetSvg.y
@@ -272,9 +273,11 @@ export default defineComponent({
     }
     // --- リサイズ処理終わり ---
 
+    // --- svg削除 ---
     const deleteSvg = (e: SVGRectKeyboardEvent) => {
       SvgsStore.deleteSvg(e)
     }
+    // --- svg削除終わり ---
 
     return {
       rects,
@@ -285,14 +288,14 @@ export default defineComponent({
       resizeMiddle,
       resizeStop,
       moveRectArrowKey,
-      deleteSvg
+      deleteSvg,
     }
   },
 })
 </script>
 
 <style scope>
-#mysvg {
+#mysvg-edit {
   background-image: linear-gradient(90deg, transparent 19px, #333 20px),
     linear-gradient(0deg, transparent 19px, #333 20px);
   background-size: 20px 20px;
