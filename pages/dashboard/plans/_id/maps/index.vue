@@ -4,8 +4,8 @@
       <map-edit></map-edit>
     </v-col>
 
-    <map-page :justify-content="'justify-sm-space-between'">
-      <span>
+    <map-page :justify-content="activeMap ? 'justify-sm-space-between' : 'justify-end'">
+      <span v-if="activeMap">
         <v-btn @click="addRect">add</v-btn>
         <v-btn @click="updateSvgs">update</v-btn>
       </span>
@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import { SvgsStore } from '~/store'
+import { SvgsStore, MapsStore } from '~/store'
 import MapEdit from '~/components/protected/maps/MapEdit.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
 import MapPage from '~/components/protected/maps/MapPage.vue'
@@ -42,5 +42,11 @@ export default defineComponent({
       updateSvgs: () => SvgsStore.updateSvgs(),
     }
   },
+
+  computed: {
+    activeMap() {
+      return MapsStore.activeMap
+    }
+  }
 })
 </script>

@@ -9,6 +9,7 @@ declare module 'interface' {
     stroke: string
     planId: string | number
     name: string
+    displayOrder: number
     isUpdated?: boolean
   }
 

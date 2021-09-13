@@ -30,9 +30,10 @@
             :stroke="rect.stroke"
             tabindex="0"
             class="grabbable"
-            @mousedown="dragStart($event)"
+            @mousedown.left="dragStart($event)"
             @keydown="moveRectArrowKey($event)"
             @keydown.delete="deleteSvg($event)"
+            @contextmenu.prevent="showMenu($event)"
           />
           <line
             x1="0"
@@ -69,6 +70,25 @@
         </g>
       </template>
     </svg>
+
+    <v-menu
+      v-model="isShowMenu"
+      :position-x="position.x"
+      :position-y="position.y"
+      absolute
+      offset-y
+    >
+      <v-list>
+        <v-list-item
+          v-for="(item, i) in menuItems"
+          :key="i"
+          class="pointer"
+          @click="item.func()"
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-sheet>
 </template>
 
@@ -78,8 +98,11 @@ import {
   ref,
   reactive,
   computed,
+  nextTick,
+  watch,
 } from '@nuxtjs/composition-api'
 import { SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
+import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
 
 export default defineComponent({
@@ -97,11 +120,11 @@ export default defineComponent({
     const gapXY = reactive<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const dragStart = (e: SVGRectMouseEvent): void => {
+      isShowMenu.value = false
       SvgsStore.setTargetId(e)
       if (typeof SvgsStore.targetSvg === 'undefined') {
         return
       }
-      SvgsStore.changeOrder('up')
       isDragging.value = true
       gapXY.x = e.offsetX - SvgsStore.targetSvg.x
       gapXY.y = e.offsetY - SvgsStore.targetSvg.y
@@ -128,6 +151,7 @@ export default defineComponent({
 
     // 十字キーでドラッグするための処理
     const moveRectArrowKey = (e: SVGRectKeyboardEvent): void => {
+      isShowMenu.value = false
       SvgsStore.setTargetId(e)
       if (typeof SvgsStore.targetSvg === 'undefined') {
         return
@@ -160,7 +184,6 @@ export default defineComponent({
       }
       SvgsStore.setTargetId(0)
     }
-    // --- ドラッグ処理終わり ---
 
     // --- リサイズ処理 ---
 
@@ -271,13 +294,37 @@ export default defineComponent({
       isResizing.value = false
       SvgsStore.setTargetId(0)
     }
-    // --- リサイズ処理終わり ---
 
     // --- svg削除 ---
     const deleteSvg = (e: SVGRectKeyboardEvent) => {
       SvgsStore.deleteSvg(e)
     }
-    // --- svg削除終わり ---
+
+    // --- コンテキストメニュー表示 ---
+    const isShowMenu = ref(false)
+    const position = reactive({ x: 0, y: 0 })
+    const showMenu = (e: SVGRectMouseEvent) => {
+      isShowMenu.value = false
+      SvgsStore.setTargetId(e)
+      position.x = e.clientX
+      position.y = e.clientY
+      nextTick(() => {
+        isShowMenu.value = true
+      })
+    }
+    const menuItems = [
+      { title: '最上面に移動', func: () => SvgsStore.changeOrder('top') },
+      { title: '一つ上に移動', func: () => SvgsStore.changeOrder('up') },
+      { title: '一つ下に移動', func: () => SvgsStore.changeOrder('down') },
+      { title: '最下面に移動', func: () => SvgsStore.changeOrder('bottom') },
+    ]
+
+    // オートセーブ
+    const autosave = debounce(function(){
+      SvgsStore.updateSvgs()
+    }, 5000, { 'maxWait': 30000 })
+
+    watch(SvgsStore.activeMapRects, () =>  autosave())
 
     return {
       rects,
@@ -289,6 +336,10 @@ export default defineComponent({
       resizeStop,
       moveRectArrowKey,
       deleteSvg,
+      showMenu,
+      isShowMenu,
+      position,
+      menuItems,
     }
   },
 })
