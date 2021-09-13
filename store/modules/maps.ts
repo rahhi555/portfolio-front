@@ -6,22 +6,37 @@ import { SnackbarStore } from '~/utils/store-accessor'
 const MODEL = 'マップ'
 
 @Module({
-  name: 'maps',
+  name: 'modules/maps',
   stateFactory: true,
   namespaced: true,
 })
 export default class Maps extends VuexModule {
   private mapsState: Map[] = []
 
+  private activeIndexState: number = 0
+
+  private get currentPlanId() {
+    const planIds = this.mapsState?.map((map) => map.planId)
+    if (!planIds) return false
+    const isAllEqual = planIds?.every((planId) => planId === planIds[0])
+    return isAllEqual ? planIds[0] : false
+  }
+
   public get maps() {
     return this.mapsState
   }
 
-  public get currentPlanId() {
-    const planIds = this.mapsState?.map((map) => map.planId)
-    if (!planIds) return false
-    const isAllEqual = planIds?.every((planId) => planId === planIds[0])
-    return isAllEqual ? planIds[0] : window.$nuxt.$route.params
+  public get activeIndex() {
+    return this.activeIndexState
+  }
+
+  public get activeMap() {
+    return this.mapsState[this.activeIndexState]
+  }
+
+  @Mutation
+  public setActiveIndex(index: number) {
+    this.activeIndexState = index
   }
 
   @Mutation

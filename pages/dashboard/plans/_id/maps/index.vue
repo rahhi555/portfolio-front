@@ -1,68 +1,51 @@
 <template>
   <v-row>
     <v-col max-width="100%" rounded cols="12">
-      <map-base></map-base>
+      <map-edit></map-edit>
     </v-col>
 
-    <v-col class="py-0">
-      <div class="text-center d-flex justify-end align-center">
-        <template v-if="selectMap">
-          <v-chip>{{selectMap.name}}</v-chip>
-          <v-pagination v-model="select" :length="maps.length"></v-pagination>
-        </template>
-        <v-chip v-else disabled>マップがありません</v-chip>
-      </div>
-    </v-col>
+    <map-page :justify-content="activeMap ? 'justify-sm-space-between' : 'justify-end'">
+      <span v-if="activeMap">
+        <v-btn @click="addRect">add</v-btn>
+        <v-btn @click="updateSvgs">update</v-btn>
+      </span>
+    </map-page>
 
     <map-modal></map-modal>
   </v-row>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  useFetch,
-  ref,
-  computed,
-} from '@nuxtjs/composition-api'
-import { PlansStore, MapsStore } from '~/store'
-import MapBase from '~/components/protected/maps/MapBase.vue'
+import { defineComponent } from '@nuxtjs/composition-api'
+import { SvgsStore, MapsStore } from '~/store'
+import MapEdit from '~/components/protected/maps/MapEdit.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
+import MapPage from '~/components/protected/maps/MapPage.vue'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
   components: {
-    MapBase,
+    MapEdit,
     MapModal,
+    MapPage,
   },
 
   layout: 'protected',
 
-  setup() {
-    useFetch(async ({ $route }) => {
-      const planId = $route.params.id
-      await Promise.all([
-        PlansStore.setCurrentPlan(planId),
-        MapsStore.indexMaps(planId),
-      ])
-    })
+  middleware: ['initialize-store'],
 
+  setup() {
     setAppBarTabDialog('マップ作成')
 
-    const select = ref(1)
-    const selectMap = computed(() => {
-      return MapsStore.maps[select.value - 1 ]
-    })
-
     return {
-      select,
-      selectMap,
+      addRect: () => SvgsStore.addRect(),
+      updateSvgs: () => SvgsStore.updateSvgs(),
     }
   },
 
   computed: {
-    maps() {
-      return MapsStore.maps
+    activeMap() {
+      return MapsStore.activeMap
     }
   }
 })

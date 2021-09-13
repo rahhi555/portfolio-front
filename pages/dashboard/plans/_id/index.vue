@@ -1,32 +1,30 @@
-<template >
+<template>
   <v-row>
-    <v-col max-width="100%" rounded>
-      <map-base></map-base>
+    <v-col max-width="100%" rounded cols="12">
+      <map-show></map-show>
     </v-col>
-    
+
+    <map-page :justify-content="'justify-end'"></map-page>
   </v-row>
 </template>
 
 <script lang="ts">
-import { defineComponent, useFetch } from '@nuxtjs/composition-api'
-import { PlansStore } from '~/store'
-import MapBase from '~/components/protected/maps/MapBase.vue'
+import { defineComponent } from '@nuxtjs/composition-api'
+import MapShow from '~/components/protected/maps/MapShow.vue'
+import MapPage from '~/components/protected/maps/MapPage.vue'
 
 export default defineComponent({
   components: {
-    MapBase,
+    MapShow,
+    MapPage
   },
 
-  layout: 'protected',  
+  layout: 'protected',
+
+  middleware: ['initialize-store'],
 
   setup() {
-    useFetch( async ({ $route }) => {
-      const planId = $route.params.id
-      await PlansStore.setCurrentPlan(planId)
-    })
-
-    return {
-    }
+    return {}
   },
 })
 </script>

@@ -1,14 +1,35 @@
 declare module 'interface' {
-  export interface Rect {
-    id: number,
-    x: number,
-    y: number,
+  interface SvgBase {
+    id: number
+    mapId: number
+    type: string
+    x: number
+    y: number
+    fill: string
+    stroke: string
+    planId: string | number
+    name: string
+    displayOrder: number
+    isUpdated?: boolean
+  }
+
+  export interface Rect extends SvgBase {
     width: number,
     height: number,
-    fill?: string,
-    stroke?: string
+  }
+
+  export interface Path extends SvgBase {
+    displayTime: number
+    drawPoints: string
+  }
+
+  export interface Polyline extends SvgBase {
+    displayTime: number
+    drawPoints: string
   }
   
+  export type SvgType = Rect & Path & Polyline
+
   export interface SVGRectMouseEvent extends MouseEvent {
     target: SVGRectElement
   }

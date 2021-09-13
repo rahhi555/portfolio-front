@@ -6,7 +6,7 @@ import { SnackbarStore } from '~/utils/store-accessor'
 const MODEL = 'メンバー'
 
 @Module({
-  name: 'members',
+  name: 'modules/members',
   stateFactory: true,
   namespaced: true,
 })

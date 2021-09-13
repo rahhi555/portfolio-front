@@ -13,7 +13,7 @@ interface RoleParams {
 const MODEL = 'ロール'
 
 @Module({
-  name: 'roles',
+  name: 'modules/roles',
   stateFactory: true,
   namespaced: true,
 })
