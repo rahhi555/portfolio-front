@@ -10,8 +10,6 @@ import { $axios } from '~/utils/axios-accessor'
 
 type SvgTypeKeys = keyof SvgType
 
-const MODEL: string = '図形'
-
 @Module({
   name: 'modules/svgs',
   stateFactory: true,
@@ -19,6 +17,11 @@ const MODEL: string = '図形'
 })
 export default class Svgs extends VuexModule {
   private svgsState: SvgType[] = []
+
+  // すべてのsvgを返す
+  public get allRects(): Rect[] {
+    return this.svgsState
+  }
 
   // 現在のマップのsvgを返す
   public get activeMapRects(): Rect[] {

@@ -324,7 +324,7 @@ export default defineComponent({
       SvgsStore.updateSvgs()
     }, 5000, { 'maxWait': 30000 })
 
-    watch(SvgsStore.activeMapRects, () =>  autosave())
+    watch(SvgsStore.allRects, () => autosave())
 
     return {
       rects,
