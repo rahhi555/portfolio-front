@@ -149,20 +149,9 @@ export default class Svgs extends VuexModule {
     }
     Promise.all(
       this.updatedSvgs.map((svg) => {
-        const svgParams = {
-          type: svg.type,
-          x: svg.x,
-          y: svg.y,
-          fill: svg.fill,
-          stroke: svg.stroke,
-          name: svg.name,
-          width: svg.width,
-          height: svg.height,
-          display_time: svg.displayTime,
-          draw_points: svg.drawPoints,
-          display_order: svg.displayOrder,
-        }
-        return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg: svgParams })
+        const invalidKeys = [ 'mapId', 'createdAt', 'updatedAt', 'planId', 'isUpdated' ]
+        for(const key of invalidKeys) { delete svg[key] }
+        return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg })
       })
     )
       .then(() => this.resetUpdated())

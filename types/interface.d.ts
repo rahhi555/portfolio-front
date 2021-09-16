@@ -11,6 +11,8 @@ declare module 'interface' {
     name: string
     displayOrder: number
     isUpdated?: boolean
+    createdAt: Date
+    updatedAt: Date
   }
 
   export interface Rect extends SvgBase {

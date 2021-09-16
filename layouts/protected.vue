@@ -1,5 +1,16 @@
 <template>
   <v-app dark>
+    <MaterialSnackbar
+      :type="snackParams.color"
+      timeout="4000"
+      v-bind="{
+        center: true,
+        top: true,
+      }"
+    >
+      {{ snackParams.message }}
+    </MaterialSnackbar>
+
     <v-img
       :src="require(`@/assets/login_gray.png`)"
       gradient="to top, #00000080, #00000080"
@@ -8,17 +19,6 @@
     >
       <app-bar />
 
-      <MaterialSnackbar
-        :type="snackParams.color"
-        timeout="4000"
-        v-bind="{
-          center: true,
-          top: true,
-        }"
-      >
-        {{ snackParams.message }}
-      </MaterialSnackbar>
-
       <v-main>
         <v-container my-5>
           <Nuxt />
@@ -26,9 +26,9 @@
       </v-main>
 
       <account-dialog />
-
-      <Footer />
     </v-img>
+
+    <Footer />
   </v-app>
 </template>
 

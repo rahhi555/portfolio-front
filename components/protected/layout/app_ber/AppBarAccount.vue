@@ -10,7 +10,8 @@
     <template #activator="{ attrs, on }">
       <v-btn class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
         <v-avatar>
-          <v-img :src="`https://i.pravatar.cc/180?img=1`"></v-img>
+          <v-img v-if="currentUser.avatar" height="100%" width="100%" :src="currentUser.avatar" />
+          <v-icon v-else class="mx-auto">mdi-account</v-icon>
         </v-avatar>
       </v-btn>
     </template>
@@ -35,6 +36,7 @@
 <script lang="ts">
 import { defineComponent, useContext, inject } from '@nuxtjs/composition-api'
 import { AccountDialogKey } from '~/types/injection-key'
+import { UserStore } from '~/store'
 
 export default defineComponent({
   setup() {
@@ -51,5 +53,11 @@ export default defineComponent({
       accountDialog,
     }
   },
+
+  computed: {
+    currentUser() {
+      return UserStore.currentUser
+    }
+  }
 })
 </script>
