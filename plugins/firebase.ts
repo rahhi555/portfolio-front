@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import { UserStore } from '~/store'
 
 const firebaseConfig = {
   apiKey: "AIzaSyDP38Ubcnjfzfg2IN4PTexqi21NJ8Kdwbo",
@@ -20,7 +21,8 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 firebase.auth().onAuthStateChanged((user) => {
-  console.log('current user', user)
+  if (!user || !user.email) return
+  UserStore.setEmail(user.email)
 })
 
 

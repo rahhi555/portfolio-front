@@ -8,3 +8,5 @@ export const AppBarFuncKey: InjectionKey<Ref<AppBarFunc | null>> = Symbol('AppBa
 export const AppBarDialogKey: InjectionKey<Ref<boolean>> = Symbol('AppBarDialogKey')
 
 export const AccountDialogKey: InjectionKey<Ref<boolean>> = Symbol('AccountDialogKey')
+
+export const DrawerKey: InjectionKey<Ref<boolean>> = Symbol('DrawerKey')

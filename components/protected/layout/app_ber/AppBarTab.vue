@@ -1,5 +1,5 @@
 <template>
-  <v-tabs :value="activeTab" align-with-title class="v-tabs">
+  <v-tabs :value="activeTab" :align-with-title="$vuetify.breakpoint.smAndUp" class="v-tabs">
     <v-tab
       v-for="(tab, index) in appBarTab"
       :key="index"

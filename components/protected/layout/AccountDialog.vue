@@ -20,7 +20,9 @@
         </v-card-title>
 
         <div class="text-center text-h5 grey--text font-weight-light mb-6">
-          <p v-if="isAnonymous" class='grey--text'>現在仮ユーザーです。本登録ページはこちら</p>
+          <p v-if="isAnonymous" class="grey--text">
+            現在仮ユーザーです。本登録ページはこちら
+          </p>
           <p v-else class="success--text">本登録ユーザーです</p>
         </div>
 
@@ -45,14 +47,21 @@
                   :class="currentUser.avatar ? 'success--text' : 'grey--text'"
                   class="mx-auto mt-0 d-inline-flex v-card--account"
                   outlined
-                  height="106"
-                  width="106"
+                  :max-height="$vuetify.breakpoint.xs ? null : 300"
+                  :max-width="$vuetify.breakpoint.xs ? null : 300"
                   @click="selectImage"
                 >
-                  <v-img v-if="currentUser.avatar" height="100%" width="100%" :src="currentUser.avatar" />
-                  <v-icon v-else class="mx-auto" size="96">
-                    mdi-account
-                  </v-icon>
+                  <v-avatar size="100%" tile>
+                    <v-img
+                      v-if="currentUser.avatar"
+                      height="100%"
+                      width="100%"
+                      :src="currentUser.avatar"
+                    />
+                    <v-icon v-else class="mx-auto" size="96">
+                      mdi-account
+                    </v-icon>
+                  </v-avatar>
                 </v-card>
 
                 <div class="font-weight-bold grey--text">CHOOSE PICTURE</div>
@@ -69,7 +78,7 @@
                 />
 
                 <v-text-field
-                  :value="email"
+                  :value="currentUser.email"
                   color="secondary"
                   label="Email*"
                   prepend-icon="mdi-email"
@@ -89,7 +98,6 @@
 import { defineComponent, inject, ref } from '@nuxtjs/composition-api'
 import { AccountDialogKey } from '~/types/injection-key'
 import { UserStore } from '~/store'
-import firebase from '~/plugins/firebase'
 
 export default defineComponent({
   setup() {
@@ -117,9 +125,6 @@ export default defineComponent({
     isAnonymous() {
       return UserStore.isAnonymous
     },
-    email() {
-      return firebase.auth().currentUser?.email
-    }
   },
 })
 </script>

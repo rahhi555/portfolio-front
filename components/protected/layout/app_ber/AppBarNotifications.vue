@@ -8,7 +8,7 @@
   >
     <template #activator="{ attrs, on }">
       <v-btn
-        class="ml-2"
+        class="ml-2 hidden-xs-only"
         min-width="0"
         text
         v-bind="attrs"

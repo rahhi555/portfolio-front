@@ -11,6 +11,8 @@
       {{ snackParams.message }}
     </MaterialSnackbar>
 
+    <drawer />
+
     <v-img
       :src="require(`@/assets/login_gray.png`)"
       gradient="to top, #00000080, #00000080"
@@ -37,13 +39,15 @@ import { defineComponent, provide, ref } from '@nuxtjs/composition-api'
 import { AppBarTab, AppBarFunc } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
-import Footer from '~/components/protected/layout/Footer.vue'
+import Footer from '~/components/default/Footer.vue'
 import AccountDialog from '~/components/protected/layout/AccountDialog.vue'
+import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import { SnackbarStore } from '~/store'
 import {
   AppBarTabKey,
   AppBarFuncKey,
   AccountDialogKey,
+  DrawerKey
 } from '~/types/injection-key'
 
 export default defineComponent({
@@ -52,6 +56,7 @@ export default defineComponent({
     AppBar,
     Footer,
     AccountDialog,
+    Drawer
   },
 
   middleware: ['authenticated'],
@@ -67,6 +72,9 @@ export default defineComponent({
 
     const accountDialog = ref(false)
     provide(AccountDialogKey, accountDialog)
+
+    const drawer = ref(false)
+    provide(DrawerKey, drawer)
 
     return {
       fixed,

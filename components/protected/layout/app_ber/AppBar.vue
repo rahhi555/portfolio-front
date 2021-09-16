@@ -4,13 +4,13 @@
     app
     absolute
     class="v-bar--underline"
-    :clipped-left="$vuetify.rtl"
-    :clipped-right="!$vuetify.rtl"
     height="50"
     flat
     dark
   >
-    <go-home />
+    <go-home class="hidden-xs-only" />
+
+    <drawer-toggle class="hidden-sm-and-up" />
 
     <v-spacer />
 
@@ -27,6 +27,7 @@
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
 import GoHome from './AppBarGoHome.vue'
+import DrawerToggle from './AppBarDrawerToggle.vue'
 import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
@@ -35,13 +36,15 @@ import { PlansStore } from '~/store'
 export default defineComponent({
   components: {
     GoHome,
+    DrawerToggle,
     Notifications,
     Account,
     Tab,
   },
 
   setup() {
-    return {}
+    return {
+    }
   },
 
   computed: {
