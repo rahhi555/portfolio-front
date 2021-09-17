@@ -10,8 +10,6 @@ import { $axios } from '~/utils/axios-accessor'
 
 type SvgTypeKeys = keyof SvgType
 
-const MODEL: string = '図形'
-
 @Module({
   name: 'modules/svgs',
   stateFactory: true,
@@ -19,6 +17,11 @@ const MODEL: string = '図形'
 })
 export default class Svgs extends VuexModule {
   private svgsState: SvgType[] = []
+
+  // すべてのsvgを返す
+  public get allRects(): Rect[] {
+    return this.svgsState
+  }
 
   // 現在のマップのsvgを返す
   public get activeMapRects(): Rect[] {
@@ -146,20 +149,9 @@ export default class Svgs extends VuexModule {
     }
     Promise.all(
       this.updatedSvgs.map((svg) => {
-        const svgParams = {
-          type: svg.type,
-          x: svg.x,
-          y: svg.y,
-          fill: svg.fill,
-          stroke: svg.stroke,
-          name: svg.name,
-          width: svg.width,
-          height: svg.height,
-          display_time: svg.displayTime,
-          draw_points: svg.drawPoints,
-          display_order: svg.displayOrder,
-        }
-        return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg: svgParams })
+        const invalidKeys = [ 'mapId', 'createdAt', 'updatedAt', 'planId', 'isUpdated' ]
+        for(const key of invalidKeys) { delete svg[key] }
+        return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg })
       })
     )
       .then(() => this.resetUpdated())

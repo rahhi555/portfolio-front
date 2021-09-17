@@ -4,29 +4,19 @@
     app
     absolute
     class="v-bar--underline"
-    color="transparent"
-    :clipped-left="$vuetify.rtl"
-    :clipped-right="!$vuetify.rtl"
     height="50"
     flat
+    dark
   >
-    <v-app-bar-nav-icon class="hidden-md-and-up" @click="drawer = !drawer" />
+    <go-home class="hidden-xs-only" />
 
-    <drawer-toggle class="hidden-sm-and-down" />
-
-    <v-toolbar-title class="font-weight-light text-h5" v-text="name" />
+    <drawer-toggle class="hidden-sm-and-up" />
 
     <v-spacer />
 
-    <template #extension>
-      <tab />
-    </template>
+    <tab />
 
     <v-spacer />
-
-    <!-- <search class="hidden-sm-and-down" /> -->
-
-    <go-home />
 
     <notifications />
 
@@ -35,31 +25,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from '@nuxtjs/composition-api'
-import DrawerToggle from './AppBarDrawerToggle.vue'
-import Search from './AppBarSearch.vue'
+import { defineComponent } from '@nuxtjs/composition-api'
 import GoHome from './AppBarGoHome.vue'
+import DrawerToggle from './AppBarDrawerToggle.vue'
 import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
-import { DrawerKey } from '~/types/injection-key'
 import { PlansStore } from '~/store'
 
 export default defineComponent({
   components: {
-    DrawerToggle,
-    Search,
     GoHome,
+    DrawerToggle,
     Notifications,
     Account,
-    Tab
+    Tab,
   },
 
   setup() {
-    const drawer = inject(DrawerKey)
-
     return {
-      drawer,
     }
   },
 
@@ -68,7 +52,7 @@ export default defineComponent({
       const appbarName = PlansStore.currentPlan?.name
       let routeName = this.$route.name as string
 
-      if(appbarName && routeName.includes('plans-id')) return appbarName
+      if (appbarName && routeName.includes('plans-id')) return appbarName
 
       routeName = routeName.replace(/.*-/g, '')
       return routeName.charAt(0).toUpperCase() + routeName.slice(1)

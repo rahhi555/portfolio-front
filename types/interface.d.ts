@@ -11,6 +11,8 @@ declare module 'interface' {
     name: string
     displayOrder: number
     isUpdated?: boolean
+    createdAt: Date
+    updatedAt: Date
   }
 
   export interface Rect extends SvgBase {
@@ -46,6 +48,7 @@ declare module 'interface' {
     accept: boolean
     userName: string
     roleName: string
+    avatar?: string
   }
   
   export interface Plan {

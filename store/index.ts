@@ -31,12 +31,7 @@ export const actions: ActionTree<any, any> = {
     await server.$axios
       .$get('/api/v1/me')
       .then((user) => {
-        context.commit('user/setUserMutation', {
-          id: user.id,
-          name: user.name,
-          uid: user.uid,
-          provider: user.provider,
-        })
+        context.commit('user/setUserMutation', user)
       })
       .catch(() => {
         context.dispatch('user/removeUser')

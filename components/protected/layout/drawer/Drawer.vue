@@ -1,12 +1,10 @@
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    :mini-variant.sync="miniVariant"
     fixed
     app
     dark
-    :src="require('~/assets/login_gray.png')"
-    mini-variant-width="80"
+    disable-resize-watcher
   >
     <div>
       <drawer-header />
@@ -22,6 +20,7 @@
           v-for="(item, i) in visibleItems"
           :key="i"
           :to="item.to"
+          @click="item.click"
           router
           exact
         >
@@ -38,11 +37,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, computed, ref } from '@nuxtjs/composition-api'
+import { defineComponent, inject, computed, ref, useContext } from '@nuxtjs/composition-api'
 import DrawerHeader from './DrawerHeader.vue'
 import AccountSettings from './DrawerAccountSettings.vue'
-import { DrawerKey, MiniVariantKey } from '~/types/injection-key'
-import { UserStore } from '~/store'
+import { AccountDialogKey ,DrawerKey } from '~/types/injection-key'
 
 export default defineComponent({
   components: {
@@ -51,24 +49,34 @@ export default defineComponent({
   },
 
   setup() {
+    const { $auth } = useContext()
+
+    const accountDialog = inject(AccountDialogKey)
+
     const items = ref([
       {
-        icon: 'mdi-apps',
+        icon: 'mdi-home',
         title: '計画一覧',
         to: '/dashboard/plans',
         visible: true,
+        click: () => {}
       },
       {
-        icon: 'mdi-chart-bubble',
-        title: 'Inspire',
-        to: '/dashboard',
+        icon: 'mdi-account',
+        title: 'プロフィール',
+        to: '',
+        click: () => { 
+          if(!accountDialog) return
+          accountDialog.value = true 
+        },
         visible: true,
       },
       {
-        icon: 'mdi-chart-bubble',
-        title: 'Credential',
-        to: '/dashboard/credential',
-        visible: UserStore.isAnonymous,
+        icon: 'mdi-logout',
+        title: 'ログアウト',
+        to: '',
+        visible: true,
+        click: () => { $auth.logout() }
       },
     ])
 
@@ -78,12 +86,10 @@ export default defineComponent({
       })
     })
 
-    const miniVariant = inject(MiniVariantKey)
     const drawer = inject(DrawerKey)
 
     return {
       visibleItems,
-      miniVariant,
       drawer,
       items
     }

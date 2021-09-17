@@ -2,12 +2,16 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import Cookie from 'universal-cookie'
 import firebase from '~/plugins/firebase'
 import { $axios } from '~/utils/axios-accessor'
+import { SnackbarStore } from '~/utils/store-accessor'
+import imageValidates from '~/utils/helpers/image_validatior'
 
 interface UserParams {
   id: number
   name: string
   uid: string
   provider: 'anonymous' | 'password' | 'google' | ''
+  avatar?: string
+  email?: string
 }
 
 @Module({
@@ -20,7 +24,9 @@ export default class User extends VuexModule {
     id: 0,
     name: '',
     uid: '',
-    provider: ''
+    provider: '',
+    avatar: '',
+    email: ''
   }
 
   private tokenState: string = ''
@@ -41,7 +47,8 @@ export default class User extends VuexModule {
   public get isAuthenticated() {
     let hasAllGetted = true
     for(const value in this.userState ) {
-      // @ts-ignore
+      // avatarかemailは無い場合もあるのでスキップ
+      if(value === 'avatar' || value === 'email') continue
       if(!!this.userState[value] === false) hasAllGetted = false 
     }
     return hasAllGetted && !!this.tokenState
@@ -58,14 +65,17 @@ export default class User extends VuexModule {
 
   @Mutation
   private removeUserMutation() {
-    this.userState.id = 0
-    this.userState.uid = ''
-    this.userState.name = ''
+    for(const value in this.userState) { this.userState[value] = '' }
   }
 
   @Mutation
   public setTokenMutation(token: string) {
     this.tokenState = token
+  }
+
+  @Mutation
+  public setEmail(email: string) {
+    this.userState.email = email
   }
 
   @Action
@@ -74,11 +84,7 @@ export default class User extends VuexModule {
     const token = await currentUser?.getIdToken()
 
     $axios.defaults.headers.common.Authorization = `Bearer ${token}`
-    const user = (await $axios
-      .$get('/api/v1/me')
-      .then((user) => {
-        return { id: user.id, name: user.name, uid: user.uid , provider: user.provider}
-      })) as UserParams
+    const user = await $axios.$get('/api/v1/me')
     this.setUserMutation(user)
 
     const cookies = new Cookie()
@@ -97,5 +103,19 @@ export default class User extends VuexModule {
     const token = await firebase.auth().currentUser?.getIdToken()
     if(!token) return
     this.setTokenMutation(token) 
+  }
+
+  @Action
+  public async updateAvatar(files: FileList) {
+    if(!imageValidates(files)) return
+    
+    const formData = new FormData()
+    formData.append('user[avatar]', files[0])
+    await $axios.$patch('/api/v1/me', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    .then(res => this.setUserMutation(res))
+    .catch(() => SnackbarStore.catchError())
+    .finally(() => SnackbarStore.CRUDvisible({ model: 'アバター画像', crud: 'update' }))
   }
 }

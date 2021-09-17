@@ -1,5 +1,5 @@
 <template>
-  <v-tabs :value="activeTab" align-with-title>
+  <v-tabs :value="activeTab" :align-with-title="$vuetify.breakpoint.smAndUp" class="v-tabs">
     <v-tab
       v-for="(tab, index) in appBarTab"
       :key="index"
@@ -16,7 +16,6 @@
       :absolute="!$nuxt.context.$vuetify.breakpoint.xs"
       :right="!$nuxt.context.$vuetify.breakpoint.xs"
       min-width="130"
-      outlined
       @click="appBarFunc.func"
       >{{ appBarFunc.name }}</v-btn
     >

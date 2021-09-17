@@ -4,25 +4,23 @@
     elevation="1"
     fab
     small
-    @click="miniVariant = !miniVariant; drawer = true"
+    @click="drawer = !drawer"
   >
     <v-icon>
-      {{ miniVariant ? 'mdi-format-list-bulleted' : 'mdi-dots-vertical' }}
+      mdi-format-list-bulleted
     </v-icon>
   </v-btn>
 </template>
 
 <script lang="ts">
   import { defineComponent, inject } from '@nuxtjs/composition-api'
-  import { MiniVariantKey, DrawerKey } from '~/types/injection-key'
+  import { DrawerKey } from '~/types/injection-key'
 
   export default defineComponent({
     setup(){
-      const miniVariant = inject(MiniVariantKey)
       const drawer = inject(DrawerKey)
 
       return {
-        miniVariant,
         drawer
       }
     }

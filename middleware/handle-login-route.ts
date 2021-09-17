@@ -7,6 +7,6 @@ export default defineNuxtMiddleware((ctx) => {
     const encodedPayload = encodeURI(snackbarPayload)
 
     ctx.res.setHeader('Set-Cookie', `snackbar=${encodedPayload};Path=/`)
-    return ctx.redirect('/dashboard')
+    return ctx.redirect('/dashboard/plans')
   }
 })

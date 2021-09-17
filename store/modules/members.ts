@@ -17,13 +17,6 @@ export default class Members extends VuexModule {
     return this.membersState
   }
 
-  public get currentPlanId() {
-    const planIds = this.membersState?.map((member) => member.planId)
-    if (!planIds) return false
-    const isAllEqual = planIds?.every((planId) => planId === planIds[0])
-    return isAllEqual ? planIds[0] : false
-  }
-
   @Mutation
   private setMembersMutation(members: Member[]) {
     this.membersState = members
@@ -43,7 +36,6 @@ export default class Members extends VuexModule {
 
   @Action({ rawError: true })
   public async indexMembers(planId: string) {
-    if(this.currentPlanId === Number.parseInt(planId)) return
     const members = await $axios.$get(`/api/v1/plans/${planId}/members`)
     this.setMembersMutation(members)
   }

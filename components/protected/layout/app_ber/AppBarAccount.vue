@@ -8,53 +8,56 @@
     transition="scale-transition"
   >
     <template #activator="{ attrs, on }">
-      <v-btn class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
-        <v-list-item-icon>
-          <v-icon>mdi-account</v-icon>
-        </v-list-item-icon>
+      <v-btn data-cypress="logout" class="ml-2 hidden-xs-only" min-width="0" text v-bind="attrs" v-on="on">
+        <v-avatar>
+          <v-img v-if="currentUser.avatar" height="100%" width="100%" :src="currentUser.avatar" />
+          <v-icon v-else class="mx-auto">mdi-account</v-icon>
+        </v-avatar>
       </v-btn>
     </template>
 
     <v-list :tile="false" flat nav>
-      <template v-for="(p, i) in profile">
-        <v-divider v-if="p.divider" :key="`divider-${i}`" class="mb-2 mt-2" />
-
-        <div v-else-if="p.title === 'Log out'" :key="`item-${i}`" @click="logout">
-          <app-bar-item>
-            <v-list-item-title v-text="p.title" />
-          </app-bar-item>
-        </div>
-
-        <app-bar-item v-else :key="`item-${i}`" to="/">
-          <v-list-item-title v-text="p.title" />
+      <div @click="accountDialog = true">
+        <app-bar-item>
+          <v-list-item-title v-text="'Profile'" />
         </app-bar-item>
-      </template>
+      </div>
+      <v-divider class="mb-2 mt-2" />
+
+      <div @click="logout">
+        <app-bar-item>
+          <v-list-item-title v-text="'Log out'" />
+        </app-bar-item>
+      </div>
     </v-list>
   </v-menu>
 </template>
 
 <script lang="ts">
-import { defineComponent, useContext } from '@nuxtjs/composition-api'
+import { defineComponent, useContext, inject } from '@nuxtjs/composition-api'
+import { AccountDialogKey } from '~/types/injection-key'
+import { UserStore } from '~/store'
 
 export default defineComponent({
   setup() {
     const { $auth } = useContext()
 
-    const profile = [
-      { title: 'Profile' },
-      { title: 'Settings' },
-      { divider: true },
-      { title: 'Log out' },
-    ]
+    const accountDialog = inject(AccountDialogKey)
 
     const logout = () => {
       $auth.logout()
     }
 
     return {
-      profile,
       logout,
+      accountDialog,
     }
   },
+
+  computed: {
+    currentUser() {
+      return UserStore.currentUser
+    }
+  }
 })
 </script>

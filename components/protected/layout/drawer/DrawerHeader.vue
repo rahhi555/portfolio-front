@@ -16,4 +16,3 @@
     </v-list-item-content>
   </v-list-item>
 </template>
-
