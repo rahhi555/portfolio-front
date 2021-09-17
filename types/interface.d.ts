@@ -48,6 +48,7 @@ declare module 'interface' {
     accept: boolean
     userName: string
     roleName: string
+    avatar?: string
   }
   
   export interface Plan {

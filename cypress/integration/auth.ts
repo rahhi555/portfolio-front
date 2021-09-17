@@ -29,7 +29,7 @@ describe('認証系', () => {
   describe('ページ遷移', () => {
     context('未ログインの場合', () => {
       it('ダッシュボードにアクセスできないこと', () => {
-        cy.visit('/dashboard')
+        cy.visit('/dashboard/plans')
         cy.url().should('include', '/')
         cy.contains('ログインしてください')
       })

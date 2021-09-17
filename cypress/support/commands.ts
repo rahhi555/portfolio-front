@@ -48,7 +48,7 @@ Cypress.Commands.add('emailLogin', (email: string, password: string) => {
 })
 
 Cypress.Commands.add('logout', () => {
-  cy.get('.mdi-account').click()
+  cy.get('[data-cypress=logout]').click()
   cy.get('.v-list-item__title').contains('Log out').click()
   cy.url().should('include', '/')
   cy.contains('ログアウトしました')

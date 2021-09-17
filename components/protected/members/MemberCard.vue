@@ -1,6 +1,6 @@
 <template>
   <v-card tile elevation="3">
-    <v-tooltip v-if="member.accept" bottom>
+    <v-tooltip v-if="member.accept && !isAuthor" bottom>
       <template #activator="{ on, attrs }">
         <v-icon
           color="success"
@@ -14,7 +14,7 @@
       </template>
       <span>承認済み</span>
     </v-tooltip>
-    <v-tooltip v-else bottom>
+    <v-tooltip v-else-if="!member.accept" bottom>
       <template #activator="{ on, attrs }">
         <v-icon
           color="error"
@@ -29,8 +29,9 @@
       <span>未承認</span>
     </v-tooltip>
 
-    <v-avatar size="100%" tile>
-      <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+    <v-avatar size="100%" height="200px" tile>
+      <v-img v-if="member.avatar" :src="member.avatar"  ></v-img>
+      <v-icon v-else size="150"> mdi-account </v-icon>
     </v-avatar>
     <v-list-item color="rgba(0, 0, 0, .4)" light>
       <v-list-item-content>
@@ -44,7 +45,7 @@
         <v-icon>mdi-square-edit-outline</v-icon>
       </v-btn>
       <v-btn
-        v-if="member.userId == $store.getters['user/currentUser'].id"
+        v-if="!isAuthor"
         text
         icon
         color="error"
@@ -99,7 +100,7 @@ export default defineComponent({
     },
   },
 
-  setup() {
+  setup(props) {
     const exitMembers = (id: number) => {
       if (!confirm('メンバーを脱退してよろしいですか？')) {
         alert('キャンセルしました')
@@ -122,15 +123,23 @@ export default defineComponent({
       MembersStore.updateMember({ id: member.id, accept })
     }
 
+    const isAuthor = computed(() => {
+      return UserStore.currentUser.id === props.member.userId
+    })
+
     return {
       exitMembers,
       dialog: ref(false),
-      roles: computed(() => {
-        return RolesStore.roles
-      }),
       updateMember,
       acceptToggle,
+      isAuthor,
     }
+  },
+
+  computed: {
+    roles() {
+      return RolesStore.roles
+    },
   },
 })
 </script>
