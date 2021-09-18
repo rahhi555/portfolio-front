@@ -2,21 +2,21 @@
   <v-dialog v-model="dialog" max-width="1000px" class="pa-4">
     <v-container>
       <v-row>
-        <v-col :md="isMyPlan ? 7 : 12">
+        <v-col :md="currentUserAccept ? 7 : 12">
           <v-simple-table>
             <template #default>
               <thead>
                 <tr>
                   <th width="30%" class="text-left">ロール名</th>
                   <th width="45%"  class="text-left">説明</th>
-                  <th v-if="isMyPlan" width="25%"  class="text-left">Action</th>
+                  <th v-if="currentUserAccept" width="25%"  class="text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="role in roles" :key="role.name">
                   <td>{{ role.name }}</td>
                   <td>{{ role.description }}</td>
-                  <td v-if="isMyPlan">
+                  <td v-if="currentUserAccept">
                     <role-modal-button :role="role"
                     ></role-modal-button>
                   </td>
@@ -26,7 +26,7 @@
           </v-simple-table>
         </v-col>
 
-        <v-col v-if="isMyPlan" md="5">
+        <v-col v-if="currentUserAccept" md="5">
           <v-card>
             <v-card-title>
               <span class="text-h5">ロール作成</span>
@@ -81,7 +81,7 @@ import {
   ref,
   computed,
 } from '@nuxtjs/composition-api'
-import { RolesStore, UserStore, PlansStore } from '~/store'
+import { RolesStore, PlansStore, MembersStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
 import RoleModalButton from '~/components/protected/roles/RoleModalButton.vue'
 
@@ -112,10 +112,13 @@ export default defineComponent({
       createRole,
       dialog: inject(AppBarDialogKey),
       roles: computed(() => RolesStore.roles),
-      isMyPlan: computed(() => {
-        return PlansStore.currentPlan?.userId === UserStore.currentUser.id
-      }),
     }
   },
+
+  computed: {
+    currentUserAccept() {
+      return MembersStore.currentUserAccept
+    }
+  }
 })
 </script>

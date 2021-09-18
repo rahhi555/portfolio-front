@@ -31,6 +31,8 @@
     </v-img>
 
     <Footer />
+
+    <mini-snackbar />
   </v-app>
 </template>
 
@@ -42,6 +44,7 @@ import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
 import Footer from '~/components/default/Footer.vue'
 import AccountDialog from '~/components/protected/layout/AccountDialog.vue'
 import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
+import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
 import { SnackbarStore } from '~/store'
 import {
   AppBarTabKey,
@@ -56,7 +59,8 @@ export default defineComponent({
     AppBar,
     Footer,
     AccountDialog,
-    Drawer
+    Drawer,
+    MiniSnackbar
   },
 
   middleware: ['authenticated'],

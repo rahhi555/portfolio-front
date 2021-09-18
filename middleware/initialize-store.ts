@@ -1,5 +1,5 @@
 import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
-import { PlansStore, MapsStore, MembersStore, RolesStore, SvgsStore } from "~/store";
+import { PlansStore, MapsStore, MembersStore, RolesStore, SvgsStore, TodoListsStore } from "~/store";
 
 const initializeStore = async (planId: string): Promise<void> => {
   await Promise.all([
@@ -7,7 +7,8 @@ const initializeStore = async (planId: string): Promise<void> => {
     MapsStore.indexMaps(planId),
     SvgsStore.indexSvgs(planId),
     MembersStore.indexMembers(planId),
-    RolesStore.indexRoles(planId)
+    RolesStore.indexRoles(planId),
+    TodoListsStore.indexTodoLists(planId)
   ])
 } 
 

@@ -60,7 +60,11 @@ export default class User extends VuexModule {
 
   @Mutation
   private setUserMutation(user: UserParams) {
+    // 先にemailが入っていると上書きされるので対処
+    let email;
+    if(this.userState.email) email = this.userState.email
     this.userState = user
+    this.userState.email = email
   }
 
   @Mutation

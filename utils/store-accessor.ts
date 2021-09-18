@@ -7,6 +7,7 @@ import Plans from '~/store/modules/plans'
 import Members from '~/store/modules/members'
 import Maps from '~/store/modules/maps'
 import Svgs from '~/store/modules/svgs'
+import TodoLists from '~/store/modules/todoLists'
 
 let SnackbarStore: Snackbar
 let UserStore: User
@@ -15,6 +16,7 @@ let PlansStore: Plans
 let MembersStore: Members
 let MapsStore: Maps
 let SvgsStore: Svgs
+let TodoListsStore: TodoLists
 
 function initialiseStores(store: Store<any>): void {
   SnackbarStore = getModule(Snackbar, store)
@@ -24,6 +26,7 @@ function initialiseStores(store: Store<any>): void {
   MembersStore = getModule(Members, store)
   MapsStore = getModule(Maps, store)
   SvgsStore = getModule(Svgs, store)
+  TodoListsStore = getModule(TodoLists, store)
 }
 
 export {
@@ -34,5 +37,6 @@ export {
   PlansStore,
   MembersStore,
   MapsStore,
-  SvgsStore
+  SvgsStore,
+  TodoListsStore
 }

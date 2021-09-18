@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Member } from 'interface'
 import { $axios } from '~/utils/axios-accessor'
-import { SnackbarStore } from '~/utils/store-accessor'
+import { SnackbarStore, UserStore } from '~/utils/store-accessor'
 
 const MODEL = 'メンバー'
 
@@ -15,6 +15,12 @@ export default class Members extends VuexModule {
 
   public get members() {
     return this.membersState
+  }
+
+  public get currentUserAccept() {
+    if(!this.membersState) return
+    const currentUserMember = this.membersState.find(member => member.userId === UserStore.currentUser.id)
+    return currentUserMember?.accept
   }
 
   @Mutation

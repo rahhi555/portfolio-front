@@ -5,7 +5,7 @@ import {
   SVGRectMouseEvent,
   SVGRectKeyboardEvent,
 } from 'interface'
-import { MapsStore, SnackbarStore } from '~/utils/store-accessor'
+import { MapsStore, SnackbarStore } from '~/store'
 import { $axios } from '~/utils/axios-accessor'
 
 type SvgTypeKeys = keyof SvgType
@@ -109,21 +109,20 @@ export default class Svgs extends VuexModule {
   public changeSvg({
     status,
     value,
-    otherTargetId
+    otherTargetId,
   }: {
     status: SvgTypeKeys
     value: number | string
     otherTargetId?: number
   }) {
+    let target: SvgType | undefined
 
-    let target: SvgType | undefined;
-    
-    if(otherTargetId) { 
+    if (otherTargetId) {
       target = this.svgsState.find((svg) => svg.id === otherTargetId)
     } else {
       target = this.svgsState.find((svg) => svg.id === this.targetId)
     }
-    
+
     if (!target) return
     target.isUpdated = true
     // @ts-ignore
@@ -149,13 +148,32 @@ export default class Svgs extends VuexModule {
     }
     Promise.all(
       this.updatedSvgs.map((svg) => {
-        const invalidKeys = [ 'mapId', 'createdAt', 'updatedAt', 'planId', 'isUpdated' ]
-        for(const key of invalidKeys) { delete svg[key] }
-        return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg })
+        // ストロングパラメータ用に余分な属性を削除
+        const shallowSvg = Object.assign({}, svg)
+        const invalidKeys = [
+          'mapId',
+          'todoListId',
+          'createdAt',
+          'updatedAt',
+          'planId',
+          'isUpdated',
+        ]
+        for (const key in invalidKeys) {
+          delete shallowSvg[key]
+        }
+        return $axios.$patch(`/api/v1/svgs/${svg.id}`, { svg: shallowSvg })
       })
     )
-      .then(() => this.resetUpdated())
-      .catch(() => SnackbarStore.visible({color: 'error', message: 'エラーが発生しました'}))
+      .then(() => {
+        this.resetUpdated()
+        SnackbarStore.miniSnackbarVisible('Update Success')
+      })
+      .catch(() =>
+        SnackbarStore.visible({
+          color: 'error',
+          message: 'エラーが発生しました',
+        })
+      )
   }
 
   // svg削除
@@ -262,19 +280,19 @@ export default class Svgs extends VuexModule {
         this.changeSvg({
           status: 'displayOrder',
           value: targetDisplayOrder,
-          otherTargetId: nextRect!.id
+          otherTargetId: nextRect!.id,
         })
         break
       case 'down':
         if (!prevRect) return
         this.changeSvg({
           status: 'displayOrder',
-          value: prevRect!.displayOrder
+          value: prevRect!.displayOrder,
         })
         this.changeSvg({
           status: 'displayOrder',
           value: targetDisplayOrder,
-          otherTargetId: prevRect!.id
+          otherTargetId: prevRect!.id,
         })
         break
     }

@@ -75,6 +75,12 @@ declare module 'interface' {
     name: string
   }
 
+  export interface TodoList {
+    id: number
+    planId: number
+    title: string
+  }
+
   export interface AppBarTab {
     name: string
     link: string
