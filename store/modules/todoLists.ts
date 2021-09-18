@@ -1,0 +1,92 @@
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import { TodoList } from 'interface'
+import { $axios } from '~/utils/axios-accessor'
+import { PlansStore } from '~/store'
+import { SnackbarStore } from '~/utils/store-accessor'
+
+const MODEL = 'Todoリスト'
+
+@Module({
+  name: 'modules/todoLists',
+  stateFactory: true,
+  namespaced: true
+})
+export default class TodoLists extends VuexModule {
+  private todoListsState: TodoList[] = []
+
+  private selectedTodoListState: null | number = null
+
+  public get todoList(): TodoList[] {
+    return this.todoListsState
+  }
+
+  public get selectedTodoList(): number | null {
+    return this.selectedTodoListState
+  }
+
+  @Mutation
+  public setSelectedTodoList(index: number | null) {
+    this.selectedTodoListState = index
+  }
+
+  @Mutation
+  private setTodoListsMutation(todoLists: TodoList[]) {
+    this.todoListsState = todoLists
+  }
+
+  @Mutation
+  private addTodoListsMutation(todoList: TodoList) {
+    this.todoListsState.push(todoList)
+  }
+
+  @Mutation
+  private updateTodoListsMutation(todoList: TodoList) {
+    const index = this.todoListsState.findIndex(t => t.id === todoList.id)
+    this.todoListsState.splice(index, 1, todoList)
+  } 
+
+  @Mutation
+  private deleteTodoListsMutation(id: number) {
+    const index = this.todoListsState.findIndex(t => t.id === id)
+    this.todoListsState.splice(index, 1)
+  }
+
+  @Action
+  public async indexTodoLists(planId: string) {
+    await $axios
+    .$get(`/api/v1/plans/${planId}/todo_lists`)
+    .then((res) => this.setTodoListsMutation(res) )
+  }
+
+  @Action
+  public async createTodoList(title: string) {
+    const todoList = { title }
+    await $axios
+    .$post(`/api/v1/plans/${PlansStore.currentPlan?.id}/todo_lists`, { todoList })
+    .then((res) => this.addTodoListsMutation(res))
+    .catch(() => SnackbarStore.catchError())
+    .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'create' }))
+  }
+
+  @Action
+  public async updateTodoList({ id, title }: { id: number, title: string }) {
+    const todoList = { title }
+    await $axios.$patch(`/api/v1/todo_lists/${id}`, { todoList })
+    .then((res) => {
+      this.updateTodoListsMutation(res)
+      SnackbarStore.miniSnackbarVisible('Update Success')
+    })
+    .catch(() => SnackbarStore.visible({ color: 'error', message: 'Todoリストの更新に失敗しました' }))
+  }
+
+  @Action
+  public async deleteTodoList(id: number) {
+    await $axios.$delete(`/api/v1/todo_lists/${id}`)
+    .then(() => { 
+      this.setSelectedTodoList(null)
+      this.deleteTodoListsMutation(id) 
+      SnackbarStore.miniSnackbarVisible('Delete Success')
+    })
+    .catch(() => SnackbarStore.visible({ color: 'error', message: 'Todoリストの削除に失敗しました' }))
+  }
+}

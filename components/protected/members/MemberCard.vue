@@ -1,6 +1,6 @@
 <template>
   <v-card tile elevation="3">
-    <v-tooltip v-if="member.accept && !isAuthor" bottom>
+    <v-tooltip v-if="member.accept && !isAuthorCard" bottom>
       <template #activator="{ on, attrs }">
         <v-icon
           color="success"
@@ -30,7 +30,7 @@
     </v-tooltip>
 
     <v-avatar size="100%" height="200px" tile>
-      <v-img v-if="member.avatar" :src="member.avatar"  ></v-img>
+      <v-img v-if="member.avatar" :src="member.avatar"></v-img>
       <v-icon v-else size="150"> mdi-account </v-icon>
     </v-avatar>
     <v-list-item color="rgba(0, 0, 0, .4)" light>
@@ -41,11 +41,11 @@
         <v-list-item-subtitle>{{ member.roleName }}</v-list-item-subtitle>
       </v-list-item-content>
 
-      <v-btn text icon @click="dialog = true">
+      <v-btn v-if="currentUserAccept" text icon @click="dialog = true">
         <v-icon>mdi-square-edit-outline</v-icon>
       </v-btn>
       <v-btn
-        v-if="!isAuthor"
+        v-if="isMyCard && !isAuthorCard"
         text
         icon
         color="error"
@@ -115,7 +115,7 @@ export default defineComponent({
     }
 
     const acceptToggle = (member: Member) => {
-      if (PlansStore.currentPlan?.userId !== UserStore.currentUser.id) {
+      if (PlansStore.currentPlan!.userId !== UserStore.currentUser.id) {
         alert('承認および承認解除は作成者しか実行できません')
         return
       }
@@ -123,7 +123,11 @@ export default defineComponent({
       MembersStore.updateMember({ id: member.id, accept })
     }
 
-    const isAuthor = computed(() => {
+    const isAuthorCard = computed(() => {
+      return PlansStore.currentPlan?.userId === props.member.userId
+    })
+
+    const isMyCard = computed(() => {
       return UserStore.currentUser.id === props.member.userId
     })
 
@@ -132,13 +136,17 @@ export default defineComponent({
       dialog: ref(false),
       updateMember,
       acceptToggle,
-      isAuthor,
+      isAuthorCard,
+      isMyCard,
     }
   },
 
   computed: {
     roles() {
       return RolesStore.roles
+    },
+    currentUserAccept() {
+      return MembersStore.currentUserAccept
     },
   },
 })

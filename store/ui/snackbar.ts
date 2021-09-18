@@ -95,4 +95,26 @@ export default class Snackbar extends VuexModule {
 
     this.resetIsError()
   }
+
+  // 画面右下に表示する小型のスナックバー
+  private miniSnackState = {
+    isVisible: false,
+    message: ''
+  }
+
+  public get miniSnackbar() {
+    return this.miniSnackState
+  }
+
+  @Mutation
+  public miniSnackbarVisible(message: string) {
+    this.miniSnackState.isVisible = true
+    this.miniSnackState.message = message
+  }
+
+  @Mutation
+  public miniSnackbarHidden() {
+    this.miniSnackState.isVisible = false
+    this.miniSnackState.message = ''
+  }
 }

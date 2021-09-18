@@ -21,7 +21,11 @@
 
         <div class="text-center text-h5 grey--text font-weight-light mb-6">
           <p v-if="isAnonymous" class="grey--text">
-            現在仮ユーザーです。本登録ページはこちら
+            現在仮ユーザーです。<nuxt-link
+              to="/dashboard/credential"
+              @click.native="accountDialog = false"
+              >本登録ページはこちら</nuxt-link
+            >
           </p>
           <p v-else class="success--text">本登録ユーザーです</p>
         </div>

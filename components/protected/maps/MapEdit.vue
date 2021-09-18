@@ -1,12 +1,9 @@
 <template>
-  <v-sheet color="gray" elevation="6" height="50vh">
+  <v-sheet color="gray" elevation="6" height="70vh">
     <svg
       id="mysvg-edit"
-      x="0"
-      y="0"
       width="100%"
       height="100%"
-      viewBow="0 0 100% 100%"
       xmlns="http://www.w3.org/2000/svg"
       @mousemove="
         dragMiddle($event)
@@ -322,7 +319,7 @@ export default defineComponent({
     // オートセーブ
     const autosave = debounce(function(){
       SvgsStore.updateSvgs()
-    }, 5000, { 'maxWait': 30000 })
+    }, 3000, { 'maxWait': 30000 })
 
     watch(SvgsStore.allRects, () => autosave())
 
