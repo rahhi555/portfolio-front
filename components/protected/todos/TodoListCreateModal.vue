@@ -54,9 +54,10 @@ export default defineComponent({
   setup() {
     const title = ref('')
     const dialog = inject(AppBarDialogKey)
-    const createTodoList = () => {
+    const createTodoList = async () => {
       dialog!.value = false
-      TodoListsStore.createTodoList(title.value)
+      await TodoListsStore.createTodoList(title.value)
+      title.value = ''
     }
 
     return {

@@ -115,6 +115,7 @@ export default class User extends VuexModule {
     
     const formData = new FormData()
     formData.append('user[avatar]', files[0])
+  
     await $axios.$patch('/api/v1/me', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })

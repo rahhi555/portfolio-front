@@ -75,10 +75,22 @@ declare module 'interface' {
     name: string
   }
 
+  export interface Todo {
+    id: number
+    todoListId: number
+    title: string
+    body: string
+    beginTime: Date
+    endTime: Date
+    status: 'todo' | 'doing' | 'done'
+    images: string[]
+  }
+
   export interface TodoList {
     id: number
     planId: number
     title: string
+    todos?: Todo[]
   }
 
   export interface AppBarTab {

@@ -1,9 +1,9 @@
 <template>
   <v-row>
-    <v-col cols="3">
+    <v-col sm="3">
       <todo-lists />
     </v-col>
-    <v-col cols="9">
+    <v-col sm="9">
       <todos />
     </v-col>
 

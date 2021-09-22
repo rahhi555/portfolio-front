@@ -1,14 +1,14 @@
 <template>
   <v-footer
     id="page-footer"
-    :absolute="$vuetify.breakpoint.mdAndUp"
-    color="transparent"
-    height="auto"
+    color="black"
+    height="60px"
+    padless
   >
     <v-container>
       <v-row align="center">
         <v-col mx="auto">
-          <div class="text-body-1 font-weight-light pt-6 pt-md-0 text-center">
+          <div class="text-body-1 font-weight-light pt-md-0 text-center">
             &copy; {{ new Date().getFullYear() }}
             <v-avatar
               tile

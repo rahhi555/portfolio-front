@@ -1,17 +1,20 @@
 <template>
   <v-card class="mx-auto" max-width="300" tile>
     <v-list dense>
-      <v-subheader>Todoリスト</v-subheader>
+      <v-list-group v-if="todoLists.length" :value="true">
+          <template #activator>
+              <v-list-item-title>Todoリスト</v-list-item-title>
+          </template>
 
-      <v-list-item-group
-        v-if="todoLists.length"
-        v-model="selectedTodoList"
-        color="primary"
-      >
-        <v-list-item v-for="todoList in todoLists" :key="todoList.id">
-          <todo-list-item :todo-list="todoList"/>
-        </v-list-item>
-      </v-list-item-group>
+        <v-list-item-group
+          v-model="selectedTodoList"
+          color="primary"
+        >
+          <v-list-item v-for="todoList in todoLists" :key="todoList.id">
+            <todo-list-item :todo-list="todoList"/>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list-group>
 
       <v-list-item v-else>Empty Todo List</v-list-item>
     </v-list>
