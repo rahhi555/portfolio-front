@@ -38,6 +38,10 @@
           <v-card>
             <v-card-title>
               <h4>{{ item.title }}</h4>
+
+              <v-spacer />
+
+              <v-icon size="20" @click="deleteTodo(item)">mdi-delete</v-icon>
             </v-card-title>
 
             <v-divider />
@@ -55,7 +59,6 @@
               <v-col v-for="(image, i) in item.images" :key="i" cols="3">
                 <v-img
                   tile
-                  style="background-color: red"
                   :src="image"
                   height="40"
                   @click="imageShow(item.id)"
@@ -77,6 +80,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, useContext } from '@nuxtjs/composition-api'
+import { Todo } from 'interface'
 import { TodoListsStore } from '~/store'
 import TodoCreateModal from '~/components/protected/todos/TodoCreateModal.vue'
 import TodoImageCarousel from '~/components/protected/todos/TodoImageCarousel.vue'
@@ -101,17 +105,26 @@ export default defineComponent({
     const selectImages = ref<string[]>([])
     const imageShow = async (todoId: number) => {
       app.loading = true
-      selectImages.value = await $axios.$get(`/api/v1/todos/${todoId}?column=images`)
+      selectImages.value = await $axios.$get(
+        `/api/v1/todos/${todoId}?column=images`
+      )
       app.loading = false
       imageDialog.value = true
     }
 
+    const createDialog = ref(false)
+
+    const deleteTodo = (todo: Todo) => {
+      TodoListsStore.deleteTodo(todo)
+    }
+
     return {
       todoContents,
-      createDialog: ref(false),
       imageDialog,
       selectImages,
       imageShow,
+      deleteTodo,
+      createDialog
     }
   },
 

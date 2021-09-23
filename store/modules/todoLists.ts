@@ -117,7 +117,7 @@ export default class TodoLists extends VuexModule {
   }
 
   // ----------- Todoの操作 ---------------
-  // 選択中のtodo
+  // 選択中のtodos
   public get selectedTodos() {
     const index = this.selectedTodoListState
     if (!Number.isInteger(index)) return
@@ -128,6 +128,13 @@ export default class TodoLists extends VuexModule {
   private addTodoMutation(todo: Todo) {
     const target = this.todoListsState[this.selectedTodoListState!]
     target?.todos?.push(todo)
+  }
+
+  @Mutation
+  private deleteTodoMutation(todo: Todo) {
+    const todoList = this.todoListsState.find(todoList => todoList.id === todo.todoListId)
+    const index = todoList!.todos?.findIndex(t => t.id === todo.id)
+    todoList?.todos?.splice(index!, 1)
   }
 
   @Action
@@ -162,5 +169,15 @@ export default class TodoLists extends VuexModule {
           message: 'Todoの追加に失敗しました',
         })
       )
+  }
+
+  @Action
+  public async deleteTodo(todo: Todo) {
+    await $axios.$delete(`/api/v1/todos/${todo.id}`)
+    .then(() => {
+      this.deleteTodoMutation(todo)
+      SnackbarStore.miniSnackbarVisible('Deleted Todo')
+    })
+    .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの削除に失敗しました'}))
   }
 }

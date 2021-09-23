@@ -44,14 +44,21 @@
                   width="290px"
                 >
                   <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="todoParams.beginTime"
-                      label="開始時刻"
-                      prepend-icon="mdi-clock-time-four-outline"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      rules="beginTime:@終了時刻"
+                      name="開始時刻"
+                    >
+                      <v-text-field
+                        v-model="todoParams.beginTime"
+                        label="開始時刻"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        :error-messages="errors[0]"
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </ValidationProvider>
                   </template>
                   <v-time-picker
                     v-if="timeDialog.begin"
@@ -85,14 +92,21 @@
                   width="290px"
                 >
                   <template #activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="todoParams.endTime"
-                      label="終了時刻"
-                      prepend-icon="mdi-clock-time-four-outline"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      rules="endTime:@開始時刻"
+                      name="終了時刻"
+                    >
+                      <v-text-field
+                        v-model="todoParams.endTime"
+                        label="終了時刻"
+                        prepend-icon="mdi-clock-time-four-outline"
+                        readonly
+                        :error-messages="errors[0]"
+                        v-bind="attrs"
+                        v-on="on"
+                      ></v-text-field>
+                    </ValidationProvider>
                   </template>
                   <v-time-picker
                     v-if="timeDialog.end"
@@ -114,16 +128,23 @@
                   </v-time-picker>
                 </v-dialog>
 
-                <v-file-input
-                  v-model="todoParams.images"
-                  accept="image/png, image/jpeg"
-                  prepend-icon="mdi-camera"
-                  multiple
-                  chips
-                  counter
-                  show-size
-                  label="写真追加(複数可)"
-                ></v-file-input>
+                <ValidationProvider
+                  v-slot="{ errors }"
+                  rules="size:10000"
+                  name="画像"
+                >
+                  <v-file-input
+                    v-model="todoParams.images"
+                    accept="image/png, image/jpeg"
+                    prepend-icon="mdi-camera"
+                    multiple
+                    chips
+                    counter
+                    show-size
+                    label="画像追加(複数可)"
+                    :error-messages="errors[0]"
+                  ></v-file-input>
+                </ValidationProvider>
               </v-col>
             </v-row>
           </v-container>
@@ -131,7 +152,14 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialogClose"> Close </v-btn>
-          <v-btn color="blue darken-1" :disabled="invalid" text @click="createTodo"> Create </v-btn>
+          <v-btn
+            color="blue darken-1"
+            :disabled="invalid"
+            text
+            @click="createTodo"
+          >
+            Create
+          </v-btn>
         </v-card-actions>
       </ValidationObserver>
     </v-card>
@@ -170,11 +198,11 @@ export default defineComponent({
 
     const createTodo = () => {
       TodoListsStore.createTodo(todoParams)
-      for(const key in todoParams) {
-        if(key === 'images') {
+      for (const key in todoParams) {
+        if (key === 'images') {
           todoParams[key] = []
           continue
-         }
+        }
         todoParams[key] = ''
       }
     }
@@ -183,7 +211,7 @@ export default defineComponent({
       todoParams,
       timeDialog,
       dialogClose,
-      createTodo
+      createTodo,
     }
   },
 })
