@@ -4,6 +4,7 @@
     :absolute="$vuetify.breakpoint.mdAndUp"
     color="transparent"
     height="auto"
+    style="z-index: -1;"
   >
     <v-container>
       <v-row align="center">

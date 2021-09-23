@@ -28,11 +28,11 @@
       </v-main>
 
       <account-dialog />
+
+      <mini-snackbar />
     </v-img>
 
     <Footer />
-
-    <mini-snackbar />
   </v-app>
 </template>
 
