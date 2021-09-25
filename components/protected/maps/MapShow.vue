@@ -1,5 +1,15 @@
 <template>
-  <v-sheet color="gray" elevation="6" height="70vh">
+  <v-sheet
+    ref="svgSheet"
+    color="gray"
+    elevation="6"
+    height="50vh"
+    style="touch-action: none;"
+    @pointerdown.left="scrollBegin"
+    @pointermove.prevent="scrollMiddle"
+    @pointerup.left="scrollEnd"
+    @wheel.prevent="zoomInOut"
+  >
     <svg
       id="mysvg-show"
       width="100%"
@@ -18,7 +28,6 @@
             :height="rect.height"
             :fill="rect.fill"
             :stroke="rect.stroke"
-            tabindex="0"
           />
           <line x1="0" y1="0" :x2="rect.width" y2="0" />
           <line :x1="rect.width" y1="0" :x2="rect.width" :y2="rect.height" />
@@ -27,6 +36,7 @@
         </g>
       </template>
     </svg>
+    <p style="color: white;">{{viewBoxStr}}</p>
   </v-sheet>
 </template>
 
@@ -34,43 +44,25 @@
 import {
   defineComponent,
   computed,
-  reactive,
-  ref,
 } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
+import { ViewBox } from '~/utils/helpers/viewbox'
 
 export default defineComponent({
   setup() {
+    const viewBox = new ViewBox
+
     const rects = computed(() => SvgsStore.activeMapRects)
 
-    const viewBox = reactive({
-      minX: 140,
-      minY: 0,
-      width: 870,
-      height: 530,
-    })
-    const viewBoxStr = computed(() => {
-      return `${viewBox.minX} ${viewBox.minY} ${viewBox.width} ${viewBox.height}`
-    })
-
-    const scale = ref(1)
-
-    const zoomIn = () => {
-      scale.value += 0.1
-    }
-
-    const zoomOut = () => {
-      scale.value -= 0.1
-    }
     return {
       rects,
-      scale,
-      zoomIn,
-      zoomOut,
-      viewBoxStr,
+      svgSheet: viewBox.svgSheet,
+      viewBoxStr: viewBox.viewBoxStr,
+      scrollBegin: (e: MouseEvent) => viewBox.scrollBegin(e),
+      scrollMiddle: (e: MouseEvent) => viewBox.scrollMiddle(e),
+      scrollEnd: () => viewBox.scrollEnd(),
+      zoomInOut: (e: WheelEvent) => viewBox.zoomInOut(e)
     }
-  },
+  }
 })
 </script>
-
-<style scope></style>

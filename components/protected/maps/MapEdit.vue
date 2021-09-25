@@ -1,5 +1,5 @@
 <template>
-  <v-sheet color="gray" elevation="6" height="70vh">
+  <v-sheet color="gray" elevation="6" height="50vh">
     <svg
       id="mysvg-edit"
       width="100%"
@@ -101,10 +101,13 @@ import {
 import { SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
 import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
+import { SvgController } from '~/utils/helpers/svg-controller'
 
 export default defineComponent({
   setup() {
-    const rects = computed(() => SvgsStore.activeMapRects)
+    const svgContoller = new SvgController
+
+    const rects = svgContoller.rects
 
     // 何倍単位で移動するかの定数
     const MULTIPLE_NUMBER: number = 20
