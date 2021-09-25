@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col max-width="100%" rounded cols="12">
+    <v-col max-width="100%" rounded cols="11">
       <map-show></map-show>
     </v-col>
 

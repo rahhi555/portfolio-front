@@ -26,8 +26,8 @@ export default defineComponent({
   props: {
     justifyContent: {
       type: String,
-      default: 'justify-start'
-    }
+      default: 'justify-start',
+    },
   },
 
   computed: {

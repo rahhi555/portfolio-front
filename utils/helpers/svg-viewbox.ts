@@ -30,14 +30,12 @@ export class ViewBox {
   })
 
   public scrollBegin = (e: MouseEvent) => {
-    console.log('begin',e)
     this.isScrolling = true
     this.startPoint.x = e.clientX - this.minX.value
     this.startPoint.y = e.clientY - this.minY.value
   }
 
   public scrollMiddle = (e: MouseEvent) => {
-    console.log('middle', e)
     if(!this.isScrolling) return
     const newX = e.clientX - this.startPoint.x
     const newY = e.clientY - this.startPoint.y
@@ -46,7 +44,6 @@ export class ViewBox {
   }
 
   public scrollEnd = () => {
-    console.log('end')
     this.isScrolling = false
     this.startPoint.x = 0
     this.startPoint.y = 0
@@ -72,7 +69,7 @@ export class ViewBox {
     this.height.value = zoomedHeight
   }
 
-  public zoomInOut = (e: WheelEvent) => {
+  public zoomInOut = (e: WheelEvent | { deltaY: number }) => {
     const SCALE = 1.1
     if(e.deltaY < 0) {
       this.zoom(1 / SCALE)

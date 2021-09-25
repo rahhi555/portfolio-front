@@ -1,6 +1,10 @@
 <template>
   <v-row>
-    <v-col max-width="100%" rounded cols="12">
+    <v-col cols="2">
+      <map-todo-side-bar></map-todo-side-bar>
+    </v-col>
+
+    <v-col max-width="100%" rounded cols="10">
       <map-edit></map-edit>
     </v-col>
 
@@ -21,6 +25,7 @@ import { SvgsStore, MapsStore } from '~/store'
 import MapEdit from '~/components/protected/maps/MapEdit.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
 import MapPage from '~/components/protected/maps/MapPage.vue'
+import MapTodoSideBar from '~/components/protected/maps/MapTodoSideBar.vue'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -28,6 +33,7 @@ export default defineComponent({
     MapEdit,
     MapModal,
     MapPage,
+    MapTodoSideBar
   },
 
   layout: 'protected',

@@ -3,7 +3,7 @@
     ref="svgSheet"
     color="gray"
     elevation="6"
-    height="50vh"
+    height="75vh"
     style="touch-action: none;"
     @pointerdown.left="scrollBegin"
     @pointermove.prevent="scrollMiddle"
@@ -36,7 +36,11 @@
         </g>
       </template>
     </svg>
-    <p style="color: white;">{{viewBoxStr}}</p>
+
+    <v-chip v-show="!$device.isDesktop" class="zoom-chip">
+      <v-icon class="mr-3" @click="zoomInOut({deltaY: 1})">mdi-magnify-plus-outline</v-icon>
+      <v-icon class="ml-3" @click="zoomInOut({deltaY: -1})">mdi-magnify-minus-outline</v-icon>
+    </v-chip>
   </v-sheet>
 </template>
 
@@ -46,7 +50,7 @@ import {
   computed,
 } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
-import { ViewBox } from '~/utils/helpers/viewbox'
+import { ViewBox } from '~/utils/helpers/svg-viewbox'
 
 export default defineComponent({
   setup() {
@@ -66,3 +70,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped lang="sass">
+.zoom-chip
+  position: absolute
+  bottom: 80px
+  right: 10px
+</style>
