@@ -1,10 +1,10 @@
 <template>
   <v-row>
-    <v-col cols="2">
+    <v-col cols="3">
       <map-todo-side-bar></map-todo-side-bar>
     </v-col>
 
-    <v-col max-width="100%" rounded cols="10">
+    <v-col max-width="100%" rounded cols="9">
       <map-edit></map-edit>
     </v-col>
 
@@ -33,7 +33,7 @@ export default defineComponent({
     MapEdit,
     MapModal,
     MapPage,
-    MapTodoSideBar
+    MapTodoSideBar,
   },
 
   layout: 'protected',

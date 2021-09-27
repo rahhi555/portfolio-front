@@ -1,6 +1,7 @@
 declare module 'interface' {
   interface SvgBase {
     id: number
+    todoListId: number | null
     mapId: number
     type: string
     x: number

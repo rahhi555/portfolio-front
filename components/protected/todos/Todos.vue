@@ -131,7 +131,7 @@ export default defineComponent({
   computed: {
     todoListTitle() {
       let title = 'Not Selected'
-      const index = TodoListsStore.selectedTodoList
+      const index = TodoListsStore.selectedTodoListIndex
       if (Number.isInteger(index)) {
         // @ts-ignore
         title = TodoListsStore.todoList[index].title

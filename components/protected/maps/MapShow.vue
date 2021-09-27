@@ -50,22 +50,20 @@ import {
   computed,
 } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
-import { ViewBox } from '~/utils/helpers/svg-viewbox'
+import ViewBox from '~/utils/helpers/svg-viewbox'
 
 export default defineComponent({
   setup() {
-    const viewBox = new ViewBox
-
     const rects = computed(() => SvgsStore.activeMapRects)
 
     return {
       rects,
-      svgSheet: viewBox.svgSheet,
-      viewBoxStr: viewBox.viewBoxStr,
-      scrollBegin: (e: MouseEvent) => viewBox.scrollBegin(e),
-      scrollMiddle: (e: MouseEvent) => viewBox.scrollMiddle(e),
-      scrollEnd: () => viewBox.scrollEnd(),
-      zoomInOut: (e: WheelEvent) => viewBox.zoomInOut(e)
+      svgSheet: ViewBox.svgSheet,
+      viewBoxStr: ViewBox.viewBoxStr(),
+      scrollBegin: (e: MouseEvent) => ViewBox.scrollBegin(e),
+      scrollMiddle: (e: MouseEvent) => ViewBox.scrollMiddle(e),
+      scrollEnd: () => ViewBox.scrollEnd(),
+      zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e)
     }
   }
 })

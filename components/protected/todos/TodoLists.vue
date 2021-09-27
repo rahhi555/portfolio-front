@@ -7,7 +7,7 @@
           </template>
 
         <v-list-item-group
-          v-model="selectedTodoList"
+          v-model="selectedTodoListIndex"
           color="primary"
         >
           <v-list-item v-for="todoList in todoLists" :key="todoList.id">
@@ -35,12 +35,12 @@ export default defineComponent({
     todoLists() {
       return TodoListsStore.todoList
     },
-    selectedTodoList: {
+    selectedTodoListIndex: {
       get() {
-        return TodoListsStore.selectedTodoList
+        return TodoListsStore.selectedTodoListIndex
       },
       set(value) {
-        TodoListsStore.setSelectedTodoList(value)
+        TodoListsStore.setSelectedTodoListIndex(value)
       },
     },
   },

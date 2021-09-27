@@ -1,32 +1,34 @@
-import { onMounted, onUnmounted } from '@nuxtjs/composition-api'
+import { onMounted, onUnmounted, ref } from '@nuxtjs/composition-api'
 
-export class AddEventSpaceKey {
-  public isSpaceKeyPress: boolean
+const isSpaceKeyPress = ref(false)
 
-  constructor() {
-    this.isSpaceKeyPress = false
+const spaceKeyPress = (e: KeyboardEvent) => {
+  e.preventDefault()
+  if (e.code === 'Space') {
+    isSpaceKeyPress.value = true
   }
+}
 
-  private spaceKeyPress = (e: KeyboardEvent) => {
-    e.preventDefault()
-    if(e.code === 'Space') {
-      this.isSpaceKeyPress = true
-    }
+const unSpaceKeyPress = (e: KeyboardEvent) => {
+  if (e.code === 'Space') {
+    isSpaceKeyPress.value = false
   }
+}
 
-  private unSpaceKeyPress = (e: KeyboardEvent) => {
-    if(e.code === 'Space') {
-      this.isSpaceKeyPress = false
-    }
-  }
+export default {
+  isSpaceKeyPress,
 
-  private mounted = onMounted(() => {
-    window.addEventListener('keypress', this.spaceKeyPress, false)
-    window.addEventListener('keyup', this.unSpaceKeyPress, false)
-  })
+  mounted() {
+    onMounted(() => {
+      window.addEventListener('keypress', spaceKeyPress, false)
+      window.addEventListener('keyup', unSpaceKeyPress, false)
+    })
+  },
 
-  private unMounted = onUnmounted(() => {
-    window.removeEventListener('keypress', this.spaceKeyPress, false)
-    window.removeEventListener('keyup', this.unSpaceKeyPress, false)
-  })
+  unMounted() {
+    onUnmounted(() => {
+      window.removeEventListener('keypress', spaceKeyPress, false)
+      window.removeEventListener('keyup', unSpaceKeyPress, false)
+    })
+  },
 }

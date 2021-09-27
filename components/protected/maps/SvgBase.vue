@@ -14,14 +14,12 @@
       :viewBox="viewBoxStr"
       xmlns="http://www.w3.org/2000/svg"
       @pointermove="
-        dragMiddle($event)
-        resizeMiddle($event)
         scrollMiddle($event)
+        pointerMoveHandle($event)
       "
       @pointerup="
-        dragStop()
-        resizeStop()
         scrollEnd()
+        pointerUpHandle($event)
       "
       @pointerdown.left="scrollBegin($event)"
       @wheel.prevent="zoomInOut($event)"
@@ -39,12 +37,12 @@
             :stroke="rect.stroke"
             tabindex="0"
             class="grabbable"
-            @pointerdown.left="dragStart($event)"
-            @keydown="moveRectArrowKey($event)"
-            @keydown.delete="deleteSvg($event)"
-            @contextmenu.prevent="showMenu($event)"
-            @dragenter="attachTodoListEnter($event)"
-            @dragleave="attachTodoListLeave"
+            @pointerdown.left="pointerDownHandle"
+            @keydown="keyDownHandle"
+            @keydown.delete="deleteHandle"
+            @contextmenu.prevent="contextMenuHandle"
+            @dragenter="dragEnterHandle"
+            @dragleave="dragLeaveHandle"
           />
           <line
             x1="0"
@@ -52,7 +50,7 @@
             :x2="rect.width"
             y2="0"
             class="top-line"
-            @pointerdown.stop="resizeStart($event)"
+            @pointerdown.stop="linePointerDownHandle"
           />
           <line
             :x1="rect.width"
@@ -60,7 +58,7 @@
             :x2="rect.width"
             :y2="rect.height"
             class="right-line"
-            @pointerdown.stop="resizeStart($event)"
+            @pointerdown.stop="linePointerDownHandle"
           />
           <line
             x1="0"
@@ -68,7 +66,7 @@
             :x2="rect.width"
             :y2="rect.height"
             class="bottom-line"
-            @pointerdown.stop="resizeStart($event)"
+            @pointerdown.stop="linePointerDownHandle"
           />
           <line
             x1="0"
@@ -76,14 +74,17 @@
             x2="0"
             :y2="rect.height"
             class="left-line"
-            @pointerdown.stop="resizeStart($event)"
+            @pointerdown.stop="linePointerDownHandle"
           />
           <svg-text :rect="rect"></svg-text>
         </g>
       </template>
     </svg>
 
-    <svg-context-menu :is-show-menu="isShowMenu" :position="position"></svg-context-menu>
+    <svg-context-menu
+      :is-show-menu="isShowMenu"
+      :position="position"
+    ></svg-context-menu>
   </v-sheet>
 </template>
 
@@ -91,29 +92,21 @@
 import {
   defineComponent,
   ref,
-  reactive,
   computed,
-  nextTick,
-  watch,
 } from '@nuxtjs/composition-api'
-import { SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
-import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
-import Drag from '~/utils/helpers/svg-drag'
-import Resize from '~/utils/helpers/svg-resize'
 import ViewBox from '~/utils/helpers/svg-viewbox'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
-import TodoListAttach from '~/utils/helpers/todo-list-attach'
 import SvgText from '~/components/protected/maps/SvgText.vue'
 import SvgContextMenu from '~/components/protected/maps/SvgContextMenu.vue'
 
 export default defineComponent({
   components: {
     SvgText,
-    SvgContextMenu
+    SvgContextMenu,
   },
 
-  setup() {
+  setup(_, { emit }) {
     const rects = computed(() => SvgsStore.activeMapRects)
     ViewBox.mounted()
     AddEventSpaceKey.mounted()
@@ -121,58 +114,6 @@ export default defineComponent({
 
     // スペースキーの押下判定
     const isSpaceKeyPress = ref(AddEventSpaceKey.isSpaceKeyPress)
-
-    // マウスのドラッグ操作
-    const dragStart = (e: SVGRectMouseEvent) => {
-      if (isSpaceKeyPress.value) return
-      isShowMenu.value = false
-      Drag.dragStart(e)
-    }
-    const dragMiddle = (e: SVGRectMouseEvent) => Drag.dragMiddle(e)
-    const dragStop = () => Drag.dragStop()
-
-    // 方向キーのドラッグ操作
-    const moveRectArrowKey = (e: SVGRectKeyboardEvent) => {
-      isShowMenu.value = false
-      Drag.moveRectArrowKey(e)
-    }
-
-    // リサイズ操作
-    const resizeStart = (e: SVGRectMouseEvent) => {
-      if (isSpaceKeyPress.value) return
-      isShowMenu.value = false
-      Resize.resizeStart(e)
-    }
-    const resizeMiddle = (e: SVGRectMouseEvent) => Resize.resizeMiddle(e)
-    const resizeStop = () => Resize.resizeStop()
-
-    // --- svg削除 ---
-    const deleteSvg = (e: SVGRectKeyboardEvent) => {
-      SvgsStore.deleteSvg(e)
-    }
-
-    // --- コンテキストメニュー表示 ---
-    const isShowMenu = ref(false)
-    const position = reactive({ x: 0, y: 0 })
-    const showMenu = (e: SVGRectMouseEvent) => {
-      isShowMenu.value = false
-      SvgsStore.setTargetId(e)
-      position.x = e.clientX
-      position.y = e.clientY
-      nextTick(() => {
-        isShowMenu.value = true
-      })
-    }
-
-    // オートセーブ
-    const autosave = debounce(
-      function () {
-        SvgsStore.updateSvgs()
-      },
-      3000,
-      { maxWait: 30000 }
-    )
-    watch(SvgsStore.allRects, () => autosave())
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
@@ -187,19 +128,50 @@ export default defineComponent({
       ViewBox.scrollEnd()
     }
 
+    // 各種イベントのemit
+    const pointerMoveHandle = (e: PointerEvent) => {
+      emit('pointerMoveHandle', e)
+    }
+    const pointerUpHandle = (e: PointerEvent) => {
+      emit('pointerUpHandle', e)
+    }
+    const pointerDownHandle = (e: PointerEvent) => {
+      emit('pointerDownHandle', e)
+    }
+    const keyDownHandle = (e: PointerEvent) => {
+      emit('keyDownHandle', e)
+    }
+    const deleteHandle = (e: PointerEvent) => {
+      emit('deleteHandle', e)
+    }
+    const contextMenuHandle = (e: PointerEvent) => {
+      emit('contextMenuHandle', e)
+    }
+    const dragEnterHandle = (e: PointerEvent) => {
+      emit('dragEnterHandle', e)
+    }
+    const dragLeaveHandle = (e: PointerEvent) => {
+      emit('dragLeaveHandle', e)
+    }
+    const linePointerDownHandle = (e: PointerEvent) => {
+      emit('linePointerDownHandle', e)
+    }
+    
+    
+
     return {
       rects,
-      dragStart,
-      dragMiddle,
-      dragStop,
-      moveRectArrowKey,
-      resizeStart,
-      resizeMiddle,
-      resizeStop,
-      deleteSvg,
-      showMenu,
-      isShowMenu,
-      position,
+
+      pointerMoveHandle,
+      pointerUpHandle,
+      pointerDownHandle,
+      keyDownHandle,
+      deleteHandle,
+      contextMenuHandle,
+      dragEnterHandle,
+      dragLeaveHandle,
+      linePointerDownHandle,
+      
       svgSheet: ViewBox.svgSheet,
       viewBoxStr: ViewBox.viewBoxStr(),
       scrollBegin,
@@ -207,9 +179,6 @@ export default defineComponent({
       scrollEnd,
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       isSpaceKeyPress,
-      attachTodoListEnter: (e: DragEvent) =>
-        TodoListAttach.attachTodoListEnter(e),
-      attachTodoListLeave: () => TodoListAttach.attachTodoListLeave(),
     }
   },
 })
