@@ -81,10 +81,12 @@
       </template>
     </svg>
 
-    <svg-context-menu
-      :is-show-menu="isShowMenu"
-      :position="position"
-    ></svg-context-menu>
+    <slot></slot>
+
+    <v-chip v-show="!$device.isDesktop" class="zoom-chip">
+      <v-icon class="mr-3" @click="zoomInOut({deltaY: 1})">mdi-magnify-plus-outline</v-icon>
+      <v-icon class="ml-3" @click="zoomInOut({deltaY: -1})">mdi-magnify-minus-outline</v-icon>
+    </v-chip>
   </v-sheet>
 </template>
 
@@ -98,12 +100,10 @@ import { SvgsStore } from '~/store'
 import ViewBox from '~/utils/helpers/svg-viewbox'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import SvgText from '~/components/protected/maps/SvgText.vue'
-import SvgContextMenu from '~/components/protected/maps/SvgContextMenu.vue'
 
 export default defineComponent({
   components: {
     SvgText,
-    SvgContextMenu,
   },
 
   setup(_, { emit }) {
@@ -156,8 +156,6 @@ export default defineComponent({
     const linePointerDownHandle = (e: PointerEvent) => {
       emit('linePointerDownHandle', e)
     }
-    
-    
 
     return {
       rects,
@@ -171,7 +169,7 @@ export default defineComponent({
       dragEnterHandle,
       dragLeaveHandle,
       linePointerDownHandle,
-      
+
       svgSheet: ViewBox.svgSheet,
       viewBoxStr: ViewBox.viewBoxStr(),
       scrollBegin,
@@ -184,36 +182,33 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-#mysvg-edit {
-  background-image: linear-gradient(90deg, transparent 19px, #333 20px),
-    linear-gradient(0deg, transparent 19px, #333 20px);
-  background-size: 20px 20px;
-  background-repeat: repeat;
-  background-color: #ddd;
-}
+<style scoped lang="sass">
+#mysvg-edit
+  background-image: linear-gradient(90deg, transparent 19px, #333 20px), linear-gradient(0deg, transparent 19px, #333 20px)
+  background-size: 20px 20px
+  background-repeat: repeat
+  background-color: #ddd
 
-.grabbable {
-  cursor: grab;
-}
-.grabbable:active {
-  cursor: grabbing;
-}
+.grabbable 
+  cursor: grab
+.grabbable:active
+  cursor: grabbing
 
-.move {
-  cursor: move;
-}
+.move
+  cursor: move
 
-.top-line,
-.bottom-line {
-  cursor: row-resize;
-  stroke-width: 15;
-  stroke: transparent;
-}
-.right-line,
-.left-line {
-  cursor: col-resize;
-  stroke-width: 15;
-  stroke: transparent;
-}
+.top-line, .bottom-line
+  cursor: row-resize
+  stroke-width: 15
+  stroke: transparent
+
+.right-line, .left-line
+  cursor: col-resize
+  stroke-width: 15
+  stroke: transparent
+
+.zoom-chip
+  position: absolute
+  bottom: 80px
+  right: 10px
 </style>

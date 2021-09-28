@@ -1,6 +1,10 @@
 <template>
   <v-row>
-    <v-col max-width="100%" rounded cols="11">
+    <v-col cols="3">
+
+    </v-col>
+
+    <v-col max-width="100%" rounded cols="9">
       <map-show></map-show>
     </v-col>
 
@@ -12,6 +16,7 @@
 import { defineComponent } from '@nuxtjs/composition-api'
 import MapShow from '~/components/protected/maps/MapShow.vue'
 import MapPage from '~/components/protected/maps/MapPage.vue'
+
 
 export default defineComponent({
   components: {

@@ -299,36 +299,20 @@ export default class Svgs extends VuexModule {
     this.sortSvgs('displayOrder')
   }
 
-  // todoリストをsvgにドラッグした際に塗りつぶす
+  // todoリストをsvgにアタッチまたはデタッチ
   @Mutation
-  public dragEnterMutaion() {
-    const targetSvg = this.svgsState.find((svg) => svg.id === this.targetId)
-    if(!targetSvg) return
-    targetSvg.fill = 'red'
-  }
-
-  // 塗りつぶしを解除する
-  @Mutation
-  public dragLeaveMutaion() {
-    const targetSvg = this.svgsState.find((svg) => svg.id === this.targetId)
-    if(!targetSvg) return
-    targetSvg.fill = 'white'
-    this.targetId = 0
-  }
-
-  // svgにtodoリスト紐付け
-  @Mutation
-  private attachTodoListMutation(todoListId: number | null) {
-    const target = this.svgsState.find(svg => svg.id === this.targetId)
-    target!.todoListId = todoListId
+  private attachTodoListMutation(svg: SvgType) {
+    const target = this.svgsState.find(s => s.id === svg.id )
+    target!.fill = svg.fill
+    target!.todoListId = svg.todoListId
   }
 
   @Action
   public async attachTodoList(todoListId: number | null) {
     if(!this.targetId) return
     await $axios.$patch(`/api/v1/svgs/${this.targetId}`, { svg: { todoListId } })
-    .then(() => { 
-      this.attachTodoListMutation(todoListId) 
+    .then((res) => { 
+      this.attachTodoListMutation(res) 
       SnackbarStore.miniSnackbarVisible('Attach Success')
     })
     .catch(() => SnackbarStore.visible({ color: 'error', message: 'todoリストの紐付けに失敗しました' }))

@@ -9,7 +9,6 @@
     <v-list>
       <v-list-item v-if="hasTodoList()"  class="pointer" @click="detachTodoList">
         todoリストを解除
-        {{targetSvg}}
       </v-list-item>
 
       <v-divider v-if="hasTodoList()" />
@@ -53,7 +52,8 @@ export default defineComponent({
     ]
 
     const hasTodoList = () => {
-      return !!SvgsStore.targetSvg?.todoListId
+      if(!SvgsStore.targetSvg) return false
+      return !!SvgsStore.targetSvg.todoListId
     }
     const detachTodoList = () => {
       SvgsStore.attachTodoList(null)

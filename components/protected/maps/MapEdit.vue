@@ -1,90 +1,26 @@
 <template>
-  <v-sheet
-    ref="svgSheet"
-    style="touch-action none;"
-    color="gray"
-    elevation="6"
-    height="75vh"
-    :class="{ move: isSpaceKeyPress }"
+  <svg-base
+    @pointerMoveHandle="
+      dragMiddle($event)
+      resizeMiddle($event)
+    "
+    @pointerUpHandle="
+      dragStop()
+      resizeStop()
+    "
+    @pointerDownHandle="dragStart($event)"
+    @keyDownHandle="moveRectArrowKey($event)"
+    @deleteHandle="deleteSvg($event)"
+    @contextMenuHandle="showMenu($event)"
+    @dragEnterHandle="attachTodoListEnter($event)"
+    @dragLeaveHandle="attachTodoListLeave()"
+    @linePointerDownHandle="resizeStart($event)"
   >
-    <svg
-      id="mysvg-edit"
-      width="100%"
-      height="100%"
-      :viewBox="viewBoxStr"
-      xmlns="http://www.w3.org/2000/svg"
-      @pointermove="
-        dragMiddle($event)
-        resizeMiddle($event)
-        scrollMiddle($event)
-      "
-      @pointerup="
-        dragStop()
-        resizeStop()
-        scrollEnd()
-      "
-      @pointerdown.left="scrollBegin($event)"
-      @wheel.prevent="zoomInOut($event)"
-    >
-      <template v-for="rect in rects">
-        <g
-          :id="'rect-' + rect.id"
-          :key="rect.id"
-          :transform="'translate(' + rect.x + ',' + rect.y + ')'"
-        >
-          <rect
-            :width="rect.width"
-            :height="rect.height"
-            :fill="rect.fill"
-            :stroke="rect.stroke"
-            tabindex="0"
-            class="grabbable"
-            @pointerdown.left="dragStart($event)"
-            @keydown="moveRectArrowKey($event)"
-            @keydown.delete="deleteSvg($event)"
-            @contextmenu.prevent="showMenu($event)"
-            @dragenter="attachTodoListEnter($event)"
-            @dragleave="attachTodoListLeave"
-          />
-          <line
-            x1="0"
-            y1="0"
-            :x2="rect.width"
-            y2="0"
-            class="top-line"
-            @pointerdown.stop="resizeStart($event)"
-          />
-          <line
-            :x1="rect.width"
-            y1="0"
-            :x2="rect.width"
-            :y2="rect.height"
-            class="right-line"
-            @pointerdown.stop="resizeStart($event)"
-          />
-          <line
-            x1="0"
-            :y1="rect.height"
-            :x2="rect.width"
-            :y2="rect.height"
-            class="bottom-line"
-            @pointerdown.stop="resizeStart($event)"
-          />
-          <line
-            x1="0"
-            y1="0"
-            x2="0"
-            :y2="rect.height"
-            class="left-line"
-            @pointerdown.stop="resizeStart($event)"
-          />
-          <svg-text :rect="rect"></svg-text>
-        </g>
-      </template>
-    </svg>
-
-    <svg-context-menu :is-show-menu="isShowMenu" :position="position"></svg-context-menu>
-  </v-sheet>
+    <svg-context-menu
+      :is-show-menu="isShowMenu"
+      :position="position"
+    ></svg-context-menu>
+  </svg-base>
 </template>
 
 <script lang="ts">
@@ -92,7 +28,6 @@ import {
   defineComponent,
   ref,
   reactive,
-  computed,
   nextTick,
   watch,
 } from '@nuxtjs/composition-api'
@@ -101,24 +36,18 @@ import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
 import Drag from '~/utils/helpers/svg-drag'
 import Resize from '~/utils/helpers/svg-resize'
-import ViewBox from '~/utils/helpers/svg-viewbox'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import TodoListAttach from '~/utils/helpers/todo-list-attach'
-import SvgText from '~/components/protected/maps/SvgText.vue'
+import SvgBase from '~/components/protected/maps/SvgBase.vue'
 import SvgContextMenu from '~/components/protected/maps/SvgContextMenu.vue'
 
 export default defineComponent({
   components: {
-    SvgText,
-    SvgContextMenu
+    SvgBase,
+    SvgContextMenu,
   },
 
   setup() {
-    const rects = computed(() => SvgsStore.activeMapRects)
-    ViewBox.mounted()
-    AddEventSpaceKey.mounted()
-    AddEventSpaceKey.unMounted()
-
     // スペースキーの押下判定
     const isSpaceKeyPress = ref(AddEventSpaceKey.isSpaceKeyPress)
 
@@ -174,21 +103,7 @@ export default defineComponent({
     )
     watch(SvgsStore.allRects, () => autosave())
 
-    // viewBox操作
-    const scrollBegin = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value) return
-      ViewBox.scrollBegin(e)
-    }
-    const scrollMiddle = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value) return
-      ViewBox.scrollMiddle(e)
-    }
-    const scrollEnd = () => {
-      ViewBox.scrollEnd()
-    }
-
     return {
-      rects,
       dragStart,
       dragMiddle,
       dragStop,
@@ -200,13 +115,6 @@ export default defineComponent({
       showMenu,
       isShowMenu,
       position,
-      svgSheet: ViewBox.svgSheet,
-      viewBoxStr: ViewBox.viewBoxStr(),
-      scrollBegin,
-      scrollMiddle,
-      scrollEnd,
-      zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
-      isSpaceKeyPress,
       attachTodoListEnter: (e: DragEvent) =>
         TodoListAttach.attachTodoListEnter(e),
       attachTodoListLeave: () => TodoListAttach.attachTodoListLeave(),
@@ -214,37 +122,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style scoped>
-#mysvg-edit {
-  background-image: linear-gradient(90deg, transparent 19px, #333 20px),
-    linear-gradient(0deg, transparent 19px, #333 20px);
-  background-size: 20px 20px;
-  background-repeat: repeat;
-  background-color: #ddd;
-}
-
-.grabbable {
-  cursor: grab;
-}
-.grabbable:active {
-  cursor: grabbing;
-}
-
-.move {
-  cursor: move;
-}
-
-.top-line,
-.bottom-line {
-  cursor: row-resize;
-  stroke-width: 15;
-  stroke: transparent;
-}
-.right-line,
-.left-line {
-  cursor: col-resize;
-  stroke-width: 15;
-  stroke: transparent;
-}
-</style>

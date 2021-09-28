@@ -4,6 +4,12 @@ let isAttaching = false
 const dragOverPreventDefault = (e: Event) => {
   e.preventDefault()
 }
+let dragEnterSvg: HTMLElement
+
+const svgReset = () => {
+  dragEnterSvg.style.fill = ""
+  SvgsStore.setTargetId(0)
+}
 
 export default {
   attachTodoListStart() {
@@ -16,14 +22,15 @@ export default {
     // @ts-ignore
     SvgsStore.setTargetId(e)
     if(!SvgsStore.targetSvg) return
-    SvgsStore.dragEnterMutaion()
+    dragEnterSvg = e.target as HTMLElement
+    dragEnterSvg.style.fill="#cccccc"
   },
 
   attachTodoListLeave() {
     if(!isAttaching) return
     if(!SvgsStore.targetSvg) return
-    SvgsStore.dragLeaveMutaion()
     window.removeEventListener('dragover', dragOverPreventDefault, false)
+    svgReset()
   },
 
   attachTodoListEnd(e: DragEvent) {
@@ -35,7 +42,7 @@ export default {
     .then(() => {
       window.removeEventListener('dragover', dragOverPreventDefault, false)
       isAttaching = false
-      SvgsStore.dragLeaveMutaion()
+      svgReset()
     })
   }
 }

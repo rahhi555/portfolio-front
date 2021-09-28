@@ -6,14 +6,16 @@
 
     <v-col max-width="100%" rounded cols="9">
       <map-edit></map-edit>
+      <map-page
+        :justify-content="
+          activeMap ? 'justify-sm-space-between' : 'justify-end'
+        "
+      >
+        <span v-if="activeMap">
+          <v-btn @click="addRect">図形追加</v-btn>
+        </span>
+      </map-page>
     </v-col>
-
-    <map-page :justify-content="activeMap ? 'justify-sm-space-between' : 'justify-end'">
-      <span v-if="activeMap">
-        <v-btn @click="addRect">add</v-btn>
-        <v-btn @click="updateSvgs">update</v-btn>
-      </span>
-    </map-page>
 
     <map-modal></map-modal>
   </v-row>
@@ -52,7 +54,7 @@ export default defineComponent({
   computed: {
     activeMap() {
       return MapsStore.activeMap
-    }
-  }
+    },
+  },
 })
 </script>
