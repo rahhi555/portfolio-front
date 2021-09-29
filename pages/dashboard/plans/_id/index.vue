@@ -1,35 +1,78 @@
 <template>
-  <v-row>
-    <v-col cols="3">
-
+  <v-row justify="center">
+    <v-col cols="12" sm="8">
+      <v-card>
+        <v-toolbar class="mb-2" color="primary" dark height="30">
+          <v-toolbar-title>進行状況</v-toolbar-title>
+        </v-toolbar>
+      
+        <v-progress-linear
+          color="light-blue"
+          height="20"
+          :value="progressHash.progressPercentage"
+          striped
+        ></v-progress-linear>
+        <v-card-text class="text-right pa-1">
+          {{ progressHash.doneTodosLength }} / {{ progressHash.allTodosLength }}
+        </v-card-text>
+      </v-card>
     </v-col>
-
-    <v-col max-width="100%" rounded cols="9">
-      <map-show></map-show>
-    </v-col>
-
-    <map-page :justify-content="'justify-end'"></map-page>
   </v-row>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import MapShow from '~/components/protected/maps/MapShow.vue'
-import MapPage from '~/components/protected/maps/MapPage.vue'
-
+import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { TodoListsStore } from '~/store'
 
 export default defineComponent({
-  components: {
-    MapShow,
-    MapPage
-  },
-
   layout: 'protected',
 
   middleware: ['initialize-store'],
 
   setup() {
-    return {}
+    const progressHash = computed(() => {
+      const todos = TodoListsStore.todoList.map((todoList) => todoList.todos)
+
+      // todoの総数
+      const allTodosLength = todos.reduce((prev, current) => {
+        return prev + current!.length
+      }, 0)
+
+      // ステータスがdoneであるtodoの総数
+      const doneTodosLength = todos.reduce((prev, current) => {
+        return (
+          prev +
+          current!.reduce((prev, current) => {
+            if (current.status === 'done') return prev + 1
+            return prev
+          }, 0)
+        )
+      }, 0)
+
+      // 進行状況を百分率で算出
+      const progressPercentage = Math.ceil(
+        (doneTodosLength / allTodosLength) * 100
+      )
+
+      const progressHash = {
+        allTodosLength,
+        doneTodosLength,
+        progressPercentage,
+      }
+
+      return progressHash
+    })
+
+    return {
+      progressHash,
+    }
   },
 })
 </script>
+
+<style scoped lang="sass">
+.v-toolbar__title
+  font-size: 1rem
+.theme--light.v-card > .v-card__text
+  color: #333
+</style>

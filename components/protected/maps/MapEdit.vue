@@ -17,8 +17,6 @@
     @linePointerDownHandle="resizeStart($event)"
   >
     <svg-context-menu
-      :is-show-menu="isShowMenu"
-      :position="position"
     ></svg-context-menu>
   </svg-base>
 </template>
@@ -27,8 +25,6 @@
 import {
   defineComponent,
   ref,
-  reactive,
-  nextTick,
   watch,
 } from '@nuxtjs/composition-api'
 import { SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
@@ -38,6 +34,7 @@ import Drag from '~/utils/helpers/svg-drag'
 import Resize from '~/utils/helpers/svg-resize'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import TodoListAttach from '~/utils/helpers/todo-list-attach'
+import ContextMenu from '~/utils/ui/svg-context-menu'
 import SvgBase from '~/components/protected/maps/SvgBase.vue'
 import SvgContextMenu from '~/components/protected/maps/SvgContextMenu.vue'
 
@@ -81,17 +78,8 @@ export default defineComponent({
     }
 
     // --- コンテキストメニュー表示 ---
-    const isShowMenu = ref(false)
-    const position = reactive({ x: 0, y: 0 })
-    const showMenu = (e: SVGRectMouseEvent) => {
-      isShowMenu.value = false
-      SvgsStore.setTargetId(e)
-      position.x = e.clientX
-      position.y = e.clientY
-      nextTick(() => {
-        isShowMenu.value = true
-      })
-    }
+    const showMenu = (e: SVGRectMouseEvent) => ContextMenu.showMenu(e)
+    const isShowMenu = ContextMenu.isShowMenu
 
     // オートセーブ
     const autosave = debounce(
@@ -113,8 +101,6 @@ export default defineComponent({
       resizeStop,
       deleteSvg,
       showMenu,
-      isShowMenu,
-      position,
       attachTodoListEnter: (e: DragEvent) =>
         TodoListAttach.attachTodoListEnter(e),
       attachTodoListLeave: () => TodoListAttach.attachTodoListLeave(),

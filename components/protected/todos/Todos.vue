@@ -2,8 +2,9 @@
   <v-data-iterator
     :items="todos"
     item-key="id"
-    style="background-color: white"
+    style="background-color: white; max-height: 75vh"
     no-data-text="　Todoがありません"
+    class="overflow-y-auto overflow-x-hidden"
   >
     <template #header>
       <v-toolbar class="mb-2" color="primary" dark dense>
@@ -12,7 +13,7 @@
         <v-spacer></v-spacer>
 
         <v-btn
-          v-show="todoListTitle !== 'Not Selected'"
+          v-show="todoListTitle !== 'Not Selected' && isEdit"
           icon
           @click="createDialog = true"
         >
@@ -26,45 +27,56 @@
     </template>
 
     <template #default="{ items }">
-      <v-row justify="center" justify-sm="start" class="pa-1">
+      <v-row justify="center" justify-sm="start">
         <v-col
           v-for="item in items"
           :key="item.name"
-          cols="9"
-          sm="6"
-          md="4"
-          lg="3"
+          :cols="cols.cols"
+          :sm="cols.sm"
+          :md="cols.md"
+          :lg="cols.lg"
         >
           <v-card>
-            <v-card-title>
-              <h4>{{ item.title }}</h4>
+            <v-list-group :value="isEdit" append-icon="" :disabled="isEdit">
+              <template #activator>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
 
-              <v-spacer />
+                <v-spacer />
 
-              <v-icon size="20" @click="deleteTodo(item)">mdi-delete</v-icon>
-            </v-card-title>
+                <v-icon v-if="isEdit" size="20" @click="deleteTodo(item)"
+                  >mdi-delete</v-icon
+                >
+                <v-icon v-else size="20" :class="{'done': item.status === 'done'}" @click.stop="toggleStatusTodo(item)"
+                  >mdi-checkbox-marked</v-icon
+                >
+              </template>
 
-            <v-divider />
+              <v-list-item
+                v-for="(value, key) in todoContents"
+                :key="key"
+                style="max-height: 30px"
+              >
+                <v-list-item-content class="text-body-2"
+                  >{{ value }}:</v-list-item-content
+                >
+                <v-list-item-content class="text-body-2 align-end">
+                  {{ item[key] }}
+                </v-list-item-content>
+              </v-list-item>
 
-            <v-list-item v-for="(value, key) in todoContents" :key="key">
-              <v-list-item-content>{{ value }}:</v-list-item-content>
-              <v-list-item-content class="align-end">
-                {{ item[key] }}
-              </v-list-item-content>
-            </v-list-item>
+              <v-divider class="mb-2" />
 
-            <v-divider class="mb-2" />
-
-            <v-row no-gutters>
-              <v-col v-for="(image, i) in item.images" :key="i" cols="3">
-                <v-img
-                  tile
-                  :src="image"
-                  height="40"
-                  @click="imageShow(item.id)"
-                />
-              </v-col>
-            </v-row>
+              <v-row no-gutters>
+                <v-col v-for="(image, i) in item.images" :key="i" cols="3">
+                  <v-img
+                    tile
+                    :src="image"
+                    height="40"
+                    @click="imageShow(item.id)"
+                  />
+                </v-col>
+              </v-row>
+            </v-list-group>
           </v-card>
         </v-col>
       </v-row>
@@ -91,14 +103,29 @@ export default defineComponent({
     TodoImageCarousel,
   },
 
+  props: {
+    cols: {
+      type: Object,
+      default: () => ({
+        cols: 9,
+        sm: 6,
+        md: 4,
+        lg: 3,
+      }),
+    },
+    isEdit: {
+      type: Boolean,
+      default: true,
+    },
+  },
+
   setup() {
     const { $axios, app } = useContext()
 
     const todoContents = {
       body: '内容',
       beginTime: '開始時刻',
-      endTime: '終了時刻',
-      status: '進行状況',
+      endTime: '終了時刻'
     }
 
     const imageDialog = ref(false)
@@ -118,13 +145,24 @@ export default defineComponent({
       TodoListsStore.deleteTodo(todo)
     }
 
+    const toggleStatusTodo = (todo: Todo) => {
+      const todoParams = { id: todo.id, status: '' }
+      if(todo.status === 'done') {
+        todoParams.status = 'doing'
+      } else {
+        todoParams.status = 'done'
+      }
+      TodoListsStore.updateTodo(todoParams)
+    }
+
     return {
       todoContents,
       imageDialog,
       selectImages,
       imageShow,
       deleteTodo,
-      createDialog
+      toggleStatusTodo,
+      createDialog,
     }
   },
 
@@ -144,3 +182,12 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped lang="sass">
+.v-card__title
+  padding: 5px 16px
+.v-list-item
+  min-height: 30px
+.done
+  color: #66BB6A
+</style>

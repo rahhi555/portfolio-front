@@ -7,11 +7,13 @@ import { SnackbarStore } from '~/utils/store-accessor'
 const MODEL = 'Todoリスト'
 
 interface TodoParams {
-  title: string
-  body: string
-  beginTime: string
-  endTime: string
-  images: File[]
+  id?: number
+  title?: string
+  body?: string
+  beginTime?: string
+  endTime?: string
+  images?: File[]
+  status?: string
 }
 
 @Module({
@@ -137,6 +139,13 @@ export default class TodoLists extends VuexModule {
     todoList?.todos?.splice(index!, 1)
   }
 
+  @Mutation
+  private updateTodoMutation(todo: Todo) {
+    const todoList = this.todoListsState[this.selectedTodoListIndexState!]
+    const index = todoList!.todos?.findIndex(t => t.id === todo.id)
+    todoList?.todos?.splice(index!, 1, todo)
+  }
+
   @Action
   public async createTodo(todo: TodoParams) {
     if(!Number.isInteger(this.selectedTodoListIndexState)) return
@@ -147,7 +156,7 @@ export default class TodoLists extends VuexModule {
       formData.append(`todo[${key}]`, todo[key])
     }
 
-    if(todo.images.length) {
+    if(todo.images && todo.images.length) {
       for(const image of todo.images) {
         formData.append('todo[images][]', image)
       } 
@@ -179,5 +188,13 @@ export default class TodoLists extends VuexModule {
       SnackbarStore.miniSnackbarVisible('Deleted Todo')
     })
     .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの削除に失敗しました'}))
+  }
+
+  @Action
+  public async updateTodo(todo: TodoParams) {
+    const { status } = todo
+    await $axios.$patch(`/api/v1/todos/${todo.id}`, { todo: { status } })
+    .then((res) => { this.updateTodoMutation(res) })
+    .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの更新に失敗しました'}))
   }
 }

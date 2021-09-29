@@ -1,7 +1,7 @@
 <template>
   <v-sheet
     ref="svgSheet"
-    style="touch-action none;"
+    style="touch-action: none"
     color="gray"
     elevation="6"
     height="75vh"
@@ -33,10 +33,10 @@
           <rect
             :width="rect.width"
             :height="rect.height"
-            :fill="rect.fill"
+            :fill="fill(rect)"
             :stroke="rect.stroke"
             tabindex="0"
-            class="grabbable"
+            :class="rectClass"
             @pointerdown.left="pointerDownHandle"
             @keydown="keyDownHandle"
             @keydown.delete="deleteHandle"
@@ -49,7 +49,7 @@
             y1="0"
             :x2="rect.width"
             y2="0"
-            class="top-line"
+            :class="{ 'top-line': isResizeActive }"
             @pointerdown.stop="linePointerDownHandle"
           />
           <line
@@ -57,7 +57,7 @@
             y1="0"
             :x2="rect.width"
             :y2="rect.height"
-            class="right-line"
+            :class="{ 'right-line': isResizeActive }"
             @pointerdown.stop="linePointerDownHandle"
           />
           <line
@@ -65,7 +65,7 @@
             :y1="rect.height"
             :x2="rect.width"
             :y2="rect.height"
-            class="bottom-line"
+            :class="{ 'bottom-line': isResizeActive }"
             @pointerdown.stop="linePointerDownHandle"
           />
           <line
@@ -73,7 +73,7 @@
             y1="0"
             x2="0"
             :y2="rect.height"
-            class="left-line"
+            :class="{ 'left-line': isResizeActive }"
             @pointerdown.stop="linePointerDownHandle"
           />
           <svg-text :rect="rect"></svg-text>
@@ -84,8 +84,12 @@
     <slot></slot>
 
     <v-chip v-show="!$device.isDesktop" class="zoom-chip">
-      <v-icon class="mr-3" @click="zoomInOut({deltaY: 1})">mdi-magnify-plus-outline</v-icon>
-      <v-icon class="ml-3" @click="zoomInOut({deltaY: -1})">mdi-magnify-minus-outline</v-icon>
+      <v-icon class="mr-3" @click="zoomInOut({ deltaY: 1 })"
+        >mdi-magnify-plus-outline</v-icon
+      >
+      <v-icon class="ml-3" @click="zoomInOut({ deltaY: -1 })"
+        >mdi-magnify-minus-outline</v-icon
+      >
     </v-chip>
   </v-sheet>
 </template>
@@ -95,8 +99,10 @@ import {
   defineComponent,
   ref,
   computed,
+  useContext,
 } from '@nuxtjs/composition-api'
-import { SvgsStore } from '~/store'
+import { Rect } from 'interface'
+import { SvgsStore, TodoListsStore } from '~/store'
 import ViewBox from '~/utils/helpers/svg-viewbox'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import SvgText from '~/components/protected/maps/SvgText.vue'
@@ -106,7 +112,20 @@ export default defineComponent({
     SvgText,
   },
 
+  props: {
+    rectClass: {
+      type: String,
+      default: 'grabbable',
+    },
+    isResizeActive: {
+      type: Boolean,
+      default: true,
+    },
+  },
+
   setup(_, { emit }) {
+    const { $device } = useContext()
+
     const rects = computed(() => SvgsStore.activeMapRects)
     ViewBox.mounted()
     AddEventSpaceKey.mounted()
@@ -117,11 +136,11 @@ export default defineComponent({
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value) return
+      if (!isSpaceKeyPress.value && $device.isDesktop ) return
       ViewBox.scrollBegin(e)
     }
     const scrollMiddle = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value) return
+      if (!isSpaceKeyPress.value && $device.isDesktop ) return
       ViewBox.scrollMiddle(e)
     }
     const scrollEnd = () => {
@@ -157,6 +176,26 @@ export default defineComponent({
       emit('linePointerDownHandle', e)
     }
 
+    const fill = (rect: Rect) => {
+      const NO_ATTACH_COLOR = 'white'
+      const TODO_COLOR = '#cccccc'
+      const DOING_COLOR = '#E6EE9C'
+      const DONE_COLOR = '#66BB6A'
+
+      const { todoListId } = rect
+      if (!todoListId) return NO_ATTACH_COLOR
+
+      const todos = TodoListsStore.todoList.find(todoList => todoList.id === todoListId)?.todos
+      if (!todos || !todos.length) return NO_ATTACH_COLOR
+      if (todos.every((todo) => todo.status === 'todo')) {
+        return TODO_COLOR
+      } else if (todos.every((todo) => todo.status === 'done')) {
+        return DONE_COLOR
+      } else {
+        return DOING_COLOR
+      }
+    }
+
     return {
       rects,
 
@@ -177,6 +216,8 @@ export default defineComponent({
       scrollEnd,
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       isSpaceKeyPress,
+
+      fill,
     }
   },
 })
@@ -189,7 +230,10 @@ export default defineComponent({
   background-repeat: repeat
   background-color: #ddd
 
-.grabbable 
+.pointer
+  cursor: pointer
+
+.grabbable
   cursor: grab
 .grabbable:active
   cursor: grabbing
@@ -197,11 +241,11 @@ export default defineComponent({
 .move
   cursor: move
 
+// top-line,bottom-line,right-line,left-lineはリサイズ処理でそのクラス名を使用するので変更しないこと
 .top-line, .bottom-line
   cursor: row-resize
   stroke-width: 15
   stroke: transparent
-
 .right-line, .left-line
   cursor: col-resize
   stroke-width: 15

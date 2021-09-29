@@ -1,17 +1,21 @@
 <template>
   <v-menu
-    :value="isShowMenu"
+    v-model="isShowMenu"
     :position-x="position.x"
     :position-y="position.y"
     absolute
     offset-y
   >
     <v-list>
-      <v-list-item v-if="hasTodoList()"  class="pointer" @click="detachTodoList">
+      <v-list-item
+        v-if="hasTodoList && isEdit"
+        class="pointer"
+        @click="detachTodoList"
+      >
         todoリストを解除
       </v-list-item>
 
-      <v-divider v-if="hasTodoList()" />
+      <v-divider v-if="hasTodoList && isEdit" />
 
       <v-list-item
         v-for="(item, i) in menuItems"
@@ -26,44 +30,46 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, ref, computed } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
+import SvgContextMenu from '~/utils/ui/svg-context-menu'
 
 export default defineComponent({
   props: {
-    isShowMenu: {
-      type: Boolean
+    isEdit: {
+      type: Boolean,
+      default: true,
     },
-    position: {
-      type: Object,
-      default: () => ({
-        x: 0,
-        y: 0
-      })
-    }
+    menuItems: {
+      type: Array,
+      default: () => [
+        { title: '最上面に移動', func: () => SvgsStore.changeOrder('top') },
+        { title: '一つ上に移動', func: () => SvgsStore.changeOrder('up') },
+        { title: '一つ下に移動', func: () => SvgsStore.changeOrder('down') },
+        { title: '最下面に移動', func: () => SvgsStore.changeOrder('bottom') },
+      ],
+    },
   },
 
-  setup(){
-    const menuItems = [
-      { title: '最上面に移動', func: () => SvgsStore.changeOrder('top') },
-      { title: '一つ上に移動', func: () => SvgsStore.changeOrder('up') },
-      { title: '一つ下に移動', func: () => SvgsStore.changeOrder('down') },
-      { title: '最下面に移動', func: () => SvgsStore.changeOrder('bottom') },
-    ]
-
-    const hasTodoList = () => {
-      if(!SvgsStore.targetSvg) return false
+  setup() {
+    // todoリストのデタッチ
+    const hasTodoList = computed(() => {
+      if (!SvgsStore.targetSvg) return false
       return !!SvgsStore.targetSvg.todoListId
-    }
+    })
     const detachTodoList = () => {
       SvgsStore.attachTodoList(null)
     }
 
-    return{
-      menuItems,
+    const isShowMenu = ref(SvgContextMenu.isShowMenu)
+    const position = SvgContextMenu.position
+
+    return {
       hasTodoList,
-      detachTodoList
+      detachTodoList,
+      isShowMenu,
+      position
     }
-  }
+  },
 })
 </script>
