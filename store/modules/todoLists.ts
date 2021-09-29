@@ -7,11 +7,13 @@ import { SnackbarStore } from '~/utils/store-accessor'
 const MODEL = 'Todoリスト'
 
 interface TodoParams {
-  title: string
-  body: string
-  beginTime: string
-  endTime: string
-  images: File[]
+  id?: number
+  title?: string
+  body?: string
+  beginTime?: string
+  endTime?: string
+  images?: File[]
+  status?: string
 }
 
 @Module({
@@ -24,19 +26,19 @@ export default class TodoLists extends VuexModule {
   private todoListsState: TodoList[] = []
 
   // 選択中のTodoリストのindex
-  private selectedTodoListState: null | number = null
+  private selectedTodoListIndexState: null | number = null
 
   public get todoList(): TodoList[] {
     return this.todoListsState
   }
 
-  public get selectedTodoList(): number | null {
-    return this.selectedTodoListState
+  public get selectedTodoListIndex(): number | null {
+    return this.selectedTodoListIndexState
   }
 
   @Mutation
-  public setSelectedTodoList(index: number | null) {
-    this.selectedTodoListState = index
+  public setSelectedTodoListIndex(index: number | null) {
+    this.selectedTodoListIndexState = index
   }
 
   @Mutation
@@ -104,7 +106,7 @@ export default class TodoLists extends VuexModule {
     await $axios
       .$delete(`/api/v1/todo_lists/${id}`)
       .then(() => {
-        this.setSelectedTodoList(null)
+        this.setSelectedTodoListIndex(null)
         this.deleteTodoListsMutation(id)
         SnackbarStore.miniSnackbarVisible('Delete Success')
       })
@@ -119,14 +121,14 @@ export default class TodoLists extends VuexModule {
   // ----------- Todoの操作 ---------------
   // 選択中のtodos
   public get selectedTodos() {
-    const index = this.selectedTodoListState
+    const index = this.selectedTodoListIndexState
     if (!Number.isInteger(index)) return
     return this.todoListsState[index!].todos
   }
 
   @Mutation
   private addTodoMutation(todo: Todo) {
-    const target = this.todoListsState[this.selectedTodoListState!]
+    const target = this.todoListsState[this.selectedTodoListIndexState!]
     target?.todos?.push(todo)
   }
 
@@ -137,9 +139,16 @@ export default class TodoLists extends VuexModule {
     todoList?.todos?.splice(index!, 1)
   }
 
+  @Mutation
+  private updateTodoMutation(todo: Todo) {
+    const todoList = this.todoListsState[this.selectedTodoListIndexState!]
+    const index = todoList!.todos?.findIndex(t => t.id === todo.id)
+    todoList?.todos?.splice(index!, 1, todo)
+  }
+
   @Action
   public async createTodo(todo: TodoParams) {
-    if(!Number.isInteger(this.selectedTodoListState)) return
+    if(!Number.isInteger(this.selectedTodoListIndexState)) return
 
     const formData = new FormData()
     for (const key in todo) {
@@ -147,13 +156,13 @@ export default class TodoLists extends VuexModule {
       formData.append(`todo[${key}]`, todo[key])
     }
 
-    if(todo.images.length) {
+    if(todo.images && todo.images.length) {
       for(const image of todo.images) {
         formData.append('todo[images][]', image)
       } 
     }
 
-    const todoListId = this.todoListsState[this.selectedTodoListState!].id
+    const todoListId = this.todoListsState[this.selectedTodoListIndexState!].id
 
     await $axios
       .$post(`/api/v1/todo_lists/${todoListId}/todos`, formData, {
@@ -179,5 +188,31 @@ export default class TodoLists extends VuexModule {
       SnackbarStore.miniSnackbarVisible('Deleted Todo')
     })
     .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの削除に失敗しました'}))
+  }
+
+  @Action
+  public async updateTodo(todo: TodoParams) {
+    const { status } = todo
+    await $axios.$patch(`/api/v1/todos/${todo.id}`, { todo: { status } })
+    .then((res) => { this.updateTodoMutation(res) })
+    .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの更新に失敗しました'}))
+  }
+
+  // planのacitveをtrueにした際、statusを全てdoingにする
+  @Mutation
+  public doingTodos() {
+    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
+    for(const todo of todos) {
+      todo!.status = 'doing'
+    }
+  }
+
+  // planのacitveをfalseにした際、statusを全てtodoにする
+  @Mutation
+  public resetTodos() {
+    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
+    for(const todo of todos) {
+      todo!.status = 'todo'
+    }
   }
 }

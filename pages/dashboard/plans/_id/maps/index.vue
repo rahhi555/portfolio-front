@@ -1,15 +1,25 @@
 <template>
   <v-row>
-    <v-col max-width="100%" rounded cols="12">
-      <map-edit></map-edit>
-    </v-col>
+    <template v-if="$device.isDesktop">
+      <v-col cols="3">
+        <map-edit-side-bar></map-edit-side-bar>
+      </v-col>
 
-    <map-page :justify-content="activeMap ? 'justify-sm-space-between' : 'justify-end'">
-      <span v-if="activeMap">
-        <v-btn @click="addRect">add</v-btn>
-        <v-btn @click="updateSvgs">update</v-btn>
-      </span>
-    </map-page>
+      <v-col max-width="100%" rounded cols="9">
+        <map-edit></map-edit>
+        <map-page
+          :justify-content="
+            activeMap ? 'justify-sm-space-between' : 'justify-end'
+          "
+        >
+          <span v-if="activeMap">
+            <v-btn @click="addRect">図形追加</v-btn>
+          </span>
+        </map-page>
+      </v-col>
+    </template>
+
+    <div class="ma-2" v-else style="color: white;">スマートフォンでのマップ編集は現在対応していません</div>
 
     <map-modal></map-modal>
   </v-row>
@@ -21,6 +31,7 @@ import { SvgsStore, MapsStore } from '~/store'
 import MapEdit from '~/components/protected/maps/MapEdit.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
 import MapPage from '~/components/protected/maps/MapPage.vue'
+import MapEditSideBar from '~/components/protected/maps/MapEditSideBar.vue'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -28,6 +39,7 @@ export default defineComponent({
     MapEdit,
     MapModal,
     MapPage,
+    MapEditSideBar,
   },
 
   layout: 'protected',
@@ -46,7 +58,7 @@ export default defineComponent({
   computed: {
     activeMap() {
       return MapsStore.activeMap
-    }
-  }
+    },
+  },
 })
 </script>

@@ -1,76 +1,53 @@
 <template>
-  <v-sheet color="gray" elevation="6" height="70vh">
-    <svg
-      id="mysvg-show"
-      width="100%"
-      height="100%"
-      :viewBox="viewBoxStr"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <template v-for="rect in rects">
-        <g
-          :id="'rect-' + rect.id"
-          :key="rect.id"
-          :transform="'translate(' + rect.x + ',' + rect.y + ')'"
-        >
-          <rect
-            :width="rect.width"
-            :height="rect.height"
-            :fill="rect.fill"
-            :stroke="rect.stroke"
-            tabindex="0"
-          />
-          <line x1="0" y1="0" :x2="rect.width" y2="0" />
-          <line :x1="rect.width" y1="0" :x2="rect.width" :y2="rect.height" />
-          <line x1="0" :y1="rect.height" :x2="rect.width" :y2="rect.height" />
-          <line x1="0" y1="0" x2="0" :y2="rect.height" />
-        </g>
-      </template>
-    </svg>
-  </v-sheet>
+  <svg-base
+    :rect-class="'pointer'"
+    :is-resize-active="false"
+    @contextMenuHandle="showMenu"
+    @pointerDownHandle="selectSvg"
+  >
+    <svg-context-menu
+      :is-edit="false"
+      :menu-items="menuItems"
+    ></svg-context-menu>
+  </svg-base>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  computed,
-  reactive,
-  ref,
-} from '@nuxtjs/composition-api'
-import { SvgsStore } from '~/store'
+import { defineComponent } from '@nuxtjs/composition-api'
+import { SVGRectMouseEvent } from 'interface'
+import SvgBase from '~/components/protected/maps/SvgBase.vue'
+import SvgContextMenu from '~/components/protected/maps/SvgContextMenu.vue'
+import { SvgsStore, TodoListsStore } from '~/store'
+import ContextMenu from '~/utils/ui/svg-context-menu'
 
 export default defineComponent({
+  components: {
+    SvgBase,
+    SvgContextMenu,
+  },
+
   setup() {
-    const rects = computed(() => SvgsStore.activeMapRects)
+    const menuItems = [
+      { title: 'test', func: () => console.log('test') }
+    ]
 
-    const viewBox = reactive({
-      minX: 140,
-      minY: 0,
-      width: 870,
-      height: 530,
-    })
-    const viewBoxStr = computed(() => {
-      return `${viewBox.minX} ${viewBox.minY} ${viewBox.width} ${viewBox.height}`
-    })
-
-    const scale = ref(1)
-
-    const zoomIn = () => {
-      scale.value += 0.1
+    const selectSvg = (e: SVGRectMouseEvent) => {
+      SvgsStore.setTargetId(e)
+      const targetRect = SvgsStore.targetSvg
+      if(!targetRect) return
+      const todoListIndex = TodoListsStore.todoList.findIndex(todoList => todoList.id === targetRect.todoListId) 
+      if(todoListIndex === -1) {
+        TodoListsStore.setSelectedTodoListIndex(null)
+        return
+      }
+      TodoListsStore.setSelectedTodoListIndex(todoListIndex)
     }
 
-    const zoomOut = () => {
-      scale.value -= 0.1
-    }
     return {
-      rects,
-      scale,
-      zoomIn,
-      zoomOut,
-      viewBoxStr,
+      showMenu: (e: SVGRectMouseEvent) => ContextMenu.showMenu(e),
+      menuItems,
+      selectSvg
     }
   },
 })
 </script>
-
-<style scope></style>

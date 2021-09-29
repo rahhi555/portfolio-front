@@ -298,4 +298,23 @@ export default class Svgs extends VuexModule {
     }
     this.sortSvgs('displayOrder')
   }
+
+  // todoリストをsvgにアタッチまたはデタッチ
+  @Mutation
+  private attachTodoListMutation(svg: SvgType) {
+    const target = this.svgsState.find(s => s.id === svg.id )
+    target!.fill = svg.fill
+    target!.todoListId = svg.todoListId
+  }
+
+  @Action
+  public async attachTodoList(todoListId: number | null) {
+    if(!this.targetId) return
+    await $axios.$patch(`/api/v1/svgs/${this.targetId}`, { svg: { todoListId } })
+    .then((res) => { 
+      this.attachTodoListMutation(res) 
+      SnackbarStore.miniSnackbarVisible('Attach Success')
+    })
+    .catch(() => SnackbarStore.visible({ color: 'error', message: 'todoリストの紐付けに失敗しました' }))
+  }
 }

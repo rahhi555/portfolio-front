@@ -196,8 +196,8 @@ export default defineComponent({
       context.emit('closeDialogHandle')
     }
 
-    const createTodo = () => {
-      TodoListsStore.createTodo(todoParams)
+    const createTodo = async () => {
+      await TodoListsStore.createTodo(todoParams)
       for (const key in todoParams) {
         if (key === 'images') {
           todoParams[key] = []
@@ -205,6 +205,7 @@ export default defineComponent({
         }
         todoParams[key] = ''
       }
+      dialogClose()
     }
 
     return {

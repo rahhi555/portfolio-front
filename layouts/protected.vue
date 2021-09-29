@@ -22,7 +22,7 @@
       <app-bar />
 
       <v-main>
-        <v-container my-5>
+        <v-container my-5 fluid :px-8="$vuetify.breakpoint.smAndUp">
           <Nuxt />
         </v-container>
       </v-main>

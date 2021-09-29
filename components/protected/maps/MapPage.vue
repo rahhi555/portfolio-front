@@ -1,5 +1,5 @@
 <template>
-  <v-col class="py-0">
+  <v-col class="py-1">
     <div :class="'text-center d-flex align-center map-page ' + justifyContent">
       <slot />
 
@@ -26,8 +26,8 @@ export default defineComponent({
   props: {
     justifyContent: {
       type: String,
-      default: 'justify-start'
-    }
+      default: 'justify-start',
+    },
   },
 
   computed: {

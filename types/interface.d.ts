@@ -1,6 +1,7 @@
 declare module 'interface' {
   interface SvgBase {
     id: number
+    todoListId: number | null
     mapId: number
     type: string
     x: number
@@ -58,6 +59,7 @@ declare module 'interface' {
     members: Member[]
     author: string
     published: boolean
+    active: boolean
     createdAt: string
     updatedAt: string
   }
