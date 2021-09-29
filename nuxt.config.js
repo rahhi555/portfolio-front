@@ -44,7 +44,15 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/dayjs'
   ],
+
+  dayjs: {
+    locales: ['ja'],
+    defaultLocale: 'ja',
+    defaultTimeZone: 'Asia/Tokyo',
+    plugins: ['utc', 'timezone'],
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
@@ -55,7 +63,8 @@ export default {
     axios: {
       serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost/server',
       browserBaseURL: process.env.BROWSER_BASE_URL || 'http://localhost:3000',
-    }
+    },
+    
   },
 
   privateRuntimeConfig: {

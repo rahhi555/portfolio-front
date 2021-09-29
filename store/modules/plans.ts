@@ -29,7 +29,7 @@ export default class Plans extends VuexModule {
   }
 
   @Mutation
-  private setCurrentPlanMutation(plan: Plan) {
+  public setCurrentPlanMutation(plan: Plan) {
     this.currentPlanState = plan
   }
 

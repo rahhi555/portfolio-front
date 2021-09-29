@@ -31,6 +31,7 @@
       "@types/node",
       "@nuxtjs/vuetify",
       "@nuxtjs/device",
+      "@nuxtjs/dayjs"
     ]
   },
   "exclude": [

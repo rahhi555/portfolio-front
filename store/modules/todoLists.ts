@@ -197,4 +197,22 @@ export default class TodoLists extends VuexModule {
     .then((res) => { this.updateTodoMutation(res) })
     .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの更新に失敗しました'}))
   }
+
+  // planのacitveをtrueにした際、statusを全てdoingにする
+  @Mutation
+  public doingTodos() {
+    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
+    for(const todo of todos) {
+      todo!.status = 'doing'
+    }
+  }
+
+  // planのacitveをfalseにした際、statusを全てtodoにする
+  @Mutation
+  public resetTodos() {
+    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
+    for(const todo of todos) {
+      todo!.status = 'todo'
+    }
+  }
 }

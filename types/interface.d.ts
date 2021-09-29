@@ -59,6 +59,7 @@ declare module 'interface' {
     members: Member[]
     author: string
     published: boolean
+    active: boolean
     createdAt: string
     updatedAt: string
   }

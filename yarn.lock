@@ -1867,6 +1867,14 @@
     ufo "^0.7.7"
     upath "^2.0.1"
 
+"@nuxtjs/dayjs@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/dayjs/-/dayjs-1.4.0.tgz#e11347bfa4f267deb9b9a6fb33bf918b32abfd00"
+  integrity sha512-rP/BcUBI0ASh57QolZj7l3Wa58xSHCPXrvaFw62Apha1ATTc7pGnnV6USiZcZh9MoF+lRx5xkGyAMKmjHWuwqg==
+  dependencies:
+    consola "^2.3.2"
+    dayjs "^1.10.4"
+
 "@nuxtjs/device@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@nuxtjs/device/-/device-2.1.0.tgz#552c668b2d82dc982d18429845777c19d48d87d6"
@@ -4199,7 +4207,7 @@ connect@^3.7.0:
     parseurl "~1.3.3"
     utils-merge "1.0.1"
 
-consola@^2.10.0, consola@^2.15.0, consola@^2.15.3, consola@^2.6.0, consola@^2.9.0:
+consola@^2.10.0, consola@^2.15.0, consola@^2.15.3, consola@^2.3.2, consola@^2.6.0, consola@^2.9.0:
   version "2.15.3"
   resolved "https://registry.yarnpkg.com/consola/-/consola-2.15.3.tgz#2e11f98d6a4be71ff72e0bdf07bd23e12cb61550"
   integrity sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==
