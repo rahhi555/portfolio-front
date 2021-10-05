@@ -104,7 +104,7 @@ export default defineComponent({
         })
         .then((res) => {
           PlansStore.setCurrentPlanMutation(res)
-          TodoListsStore.doingTodos()
+          TodoListsStore.doingTodos(true)
           SnackbarStore.visible({
             color: 'success',
             message: '計画を開始しました。頑張りましょう！',
@@ -128,7 +128,7 @@ export default defineComponent({
         })
         .then((res) => {
           PlansStore.setCurrentPlanMutation(res)
-          TodoListsStore.resetTodos()
+          TodoListsStore.resetTodos(true)
           SnackbarStore.visible({
             color: 'success',
             message: '計画を終了しました。お疲れさまでした。',

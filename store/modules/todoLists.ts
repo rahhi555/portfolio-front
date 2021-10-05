@@ -16,6 +16,11 @@ interface TodoParams {
   status?: string
 }
 
+export interface ToggleStatusParams {
+  id: number
+  status: 'doing' | 'done'
+}
+
 @Module({
   name: 'modules/todoLists',
   stateFactory: true,
@@ -134,32 +139,34 @@ export default class TodoLists extends VuexModule {
 
   @Mutation
   private deleteTodoMutation(todo: Todo) {
-    const todoList = this.todoListsState.find(todoList => todoList.id === todo.todoListId)
-    const index = todoList!.todos?.findIndex(t => t.id === todo.id)
+    const todoList = this.todoListsState.find(
+      (todoList) => todoList.id === todo.todoListId
+    )
+    const index = todoList!.todos?.findIndex((t) => t.id === todo.id)
     todoList?.todos?.splice(index!, 1)
   }
 
   @Mutation
-  private updateTodoMutation(todo: Todo) {
-    const todoList = this.todoListsState[this.selectedTodoListIndexState!]
-    const index = todoList!.todos?.findIndex(t => t.id === todo.id)
-    todoList?.todos?.splice(index!, 1, todo)
+  public toggleTodoStatusMutation({ id, status }: ToggleStatusParams) {    
+    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
+    const todo = todos.find(todo => todo?.id === id)
+    todo!.status = status
   }
 
   @Action
   public async createTodo(todo: TodoParams) {
-    if(!Number.isInteger(this.selectedTodoListIndexState)) return
+    if (!Number.isInteger(this.selectedTodoListIndexState)) return
 
     const formData = new FormData()
     for (const key in todo) {
-      if(key === 'images') continue
+      if (key === 'images') continue
       formData.append(`todo[${key}]`, todo[key])
     }
 
-    if(todo.images && todo.images.length) {
-      for(const image of todo.images) {
+    if (todo.images && todo.images.length) {
+      for (const image of todo.images) {
         formData.append('todo[images][]', image)
-      } 
+      }
     }
 
     const todoListId = this.todoListsState[this.selectedTodoListIndexState!].id
@@ -182,37 +189,60 @@ export default class TodoLists extends VuexModule {
 
   @Action
   public async deleteTodo(todo: Todo) {
-    await $axios.$delete(`/api/v1/todos/${todo.id}`)
-    .then(() => {
-      this.deleteTodoMutation(todo)
-      SnackbarStore.miniSnackbarVisible('Deleted Todo')
-    })
-    .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの削除に失敗しました'}))
+    await $axios
+      .$delete(`/api/v1/todos/${todo.id}`)
+      .then(() => {
+        this.deleteTodoMutation(todo)
+        SnackbarStore.miniSnackbarVisible('Deleted Todo')
+      })
+      .catch(() =>
+        SnackbarStore.visible({
+          color: 'error',
+          message: 'Todoの削除に失敗しました',
+        })
+      )
   }
 
   @Action
-  public async updateTodo(todo: TodoParams) {
-    const { status } = todo
-    await $axios.$patch(`/api/v1/todos/${todo.id}`, { todo: { status } })
-    .then((res) => { this.updateTodoMutation(res) })
-    .catch(() => SnackbarStore.visible({color: 'error', message: 'Todoの更新に失敗しました'}))
+  public async toggleTodoStatus({ id, status }: ToggleStatusParams) {
+    await $axios
+      .$patch(`/api/v1/todos/${id}`, { todo: { status } })
+      .then(() => {
+        window.$nuxt.context.$planChannel[0].toggleTodoStatus({ id, status })
+      })
+      .catch(() =>
+        SnackbarStore.visible({
+          color: 'error',
+          message: 'ステータスの更新に失敗しました',
+        })
+      )
   }
 
   // planのacitveをtrueにした際、statusを全てdoingにする
   @Mutation
-  public doingTodos() {
-    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
-    for(const todo of todos) {
-      todo!.status = 'doing'
+  public doingTodos(isExecutor = false) {
+    if(isExecutor) {
+      window.$nuxt.context.$planChannel[0].beginPlan()
+    } else {
+      PlansStore.beginPlan()
+      const todos = this.todoListsState.flatMap((todoList) => todoList.todos)
+      for (const todo of todos) {
+        todo!.status = 'doing'
+      }
     }
   }
 
   // planのacitveをfalseにした際、statusを全てtodoにする
   @Mutation
-  public resetTodos() {
-    const todos = this.todoListsState.flatMap(todoList => todoList.todos)
-    for(const todo of todos) {
-      todo!.status = 'todo'
+  public resetTodos(isExecutor = false) {
+    if(isExecutor) {
+      window.$nuxt.context.$planChannel[0].endPlan()
+    } else {
+      PlansStore.endPlan()
+      const todos = this.todoListsState.flatMap((todoList) => todoList.todos)
+      for (const todo of todos) {
+        todo!.status = 'todo'
+      }
     }
   }
 }

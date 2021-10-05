@@ -46,7 +46,7 @@
                 <v-icon v-if="isEdit" size="20" @click="deleteTodo(item)"
                   >mdi-delete</v-icon
                 >
-                <v-icon v-else size="20" :class="{'done': item.status === 'done'}" @click.stop="toggleStatusTodo(item)"
+                <v-icon v-if="isPlanActive" size="20" :class="{'done': item.status === 'done'}" @click.stop="toggleStatusTodo(item)"
                   >mdi-checkbox-marked</v-icon
                 >
               </template>
@@ -93,7 +93,8 @@
 <script lang="ts">
 import { defineComponent, ref, useContext } from '@nuxtjs/composition-api'
 import { Todo } from 'interface'
-import { TodoListsStore } from '~/store'
+import { PlansStore, TodoListsStore } from '~/store'
+import { ToggleStatusParams } from '~/store/modules/todoLists'
 import TodoCreateModal from '~/components/protected/todos/TodoCreateModal.vue'
 import TodoImageCarousel from '~/components/protected/todos/TodoImageCarousel.vue'
 
@@ -152,7 +153,7 @@ export default defineComponent({
       } else {
         todoParams.status = 'done'
       }
-      TodoListsStore.updateTodo(todoParams)
+      TodoListsStore.toggleTodoStatus(todoParams as ToggleStatusParams)
     }
 
     return {
@@ -179,6 +180,9 @@ export default defineComponent({
     todos() {
       return TodoListsStore.selectedTodos
     },
+    isPlanActive() {
+      return PlansStore.currentPlan?.active
+    }
   },
 })
 </script>
