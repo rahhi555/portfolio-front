@@ -23,6 +23,7 @@ export default {
     '~/plugins/axios.ts',
     '~/plugins/vee-validate.js',
     '~/plugins/auth.client.ts',
+    '~/plugins/actioncable.client.ts'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -64,7 +65,7 @@ export default {
       serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost/server',
       browserBaseURL: process.env.BROWSER_BASE_URL || 'http://localhost:3000',
     },
-    
+    actioncable: process.env.ACTION_CABLE_URL || 'ws://localhost:3000/cable'
   },
 
   privateRuntimeConfig: {

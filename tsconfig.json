@@ -31,7 +31,8 @@
       "@types/node",
       "@nuxtjs/vuetify",
       "@nuxtjs/device",
-      "@nuxtjs/dayjs"
+      "@nuxtjs/dayjs",
+      "@types/actioncable"
     ]
   },
   "exclude": [

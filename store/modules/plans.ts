@@ -90,4 +90,17 @@ export default class Plans extends VuexModule {
       .catch(() => SnackbarStore.catchError())
       .finally(() => SnackbarStore.CRUDvisible({model: MODEL, crud: 'delete'})) 
   }
+
+  @Mutation
+  public beginPlan() {
+    if(!this.currentPlanState) return
+    this.currentPlanState.active = true
+  }
+
+  @Mutation
+  public endPlan() {
+    if(!this.currentPlanState) return
+    this.currentPlanState.active = false
+  }
+
 }

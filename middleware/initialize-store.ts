@@ -14,6 +14,7 @@ const initializeStore = async (planId: string): Promise<void> => {
 
 export default defineNuxtMiddleware(async ({route, app}) => {
   const planId = route.params.id
+
   if(Number.parseInt(planId) === PlansStore.currentPlan?.id) return
   app.loading = true
   await initializeStore(planId)

@@ -44,6 +44,10 @@
         {
           "valueFrom": "/front/serverMiddlewareUrl",
           "name": "SERVER_MIDDLEWARE_URL"
+        },
+        {
+          "valueFrom": "/front/actionCableUrl",
+          "name": "ACTION_CABLE_URL"
         }
       ],
       "dockerSecurityOptions": null,
