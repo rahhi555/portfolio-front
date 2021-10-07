@@ -2,6 +2,9 @@ import { computed, ref, onMounted } from '@nuxtjs/composition-api'
 
 // svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
 const svgSheet = ref<Vue | null>(null)
+// 初期状態のwidth及びheight
+let defaultWidth: number
+let defaultHeight: number
 const minX = ref(0)
 const minY = ref(0)
 const width = ref(0)
@@ -32,11 +35,23 @@ const zoom = (scale: number) => {
 export default {
   svgSheet,
 
+  minX,
+
+  minY,
+
   mounted() {
     onMounted(() => {
-      width.value = svgSheet.value!.$el.clientWidth
-      height.value = svgSheet.value!.$el.clientHeight
+      width.value = defaultWidth = svgSheet.value!.$el.clientWidth
+      height.value = defaultHeight = svgSheet.value!.$el.clientHeight
     })
+  },
+
+  zoomParcentWidth() {
+    return defaultWidth / width.value 
+  },
+
+  zoomParcentHeight() {
+    return defaultHeight / height.value 
   },
 
   viewBoxStr() {

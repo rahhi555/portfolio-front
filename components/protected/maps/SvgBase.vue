@@ -217,7 +217,7 @@ export default defineComponent({
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       isSpaceKeyPress,
 
-      fill,
+      fill
     }
   },
 })

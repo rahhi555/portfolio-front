@@ -13,13 +13,36 @@
           "
         >
           <span v-if="activeMap">
-            <v-btn @click="addRect">図形追加</v-btn>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-icon large dark v-bind="attrs" @click="addRect" v-on="on"
+                  >mdi-rectangle-outline</v-icon
+                >
+              </template>
+              <span>四角形</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-icon large dark v-bind="attrs" v-on="on">mdi-map-marker</v-icon>
+              </template>
+              <span>ピン</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-icon large dark v-bind="attrs" v-on="on">mdi-marker</v-icon>
+              </template>
+              <span>マーカー</span>
+            </v-tooltip>
           </span>
         </map-page>
       </v-col>
     </template>
 
-    <div class="ma-2" v-else style="color: white;">スマートフォンでのマップ編集は現在対応していません</div>
+    <div class="ma-2" v-else style="color: white">
+      スマートフォンでのマップ編集は現在対応していません
+    </div>
 
     <map-modal></map-modal>
   </v-row>
@@ -51,7 +74,6 @@ export default defineComponent({
 
     return {
       addRect: () => SvgsStore.addRect(),
-      updateSvgs: () => SvgsStore.updateSvgs(),
     }
   },
 
