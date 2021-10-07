@@ -88,4 +88,11 @@ export default {
       zoom(SCALE)
     }
   },
+
+  reset() {
+    minX.value = 0
+    minY.value = 0
+    width.value = defaultWidth
+    height.value = defaultHeight
+  }
 }

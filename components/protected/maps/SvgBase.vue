@@ -91,6 +91,13 @@
         >mdi-magnify-minus-outline</v-icon
       >
     </v-chip>
+
+    <v-tooltip top>
+      <template #activator="{ on, attrs }">
+        <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on">mdi-magnify-remove-outline</v-icon>
+      </template>
+      <span>表示リセット</span>
+    </v-tooltip>
   </v-sheet>
 </template>
 
@@ -216,6 +223,7 @@ export default defineComponent({
       scrollEnd,
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       isSpaceKeyPress,
+      reset: () => ViewBox.reset(),
 
       fill
     }
@@ -254,5 +262,5 @@ export default defineComponent({
 .zoom-chip
   position: absolute
   bottom: 80px
-  right: 10px
+  right: 30px
 </style>
