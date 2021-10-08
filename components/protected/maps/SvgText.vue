@@ -13,23 +13,26 @@
         type="text"
         @blur="isEditSvgName = false"
         @keydown.enter="updateSvgName"
-        @keydown="test"
       />
     </div>
   </foreignObject>
 
-  <text v-else text-anchor="middle" @dblclick="editSvgName">
+  <text v-else :class="{'tooltip-visible': isEditPage}" text-anchor="middle" @dblclick="editSvgName">
     <tspan :x="textX" :y="textY" font-weight="bold">{{ rect.name }}</tspan>
     <tspan :x="textX" :y="textY + 20" font-style="italic" stroke="gray">{{
       todoListTitle
     }}</tspan>
-  </text>    
+
+    <tspan class="text-tooltip" :x="textX" :y="textY - 20" font-weight="lighter" font-size="small">
+      ダブルクリックで名前変更
+    </tspan>
+  </text>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick } from '@nuxtjs/composition-api'
+import { defineComponent, ref, nextTick, useRoute } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
-import { SvgsStore, TodoListsStore } from '~/store'
+import { SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
 
 export default defineComponent({
   props: {
@@ -44,6 +47,7 @@ export default defineComponent({
 
     const isEditSvgName = ref(false)
     const editSvgName = () => {
+      if(!isEditPage) return
       isEditSvgName.value = true
       nextTick(() => {
         document.getElementById(`edit-svg-form-${rect.id}`)?.focus()
@@ -53,15 +57,23 @@ export default defineComponent({
     const updateSvgName = (e: KeyboardEvent) => {
       const target = e.target as HTMLInputElement
       const name = target.value
+      if(!/^\S+/.test(name)) {
+        SnackbarStore.visible({ color: 'warning', message: '先頭の文字に空白を入力することはできません' })
+        target.value = rect.name
+        return
+      }
       SvgsStore.changeSvg({status: 'name', value: name, otherTargetId: rect.id})
       isEditSvgName.value = false
     }
+
+    const route = useRoute()
+    const isEditPage = route.value.name?.endsWith('edit')
 
     return {
       isEditSvgName,
       editSvgName,
       updateSvgName,
-      test: (e) => console.log(e.target.value)
+      isEditPage
     }
   },
 
@@ -84,3 +96,11 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped lang="sass">
+.text-tooltip
+  display: none
+
+.tooltip-visible:hover .text-tooltip
+  display: block
+</style>

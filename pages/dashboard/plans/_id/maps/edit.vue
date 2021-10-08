@@ -40,7 +40,7 @@
       </v-col>
     </template>
 
-    <div class="ma-2" v-else style="color: white">
+    <div v-else class="ma-2" style="color: white">
       スマートフォンでのマップ編集は現在対応していません
     </div>
 

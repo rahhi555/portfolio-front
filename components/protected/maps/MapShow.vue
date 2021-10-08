@@ -6,7 +6,6 @@
     @pointerDownHandle="selectSvg"
   >
     <svg-context-menu
-      :is-edit="false"
       :menu-items="menuItems"
     ></svg-context-menu>
   </svg-base>

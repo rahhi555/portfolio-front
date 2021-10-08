@@ -8,14 +8,14 @@
   >
     <v-list>
       <v-list-item
-        v-if="hasTodoList && isEdit"
+        v-if="hasTodoList && isEditPage"
         class="pointer"
         @click="detachTodoList"
       >
         todoリストを解除
       </v-list-item>
 
-      <v-divider v-if="hasTodoList && isEdit" />
+      <v-divider v-if="hasTodoList && isEditPage" />
 
       <v-list-item
         v-for="(item, i) in menuItems"
@@ -30,16 +30,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from '@nuxtjs/composition-api'
+import { defineComponent, ref, computed, useRoute } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
 import SvgContextMenu from '~/utils/ui/svg-context-menu'
 
 export default defineComponent({
   props: {
-    isEdit: {
-      type: Boolean,
-      default: true,
-    },
     menuItems: {
       type: Array,
       default: () => [
@@ -64,11 +60,15 @@ export default defineComponent({
     const isShowMenu = ref(SvgContextMenu.isShowMenu)
     const position = SvgContextMenu.position
 
+    const route = useRoute()
+    const isEditPage = route.value.name?.endsWith('edit')
+
     return {
       hasTodoList,
       detachTodoList,
       isShowMenu,
-      position
+      position,
+      isEditPage
     }
   },
 })

@@ -3,7 +3,6 @@ import { onMounted, onUnmounted, ref } from '@nuxtjs/composition-api'
 const isSpaceKeyPress = ref(false)
 
 const spaceKeyPress = (e: KeyboardEvent) => {
-  e.preventDefault()
   if (e.code === 'Space') {
     isSpaceKeyPress.value = true
   }
