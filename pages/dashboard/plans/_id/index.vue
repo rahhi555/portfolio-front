@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, SnackbarStore, TodoListsStore } from '~/store'
+import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
 import Calendar from '~/components/protected/maps/Calendar.vue'
 
 export default defineComponent({
@@ -148,6 +148,12 @@ export default defineComponent({
       beginPlan,
       endPlan,
     }
+  },
+
+  computed: {
+    svg() {
+      return SvgsStore.allRects[0].name
+    },
   },
 })
 </script>

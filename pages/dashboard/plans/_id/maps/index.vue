@@ -13,7 +13,7 @@
           "
         >
           <span v-if="activeMap">
-            <v-tooltip bottom>
+            <v-tooltip top>
               <template #activator="{ on, attrs }">
                 <v-icon large dark v-bind="attrs" @click="addRect" v-on="on"
                   >mdi-rectangle-outline</v-icon
@@ -22,14 +22,14 @@
               <span>四角形</span>
             </v-tooltip>
 
-            <v-tooltip bottom>
+            <v-tooltip top>
               <template #activator="{ on, attrs }">
                 <v-icon large dark v-bind="attrs" v-on="on">mdi-map-marker</v-icon>
               </template>
               <span>ピン</span>
             </v-tooltip>
 
-            <v-tooltip bottom>
+            <v-tooltip top>
               <template #activator="{ on, attrs }">
                 <v-icon large dark v-bind="attrs" v-on="on">mdi-marker</v-icon>
               </template>

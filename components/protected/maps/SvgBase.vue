@@ -94,7 +94,9 @@
 
     <v-tooltip top>
       <template #activator="{ on, attrs }">
-        <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on">mdi-magnify-remove-outline</v-icon>
+        <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on"
+          >mdi-magnify-remove-outline</v-icon
+        >
       </template>
       <span>表示リセット</span>
     </v-tooltip>
@@ -143,11 +145,11 @@ export default defineComponent({
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value && $device.isDesktop ) return
+      if (!isSpaceKeyPress.value && $device.isDesktop) return
       ViewBox.scrollBegin(e)
     }
     const scrollMiddle = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value && $device.isDesktop ) return
+      if (!isSpaceKeyPress.value && $device.isDesktop) return
       ViewBox.scrollMiddle(e)
     }
     const scrollEnd = () => {
@@ -192,7 +194,9 @@ export default defineComponent({
       const { todoListId } = rect
       if (!todoListId) return NO_ATTACH_COLOR
 
-      const todos = TodoListsStore.todoList.find(todoList => todoList.id === todoListId)?.todos
+      const todos = TodoListsStore.todoList.find(
+        (todoList) => todoList.id === todoListId
+      )?.todos
       if (!todos || !todos.length) return NO_ATTACH_COLOR
       if (todos.every((todo) => todo.status === 'todo')) {
         return TODO_COLOR
@@ -225,7 +229,7 @@ export default defineComponent({
       isSpaceKeyPress,
       reset: () => ViewBox.reset(),
 
-      fill
+      fill,
     }
   },
 })
