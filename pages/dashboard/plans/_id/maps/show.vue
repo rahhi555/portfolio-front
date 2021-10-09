@@ -7,7 +7,7 @@
     </client-only>
 
     <v-col max-width="100%" rounded cols="12" md="9">
-      <map-show></map-show>
+      <svg-base></svg-base>
     </v-col>
 
     <client-only>
@@ -22,14 +22,14 @@
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import MapShow from '~/components/protected/maps/MapShow.vue'
+import SvgBase from '~/components/protected/svgs/SvgBase.vue'
 import MapPage from '~/components/protected/maps/MapPage.vue'
 import MapShowSideBar from '~/components/protected/maps/MapShowSideBar.vue'
 
 
 export default defineComponent({
   components: {
-    MapShow,
+    SvgBase,
     MapPage,
     MapShowSideBar
   },

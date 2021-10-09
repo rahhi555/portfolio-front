@@ -6,7 +6,7 @@
       </v-col>
 
       <v-col max-width="100%" rounded cols="9">
-        <map-edit></map-edit>
+        <svg-base></svg-base>
         <map-page
           :justify-content="
             activeMap ? 'justify-sm-space-between' : 'justify-end'
@@ -51,7 +51,7 @@
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
 import { SvgsStore, MapsStore } from '~/store'
-import MapEdit from '~/components/protected/maps/MapEdit.vue'
+import SvgBase from '~/components/protected/svgs/SvgBase.vue'
 import MapModal from '~/components/protected/maps/MapModal.vue'
 import MapPage from '~/components/protected/maps/MapPage.vue'
 import MapEditSideBar from '~/components/protected/maps/MapEditSideBar.vue'
@@ -59,7 +59,7 @@ import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
   components: {
-    MapEdit,
+    SvgBase,
     MapModal,
     MapPage,
     MapEditSideBar,

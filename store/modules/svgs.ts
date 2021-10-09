@@ -35,21 +35,17 @@ export default class Svgs extends VuexModule {
   // 移動中のrectのidを固定する変数。これがないと素早くマウスを動かした時にイベントターゲットが存在せずエラーになる。
   private targetId: number = 0
 
-  // 操作中のsvgのElement。これを指定して表示順を操作する。
-  private targetElement: SVGGElement | null = null
 
   @Mutation
   public setTargetId(e: SVGRectMouseEvent | SVGRectKeyboardEvent | number) {
     if (typeof e === 'number') {
       this.targetId = e
-      this.targetElement = null
       return
     }
     const parentSVG = e.target.parentNode
     if (!(parentSVG instanceof SVGGElement)) {
       return
     }
-    this.targetElement = parentSVG
 
     const id = Number(parentSVG?.id.replace('rect-', ''))
     this.targetId = id
@@ -202,7 +198,7 @@ export default class Svgs extends VuexModule {
   // svg表示順変更
   @Action({ rawError: true })
   public changeOrder(order: 'top' | 'bottom' | 'up' | 'down') {
-    if (!this.targetElement || !this.targetSvg) {
+    if (!this.targetSvg) {
       return
     }
     const targetX = {
