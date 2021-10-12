@@ -1,30 +1,21 @@
 <template>
   <v-row>
     <v-col sm="3">
-      <todo-lists />
+      <TodoListsBase />
     </v-col>
     <v-col sm="9">
-      <todos />
+      <TodosItems />
     </v-col>
 
-    <todo-list-create-modal />
+    <TodoListsCreateModal />
   </v-row>
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import TodoLists from '~/components/protected/todos/TodoLists.vue'
-import Todos from '~/components/protected/todos/Todos.vue'
-import TodoListCreateModal from '~/components/protected/todos/TodoListCreateModal.vue'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
-  components: {
-    TodoLists,
-    Todos,
-    TodoListCreateModal
-  },
-
   layout: 'protected',
 
   middleware: ['initialize-store'],

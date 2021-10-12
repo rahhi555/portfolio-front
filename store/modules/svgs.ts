@@ -2,13 +2,21 @@ import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import {
   SvgType,
   Rect,
-  SVGRectMouseEvent,
-  SVGRectKeyboardEvent,
 } from 'interface'
 import { MapsStore, SnackbarStore } from '~/store'
 import { $axios } from '~/utils/axios-accessor'
 
 type SvgTypeKeys = keyof SvgType
+
+export interface SvgParams {
+  type: 'Rect' | 'Path' | 'Polyline'
+  x: number
+  y: number
+  name: string
+  width?: number
+  height?: number
+  drawPoints?: string
+}
 
 @Module({
   name: 'modules/svgs',
@@ -19,17 +27,19 @@ export default class Svgs extends VuexModule {
   private svgsState: SvgType[] = []
 
   // すべてのsvgを返す
-  public get allRects(): Rect[] {
+  public get allSvgs(): Rect[] {
     return this.svgsState
   }
 
   // 現在のマップのsvgを返す
-  public get activeMapRects(): Rect[] {
-    const activeMapId = MapsStore.activeMap?.id
-    const svgs = this.svgsState.filter(
-      (svg) => svg.mapId === activeMapId && svg.type === 'Rect'
-    ) as Rect[]
-    return svgs.concat()
+  public get activeMapSvgs() {
+    return (type: 'Rect' | 'Path' | 'Polyline') => {
+      const activeMapId = MapsStore.activeMap?.id
+      const svgs = this.svgsState.filter(
+        (svg) => svg.mapId === activeMapId && svg.type === type
+      )
+      return svgs
+    }
   }
 
   // 移動中のrectのidを固定する変数。これがないと素早くマウスを動かした時にイベントターゲットが存在せずエラーになる。
@@ -37,17 +47,18 @@ export default class Svgs extends VuexModule {
 
 
   @Mutation
-  public setTargetId(e: SVGRectMouseEvent | SVGRectKeyboardEvent | number) {
+  public setTargetId(e: PointerEvent | KeyboardEvent | number) {
     if (typeof e === 'number') {
       this.targetId = e
       return
     }
-    const parentSVG = e.target.parentNode
+    const target = e.target as SVGGElement
+    const parentSVG = target.parentNode
     if (!(parentSVG instanceof SVGGElement)) {
       return
     }
 
-    const id = Number(parentSVG?.id.replace('rect-', ''))
+    const id = Number(parentSVG?.id.replace('svg-', ''))
     this.targetId = id
   }
 
@@ -80,15 +91,7 @@ export default class Svgs extends VuexModule {
   }
 
   @Action
-  public addRect() {
-    const svg = {
-      type: 'Rect',
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100,
-      name: 'new Rect',
-    }
+  public addSvg(svg: SvgParams) {
     $axios
       .$post(`/api/v1/maps/${MapsStore.activeMap.id}/svgs`, { svg })
       .then((res) => this.addSvgMutation(res))
@@ -180,7 +183,7 @@ export default class Svgs extends VuexModule {
   }
 
   @Action
-  public async deleteSvg(e: SVGRectKeyboardEvent) {
+  public async deleteSvg(e: KeyboardEvent | number | PointerEvent) {
     this.setTargetId(e)
     await $axios.$delete(`/api/v1/svgs/${this.targetId}`).then(() => {
       this.deleteSvgMutation()
@@ -210,7 +213,7 @@ export default class Svgs extends VuexModule {
       end: this.targetSvg.y + this.targetSvg.height,
     }
     // 現在操作している図形に重なっている図形
-    const overlapRects: Rect[] = this.activeMapRects.filter((rect) => {
+    const overlapRects: Rect[] = this.activeMapSvgs('Rect').filter((rect) => {
       if (rect.id === this.targetSvg?.id) return false
 
       const rectX = { start: rect.x, end: rect.x + rect.width }

@@ -1,4 +1,4 @@
-import { SVGRectMouseEvent, SVGRectKeyboardEvent } from 'interface'
+import { PointerEvent, KeyboardEvent } from 'interface'
 import { SvgsStore } from '~/store'
 
 // 何倍単位で移動するかの定数
@@ -10,7 +10,7 @@ const gapXY = { x: 0, y: 0 }
 
 export default {
   // --- ドラッグ処理 ---
-  dragStart(e: SVGRectMouseEvent): void {
+  dragStart(e: PointerEvent): void {
     SvgsStore.setTargetId(e)
     if (typeof SvgsStore.targetSvg === 'undefined') {
       return
@@ -39,7 +39,7 @@ export default {
   },
 
   // 十字キーでドラッグするための処理
-  moveRectArrowKey(e: SVGRectKeyboardEvent): void {
+  moveRectArrowKey(e: KeyboardEvent): void {
     SvgsStore.setTargetId(e)
     if (typeof SvgsStore.targetSvg === 'undefined') {
       return

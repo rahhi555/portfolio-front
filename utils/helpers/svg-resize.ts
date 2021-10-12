@@ -1,4 +1,3 @@
-import { SVGRectMouseEvent } from 'interface'
 import { SvgsStore } from '~/store'
 import SvgViewbox from '~/utils/helpers/svg-viewbox'
 
@@ -16,7 +15,7 @@ const MULTIPLE_NUMBER = 20
 
 // 変化する値は式に一つまでにしないと急勾配な変化具合になってしまう
 // 上への引っ張りはheightを増加させると同時にyを減少させる
-const resizeMiddleTop = (e: SVGRectMouseEvent) => {
+const resizeMiddleTop = (e: PointerEvent) => {
   // zoom倍率で割った非zoomの値+スクロール分の値
   const mouseEventY = (e.offsetY / SvgViewbox.zoomParcentHeight()) + SvgViewbox.minY.value
   const resizeHeight = startHeight + startY - mouseEventY
@@ -32,7 +31,7 @@ const resizeMiddleTop = (e: SVGRectMouseEvent) => {
   }
 }
 
-const resizeMiddleRight = (e: SVGRectMouseEvent) => {
+const resizeMiddleRight = (e: PointerEvent) => {
   // zoom倍率で割った非zoomの値
   const mouseEventX = e.offsetX / SvgViewbox.zoomParcentWidth() 
   // マウス位置 - 図形の左端 + スクロール分
@@ -45,7 +44,7 @@ const resizeMiddleRight = (e: SVGRectMouseEvent) => {
   }
 }
 
-const resizeMiddleBottom = (e: SVGRectMouseEvent) => {
+const resizeMiddleBottom = (e: PointerEvent) => {
   const mouseEventY = e.offsetY / SvgViewbox.zoomParcentHeight()
   const resizeHeight = mouseEventY - SvgsStore.targetSvg!.y + SvgViewbox.minY.value
   if (resizeHeight > 0) {
@@ -57,7 +56,7 @@ const resizeMiddleBottom = (e: SVGRectMouseEvent) => {
 }
 
 // // 左への引っ張りはwidthを増加させると同時にxを減少させる
-const resizeMiddleLeft = (e: SVGRectMouseEvent) => {
+const resizeMiddleLeft = (e: PointerEvent) => {
   // mouseEventXはマウスカーソル位置とviewboxの位置を足したもの
   const mouseEventX = (e.offsetX / SvgViewbox.zoomParcentWidth()) + SvgViewbox.minX.value
   // 現在のxよりクリックしているx座標が低くなればwidthが増える
@@ -77,13 +76,14 @@ const resizeMiddleLeft = (e: SVGRectMouseEvent) => {
 
 // --- リサイズ処理 ---
 export default {
-  resizeStart(e: SVGRectMouseEvent): void {
+  resizeStart(e: PointerEvent): void {
     SvgsStore.setTargetId(e)
     if (typeof SvgsStore.targetSvg === 'undefined') {
       return
     }
     isResizing = true
-    direction = e.target.classList[0]
+    const target = e.target as SVGGElement
+    direction = target.classList[0]
     switch (direction) {
       case 'top-line':
         startY = SvgsStore.targetSvg.y
@@ -96,7 +96,7 @@ export default {
     }
   },
 
-  resizeMiddle(e: SVGRectMouseEvent) {
+  resizeMiddle(e: PointerEvent) {
     if (isResizing) {
       switch (direction) {
         case 'top-line':

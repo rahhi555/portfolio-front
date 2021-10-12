@@ -2,7 +2,7 @@
   <v-row justify="center">
     <template v-if="active">
       <v-col cols="12">
-        <calendar></calendar>
+        <MapsCalendar />
       </v-col>
 
       <v-col cols="12" sm="8">
@@ -41,14 +41,9 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
-import Calendar from '~/components/protected/maps/Calendar.vue'
+import { PlansStore, SnackbarStore, TodoListsStore } from '~/store'
 
 export default defineComponent({
-  components: {
-    Calendar,
-  },
-
   layout: 'protected',
 
   middleware: ['initialize-store'],
@@ -148,12 +143,6 @@ export default defineComponent({
       beginPlan,
       endPlan,
     }
-  },
-
-  computed: {
-    svg() {
-      return SvgsStore.allRects[0].name
-    },
   },
 })
 </script>

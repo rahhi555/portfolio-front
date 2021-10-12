@@ -6,7 +6,7 @@
     title="計画一覧"
   >
     <v-card-text>
-      <plan-create-modal
+      <PlansCreateModal
         :name.sync="planParams.name"
         :published.sync="planParams.published"
         @create-handle="createPlan"
@@ -34,10 +34,10 @@
         :loading="loading"
       >
         <template #[`item.actions`]="{ item }">
-          <plan-table-button
+          <PlansTableButton
             :item="item"
             @delete-handle="deletePlan(item)"
-          ></plan-table-button>
+          />
         </template>
       </v-data-table>
     </v-card-text>
@@ -55,17 +55,10 @@ import {
   useFetch
 } from '@nuxtjs/composition-api'
 import { Plan } from 'interface'
-import PlanCreateModal from '~/components/protected/plans/PlanCreateModal.vue'
-import PlanTableButton from '~/components/protected/plans/PlanTableButton.vue'
 import { UserStore, PlansStore } from '~/store'
 import { AppBarTabKey } from '~/types/injection-key'
 
 export default defineComponent({
-  components: {
-    PlanCreateModal,
-    PlanTableButton,
-  },
-
   layout: 'protected',
 
   setup() {

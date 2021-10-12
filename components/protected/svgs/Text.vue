@@ -17,7 +17,7 @@
     </div>
   </foreignObject>
 
-  <text v-else :class="{'tooltip-visible': isEditPage}" text-anchor="middle" @dblclick="editSvgName">
+  <text v-else :class="{'tooltip-visible': isEditPage && !isAnyMode }" text-anchor="middle" @dblclick="editSvgName">
     <tspan :x="textX" :y="textY" font-weight="bold">{{ rect.name }}</tspan>
     <tspan :x="textX" :y="textY + 20" font-style="italic" stroke="gray">{{
       todoListTitle
@@ -30,9 +30,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick, useRoute } from '@nuxtjs/composition-api'
+import { defineComponent, ref, nextTick, computed } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
 import { SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
+import Path from '~/utils/helpers/svg-add-path'
+import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 
 export default defineComponent({
   props: {
@@ -40,10 +42,19 @@ export default defineComponent({
       type: Object,
       default: null,
     },
+    isEditPage: {
+      type: Boolean
+    }
   },
 
   setup(props) {
     const rect = props.rect as Rect
+    // いずれかのモードのときtrueを返す
+    const isAnyMode = computed(() => {
+      return Path.isAddPathMode.value || AddEventSpaceKey.isSpaceKeyPress.value
+    })
+
+    const isEditPage = props.isEditPage
 
     const isEditSvgName = ref(false)
     const editSvgName = () => {
@@ -66,14 +77,11 @@ export default defineComponent({
       isEditSvgName.value = false
     }
 
-    const route = useRoute()
-    const isEditPage = route.value.name?.endsWith('edit')
-
     return {
       isEditSvgName,
       editSvgName,
       updateSvgName,
-      isEditPage
+      isAnyMode
     }
   },
 

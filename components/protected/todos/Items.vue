@@ -19,10 +19,10 @@
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
-        <todo-create-modal
+        <TodosCreateModal
           :dialog="createDialog"
           @closeDialogHandle="createDialog = false"
-        ></todo-create-modal>
+        />
       </v-toolbar>
     </template>
 
@@ -81,11 +81,11 @@
         </v-col>
       </v-row>
 
-      <todo-image-carousel
+      <TodosImageCarousel
         :image-dialog="imageDialog"
         :images="selectImages"
         @imageClose="imageDialog = false"
-      ></todo-image-carousel>
+      />
     </template>
   </v-data-iterator>
 </template>
@@ -95,15 +95,8 @@ import { defineComponent, ref, useContext } from '@nuxtjs/composition-api'
 import { Todo } from 'interface'
 import { PlansStore, TodoListsStore } from '~/store'
 import { ToggleStatusParams } from '~/store/modules/todoLists'
-import TodoCreateModal from '~/components/protected/todos/TodoCreateModal.vue'
-import TodoImageCarousel from '~/components/protected/todos/TodoImageCarousel.vue'
 
 export default defineComponent({
-  components: {
-    TodoCreateModal,
-    TodoImageCarousel,
-  },
-
   props: {
     cols: {
       type: Object,

@@ -15,7 +15,7 @@
                 <tr v-for="map in maps" :key="map.name">
                   <td>{{ map.name }}</td>
                   <td>
-                    <map-modal-button :map="map"></map-modal-button>
+                    <MapsModalButton :map="map"></MapsModalButton>
                   </td>
                 </tr>
               </tbody>
@@ -76,13 +76,8 @@ import {
 } from '@nuxtjs/composition-api'
 import { MapsStore, UserStore, PlansStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
-import MapModalButton from '~/components/protected/maps/MapModalButton.vue'
 
 export default defineComponent({
-  components: {
-    MapModalButton,
-  },
-
   setup() {
     const route = useRoute()
     const name = ref('')

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
     <template #activator="{ on, attrs }">
-      <app-btn
+      <v-btn
         color="secondary"
         class="mr-2 mb-2 float-left"
         v-bind="attrs"
@@ -9,7 +9,7 @@
       >
         <v-icon left>mdi-folder-plus-outline</v-icon>
         新規作成
-      </app-btn>
+      </v-btn>
     </template>
     <v-card>
       <v-card-title>
@@ -76,13 +76,8 @@
 
 <script lang="ts">
 import { defineComponent, ref } from '@nuxtjs/composition-api'
-import AppBtn from '~/components/app/Btn.vue'
 
 export default defineComponent({
-  components: {
-    AppBtn,
-  },
-
   props: {
     name: {
       type: String,

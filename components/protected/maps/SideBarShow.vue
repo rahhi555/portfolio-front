@@ -1,19 +1,14 @@
 <template>
-  <todos
+  <TodosItems
     :cols="cols"
     :is-edit="false">
-  </todos>
+  ></TodosItems>
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
-import Todos from '~/components/protected/todos/Todos.vue'
 
 export default defineComponent({
-  components: {
-    Todos,
-  },
-
   setup() {
     const cols = {
       cols: 12,

@@ -2,13 +2,13 @@
   <v-sheet color="white" elevation="1">
     <v-row>
       <v-col v-for="member in members" :key="member.id" md="3" sm="4">
-        <member-card
+        <MembersCard
           :member="member"
-        ></member-card>
+        />
       </v-col>
     </v-row>
 
-    <role-modal></role-modal>
+    <RolesModal />
   </v-sheet>
 </template>
 
@@ -17,17 +17,10 @@ import {
   defineComponent,
   computed,
 } from '@nuxtjs/composition-api'
-import MemberCard from '~/components/protected/members/MemberCard.vue'
-import RoleModal from '~/components/protected/roles/RoleModal.vue'
 import { MembersStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
-  components: {
-    MemberCard,
-    RoleModal,
-  },
-
   layout: 'protected',
 
   middleware: [

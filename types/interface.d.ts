@@ -2,6 +2,7 @@ declare module 'interface' {
   interface SvgBase {
     id: number
     todoListId: number | null
+    userId: number | null
     mapId: number
     type: string
     x: number
@@ -32,14 +33,6 @@ declare module 'interface' {
   }
   
   export type SvgType = Rect & Path & Polyline
-
-  export interface SVGRectMouseEvent extends MouseEvent {
-    target: SVGRectElement
-  }
-
-  export interface SVGRectKeyboardEvent extends KeyboardEvent {
-    target: SVGRectElement
-  }
 
   export interface Member {
     id: number

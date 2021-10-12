@@ -1,15 +1,15 @@
 <template>
   <g
-    :id="'rect-' + rect.id"
+    :id="'svg-' + rect.id"
     :transform="'translate(' + rect.x + ',' + rect.y + ')'"
   >
     <rect
       :width="rect.width"
       :height="rect.height"
-      :fill="fill(rect)"
+      :fill="fill(rect)" 
       :stroke="rect.stroke"
       tabindex="0"
-      :class="{ grabbable: isEditPage }"
+      :class="rectCursorClass"
       @pointerdown.left="
         dragStart($event)
         selectRect($event)
@@ -25,7 +25,7 @@
       y1="0"
       :x2="rect.width"
       y2="0"
-      :class="{ 'top-line': isEditPage }"
+      :class="[{'top-line': isEditPage }, rectCursorClass]"
       @pointerdown.stop="resizeStart"
     />
     <line
@@ -33,7 +33,7 @@
       y1="0"
       :x2="rect.width"
       :y2="rect.height"
-      :class="{ 'right-line': isEditPage }"
+      :class="[{ 'right-line': isEditPage }, rectCursorClass]"
       @pointerdown.stop="resizeStart"
     />
     <line
@@ -41,7 +41,7 @@
       :y1="rect.height"
       :x2="rect.width"
       :y2="rect.height"
-      :class="{ 'bottom-line': isEditPage }"
+      :class="[{ 'bottom-line': isEditPage }, rectCursorClass]"
       @pointerdown.stop="resizeStart"
     />
     <line
@@ -49,32 +49,28 @@
       y1="0"
       x2="0"
       :y2="rect.height"
-      :class="{ 'left-line': isEditPage }"
+      :class="[{ 'left-line': isEditPage }, rectCursorClass]"
       @pointerdown.stop="resizeStart"
     />
-    <svg-text :rect="rect"></svg-text>
+    <SvgsText :rect="rect" :is-edit-page="isEditPage"></SvgsText>
   </g>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  ref,
+  computed,
 } from '@nuxtjs/composition-api'
-import { SVGRectMouseEvent, SVGRectKeyboardEvent, Rect } from 'interface'
+import { Rect } from 'interface'
 import { SvgsStore, TodoListsStore } from '~/store'
 import Drag from '~/utils/helpers/svg-drag'
 import Resize from '~/utils/helpers/svg-resize'
-import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import TodoListAttach from '~/utils/helpers/todo-list-attach'
 import ContextMenu from '~/utils/ui/svg-context-menu'
-import SvgText from '~/components/protected/svgs/SvgText.vue'
+import Path from '~/utils/helpers/svg-add-path'
+import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 
 export default defineComponent({
-  components: {
-    SvgText,
-  },
-
   props: {
     rect: {
       type: Object,
@@ -82,49 +78,59 @@ export default defineComponent({
     },
     isEditPage: {
       type: Boolean
-    }
+    },
   },
 
    setup(props) {
-    // 現在のページが編集ページかどうか
+    // 編集ページ判定、ピン挿入モード判定、スクロールモード判定
     const isEditPage = props.isEditPage
+    const isAddPathMode = Path.isAddPathMode
+    const isSpaceKeyPress = AddEventSpaceKey.isSpaceKeyPress
 
-    // スペースキーの押下判定
-    const isSpaceKeyPress = ref(AddEventSpaceKey.isSpaceKeyPress)
+    // モードごとにカーソルのクラスを返す
+    const rectCursorClass = computed(() => {
+      if(isSpaceKeyPress.value) {
+        return 'move'
+      } else if (isAddPathMode.value) {
+        return 'add-path-mode'
+      } else if (isEditPage) {
+        return 'grabbable'
+      }
+    })
+
+    // --- コンテキストメニュー表示 ---
+    const showMenu = (e: PointerEvent) => { 
+      if(!isEditPage) return
+      ContextMenu.showMenu(e)
+    }
+    const isShowMenu = ContextMenu.isShowMenu
 
     // Rectの位置操作操作
-    const dragStart = (e: SVGRectMouseEvent) => {
+    const dragStart = (e: PointerEvent) => {
       if (isSpaceKeyPress.value || !isEditPage) return
       isShowMenu.value = false
       Drag.dragStart(e)
     }
 
     // 方向キーのドラッグ操作
-    const moveRectArrowKey = (e: SVGRectKeyboardEvent) => {
+    const moveRectArrowKey = (e: KeyboardEvent) => {
       if(!isEditPage) return
       isShowMenu.value = false
       Drag.moveRectArrowKey(e)
     }
 
     // リサイズ操作
-    const resizeStart = (e: SVGRectMouseEvent) => {
+    const resizeStart = (e: PointerEvent) => {
       if (isSpaceKeyPress.value || !isEditPage) return
       isShowMenu.value = false
       Resize.resizeStart(e)
     }
 
     // --- svg削除 ---
-    const deleteSvg = (e: SVGRectKeyboardEvent) => {
+    const deleteSvg = (e: KeyboardEvent) => {
       if(!isEditPage) return
       SvgsStore.deleteSvg(e)
     }
-
-    // --- コンテキストメニュー表示 ---
-    const showMenu = (e: SVGRectMouseEvent) => { 
-      if(!isEditPage) return
-      ContextMenu.showMenu(e)
-    }
-    const isShowMenu = ContextMenu.isShowMenu
 
     // svgの色。todoの進行状況によって変化する
     const fill = (rect: Rect) => {
@@ -150,7 +156,7 @@ export default defineComponent({
     }
 
     // 閲覧ページの場合にrectをクリックしたときの処理
-    const selectRect = (e: SVGRectMouseEvent) => {
+    const selectRect = (e: PointerEvent) => {
       if(isEditPage) return
       SvgsStore.setTargetId(e)
       const targetRect = SvgsStore.targetSvg
@@ -173,7 +179,8 @@ export default defineComponent({
         TodoListAttach.attachTodoListEnter(e),
       attachTodoListLeave: () => TodoListAttach.attachTodoListLeave(),
       fill,
-      selectRect
+      selectRect,
+      rectCursorClass,
     }
   },
 })
@@ -185,6 +192,10 @@ export default defineComponent({
 .grabbable:active
   cursor: grabbing
 
+// スペースキーを押している間のカーソル
+.move
+  cursor: move
+
 // top-line,bottom-line,right-line,left-lineはリサイズ処理でそのクラス名を使用するので変更しないこと
 .top-line, .bottom-line
   cursor: row-resize
@@ -194,4 +205,7 @@ export default defineComponent({
   cursor: col-resize
   stroke-width: 15
   stroke: transparent
+
+.add-path-mode
+  cursor: url('~assets/map-marker.svg') 15 15, pointer
 </style>

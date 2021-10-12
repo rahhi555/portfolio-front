@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="dialog" @click:outside="dialogClose" max-width="600px">
+  <v-dialog :value="dialog" max-width="600px" @click:outside="dialogClose">
     <v-card>
       <v-card-title>
         <span class="text-h5">Todo作成</span>

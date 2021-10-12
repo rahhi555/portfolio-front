@@ -5,10 +5,9 @@
     color="gray"
     elevation="6"
     height="75vh"
-    :class="{ move: isSpaceKeyPress }"
   >
     <svg
-      :class="{ 'mysvg-edit': isEditPage }"
+      :class="[{ 'mysvg-edit': isEditPage }, svgCursorClass]"
       width="100%"
       height="100%"
       :viewBox="viewBoxStr"
@@ -23,15 +22,25 @@
         dragStop()
         resizeStop()
       "
-      @pointerdown.left="scrollBegin"
+      @pointerdown.left="
+        scrollBegin($event)
+        addPath($event)
+      "
       @wheel.prevent="zoomInOut"
     >
-      <svg-rect
-        v-for="rect in rects"
+      <SvgsRect
+        v-for="rect in rects" 
         :key="rect.id"
         :rect="rect"
         :is-edit-page="isEditPage"
-      ></svg-rect>
+      ></SvgsRect>
+
+      <SvgsPath
+        v-for="path in paths"
+        :key="path.id"
+        :path="path"
+        :is-edit-page="isEditPage"
+      ></SvgsPath>
     </svg>
 
     <slot></slot>
@@ -54,72 +63,64 @@
       <span>表示リセット</span>
     </v-tooltip>
 
-    <svg-context-menu></svg-context-menu>
+    <SvgsContextMenu></SvgsContextMenu>
   </v-sheet>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  ref,
   computed,
-  useContext,
   watch,
   useRoute,
 } from '@nuxtjs/composition-api'
-import { SVGRectMouseEvent } from 'interface'
 import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
 import ViewBox from '~/utils/helpers/svg-viewbox'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import Drag from '~/utils/helpers/svg-drag'
 import Resize from '~/utils/helpers/svg-resize'
-import SvgRect from '~/components/protected/svgs/SvgRect.vue'
-import SvgContextMenu from '~/components/protected/svgs/SvgContextMenu.vue'
+import Path from '~/utils/helpers/svg-add-path'
 
 export default defineComponent({
-  components: {
-    SvgRect,
-    SvgContextMenu,
-  },
-
   setup() {
-    const { $device } = useContext()
+    const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
+    const paths = computed(() => SvgsStore.activeMapSvgs('Path'))
 
-    const rects = computed(() => SvgsStore.activeMapRects)
     ViewBox.mounted()
     AddEventSpaceKey.mounted()
     AddEventSpaceKey.unMounted()
 
     // スペースキーの押下判定
-    const isSpaceKeyPress = ref(AddEventSpaceKey.isSpaceKeyPress)
+    const isSpaceKeyPress = AddEventSpaceKey.isSpaceKeyPress
+
+    // 現在のページが編集ページかどうか
+    const route = useRoute()
+    const isEditPage = computed(() => route.value.name?.endsWith('edit'))
+
+    // ピンの挿入モード判定
+    const isAddPathMode = Path.isAddPathMode
+
+    // ピン挿入
+    const addPath = (e: PointerEvent) => {
+      if(!isEditPage.value || isSpaceKeyPress.value || !isAddPathMode.value) return
+      Path.addPath(e)
+    }
+
+    // svgのカーソルのクラス
+    const svgCursorClass = computed(() => {
+      if(isSpaceKeyPress.value) {
+        return 'move'
+      } else if(isAddPathMode.value) {
+        return 'add-path-mode'
+      }
+    })
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value && $device.isDesktop) return
+      if (!isSpaceKeyPress.value && isEditPage.value) return
       ViewBox.scrollBegin(e)
     }
-    const scrollMiddle = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value && $device.isDesktop) return
-      ViewBox.scrollMiddle(e)
-    }
-    const scrollEnd = () => {
-      ViewBox.scrollEnd()
-    }
-
-    // svgドラッグ
-    const dragMiddle = (e: SVGRectMouseEvent) => {
-      if (isSpaceKeyPress.value) return
-      Drag.dragMiddle(e)
-    }
-    const dragStop = () => Drag.dragStop()
-
-    // リサイズ操作
-    const resizeMiddle = (e: SVGRectMouseEvent) => {
-      if (isSpaceKeyPress.value) return
-      Resize.resizeMiddle(e)
-    }
-    const resizeStop = () => Resize.resizeStop()
 
     // オートセーブ
     const autosave = debounce(
@@ -129,32 +130,33 @@ export default defineComponent({
       3000,
       { maxWait: 30000 }
     )
-    watch(SvgsStore.allRects, () => autosave())
-
-    // 現在のページが編集ページかどうか
-    const route = useRoute()
-    const isEditPage = computed(() => route.value.name?.endsWith('edit'))
+    watch(SvgsStore.allSvgs, () => autosave())
 
     return {
       rects,
+      paths,
 
       svgSheet: ViewBox.svgSheet,
       viewBoxStr: ViewBox.viewBoxStr(),
 
+      addPath,
+
       scrollBegin,
-      scrollMiddle,
-      scrollEnd,
+      scrollMiddle: (e: MouseEvent) => ViewBox.scrollMiddle(e),
+      scrollEnd: () => ViewBox.scrollEnd(),
 
-      dragMiddle,
-      dragStop,
+      dragMiddle: (e: PointerEvent) => Drag.dragMiddle(e),
+      dragStop: () => Drag.dragStop(),
 
-      resizeMiddle,
-      resizeStop,
+      resizeMiddle: (e: PointerEvent) => Resize.resizeMiddle(e),
+      resizeStop: () => Resize.resizeStop(),
 
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
-      isSpaceKeyPress,
       reset: () => ViewBox.reset(),
       isEditPage,
+      isAddPathMode,
+      isSpaceKeyPress,
+      svgCursorClass
     }
   },
 })
@@ -177,4 +179,7 @@ export default defineComponent({
   position: absolute
   bottom: 80px
   right: 30px
+
+.add-path-mode
+  cursor: url('~assets/map-marker.svg') 15 15, pointer
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="imageDialog" @click:outside="$emit('imageClose')" max-width="1000" max-height="560">
+  <v-dialog :value="imageDialog" max-width="1000" max-height="560" @click:outside="$emit('imageClose')">
     <v-carousel>
       <v-carousel-item v-for="(image, i) in images" :key="i" :src="image" contain>
       </v-carousel-item>
