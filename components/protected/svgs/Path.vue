@@ -6,10 +6,7 @@
     tabindex="0"
     @keydown.delete="deletePath(path.id)"
   >
-    <path
-      fill="black"
-      :d="path.drawPoints"
-    />
+    <path fill="black" :d="path.drawPoints" />
     <image
       :href="avatar"
       x="4.5"
@@ -22,7 +19,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from '@nuxtjs/composition-api'
+import {
+  computed,
+  defineComponent,
+  ref,
+  onMounted,
+} from '@nuxtjs/composition-api'
+import { Path } from 'interface'
 import { SvgsStore, MembersStore } from '~/store'
 
 export default defineComponent({
@@ -34,22 +37,37 @@ export default defineComponent({
     isEditPage: {
       type: Boolean,
     },
-  }, 
+  },
 
   setup(props) {
+    const path = props.path as Path
+
     const deletePath = (id: number) => {
       if (!props.isEditPage) return
       SvgsStore.deleteSvg(id)
     }
 
     const avatar = computed(() => {
-      const member = MembersStore.members?.find(member => member.id === props.path.userId)
+      const member = MembersStore.members?.find(
+        (member) => member.userId === path.userId
+      )
       return member?.avatar
     })
 
+    // pathの表示判定とdisplayTimeが経過したらfalseにする関数
+    const isDisplay = ref(true)
+    onMounted(() =>
+      setTimeout(() => {
+        if (!path.displayTime) return
+        isDisplay.value = false
+        SvgsStore.deleteSvgMutation(path.id)
+      }, path.displayTime)
+    )
+
     return {
       deletePath,
-      avatar
+      avatar,
+      isDisplay,
     }
   },
 })

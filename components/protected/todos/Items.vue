@@ -46,7 +46,7 @@
                 <v-icon v-if="isEdit" size="20" @click="deleteTodo(item)"
                   >mdi-delete</v-icon
                 >
-                <v-icon v-if="isPlanActive" size="20" :class="{'done': item.status === 'done'}" @click.stop="toggleStatusTodo(item)"
+                <v-icon v-if="isPlanActive && !isEdit" size="20" :class="{'done': item.status === 'done'}" @click.stop="toggleStatusTodo(item)"
                   >mdi-checkbox-marked</v-icon
                 >
               </template>

@@ -32,7 +32,7 @@ declare module 'interface' {
     drawPoints: string
   }
   
-  export type SvgType = Rect & Path & Polyline
+  export type AllSvgType = Rect & Path & Polyline
 
   export interface Member {
     id: number

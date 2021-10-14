@@ -1,18 +1,23 @@
 import { defineNuxtPlugin } from '@nuxtjs/composition-api'
 import actioncable from 'actioncable'
-import { TodoListsStore } from '~/store'
+import { AllSvgType } from 'interface'
+import { SvgsStore, TodoListsStore } from '~/store'
 import { ToggleStatusParams } from '~/store/modules/todoLists'
+import { SvgParams } from '~/store/modules/svgs'
 
-interface ReceivedParams {
-  trigger: 'beginPlan' | 'endPlan' | 'toggleTodoStatus'
-  id?: number
-  status?: 'doing' | 'done'
-}
 
 export interface PlanChannel {
   toggleTodoStatus: ({ id, status }: ToggleStatusParams) => void
   beginPlan: () => void
   endPlan: () => void
+  sendActiveSvg: (svg: SvgParams) => void
+}
+
+interface ReceivedParams {
+  action: keyof PlanChannel
+  id?: number
+  status?: 'doing' | 'done'
+  svg?: AllSvgType
 }
 
 declare module 'actioncable' {
@@ -48,7 +53,7 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
         received(data: ReceivedParams) {
           console.log(data)
 
-          switch (data.trigger) {
+          switch (data.action) {
             case 'beginPlan':
               TodoListsStore.doingTodos()
               break
@@ -58,25 +63,34 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
             case 'toggleTodoStatus':
               TodoListsStore.toggleTodoStatusMutation({ id: data.id!, status: data.status! })
               break
+            case 'sendActiveSvg':
+              SvgsStore.addSvgMutation(data.svg!)
+              break
+            default:
+              console.error('該当するトリガーがありませんでした。')
           }
           
         },
 
         // --- 独自メソッド ---
         toggleTodoStatus({ id, status }: ToggleStatusParams) {
-          this.perform('toggle_todo_status', {
+          this.perform('toggleTodoStatus', {
             id,
             status
           })
         },
 
         beginPlan() {
-          this.perform('begin_plan', {})
+          this.perform('beginPlan', {})
         },
 
         endPlan() {
-          this.perform('end_plan', {})
+          this.perform('endPlan', {})
         },
+
+        sendActiveSvg(svg: SvgParams) {
+          this.perform('sendActiveSvg', { svg })
+        }
       }
     )
   }

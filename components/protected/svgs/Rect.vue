@@ -207,5 +207,5 @@ export default defineComponent({
   stroke: transparent
 
 .add-path-mode
-  cursor: url('~assets/map-marker.svg') 15 15, pointer
+  cursor: url('~assets/map-marker.svg') 25 25, pointer
 </style>

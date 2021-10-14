@@ -103,8 +103,12 @@ export default defineComponent({
 
     // ピン挿入
     const addPath = (e: PointerEvent) => {
-      if(!isEditPage.value || isSpaceKeyPress.value || !isAddPathMode.value) return
-      Path.addPath(e)
+      if(isSpaceKeyPress.value || !isAddPathMode.value) return
+      if(isEditPage.value) {
+        Path.addStaticPath(e)
+      } else {
+        Path.sendActivePath(e)
+      }
     }
 
     // svgのカーソルのクラス
@@ -181,5 +185,5 @@ export default defineComponent({
   right: 30px
 
 .add-path-mode
-  cursor: url('~assets/map-marker.svg') 15 15, pointer
+  cursor: url('~assets/map-marker.svg') 25 25, pointer
 </style>
