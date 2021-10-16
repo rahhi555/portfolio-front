@@ -67,9 +67,8 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
               SvgsStore.addSvgMutation(data.svg!)
               break
             default:
-              console.error('該当するトリガーがありませんでした。')
+              console.error('該当するアクションがありませんでした。')
           }
-          
         },
 
         // --- 独自メソッド ---

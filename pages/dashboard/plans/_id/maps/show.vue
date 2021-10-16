@@ -8,13 +8,13 @@
 
     <v-col max-width="100%" rounded cols="12" md="9">
       <SvgsBase />
-      <MapsFooter
+      <MapsFooterBase
         :justify-content="
           isPlanActive ? 'justify-sm-space-between' : 'justify-end'
         "
       >
         <MapsFooterShow v-if="isPlanActive" />
-      </MapsFooter>
+      </MapsFooterBase>
     </v-col>
 
     <client-only>

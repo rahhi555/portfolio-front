@@ -7,13 +7,13 @@
 
       <v-col max-width="100%" rounded cols="9">
         <SvgsBase />
-        <MapsFooter
+        <MapsFooterBase
           :justify-content="
             hasActiveMap ? 'justify-sm-space-between' : 'justify-end'
           "
         >
-          <MapsPageEdit v-if="hasActiveMap" :has-active-map="hasActiveMap" />
-        </MapsFooter>
+          <MapsFooterEdit v-if="hasActiveMap" :has-active-map="hasActiveMap" />
+        </MapsFooterBase>
       </v-col>
     </template>
 

@@ -33,7 +33,7 @@
 import { defineComponent, ref, nextTick, computed } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
 import { SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
-import Path from '~/utils/helpers/svg-add-path'
+import Path from '~/utils/svgs/svg-add-path'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 
 export default defineComponent({

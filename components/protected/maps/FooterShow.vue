@@ -24,7 +24,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
-import Path from '~/utils/helpers/svg-add-path'
+import Path from '~/utils/svgs/svg-add-path'
+import Polyline from '~/utils/svgs/svg-add-polyline'
 
 export default defineComponent({
   props: {
@@ -39,12 +40,15 @@ export default defineComponent({
       switch (selected.value) {
         case 0:
           Path.isAddPathMode.value = true
+          Polyline.isAddPolylineMode.value = false
           break
         case 1:
-          Path.isAddPathMode.value = true
+          Path.isAddPathMode.value = false
+          Polyline.isAddPolylineMode.value = true
           break
         default:
           Path.isAddPathMode.value = false
+          Polyline.isAddPolylineMode.value = false
           break
       }
     })

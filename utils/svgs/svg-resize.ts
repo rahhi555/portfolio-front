@@ -1,5 +1,5 @@
 import { SvgsStore } from '~/store'
-import SvgViewbox from '~/utils/helpers/svg-viewbox'
+import SvgViewbox from '~/utils/svgs/svg-viewbox'
 
 // リサイズ中ならtrueになる
 let isResizing = false

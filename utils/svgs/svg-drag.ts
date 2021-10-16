@@ -1,4 +1,3 @@
-import { PointerEvent, KeyboardEvent } from 'interface'
 import { SvgsStore } from '~/store'
 
 // 何倍単位で移動するかの定数
