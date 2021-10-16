@@ -1,5 +1,4 @@
 import { ref, nextTick } from '@nuxtjs/composition-api'
-import { PointerEvent } from 'interface'
 import { SvgsStore } from '~/store'
 
 // --- コンテキストメニュー表示 ---
