@@ -10,11 +10,11 @@ type AllSvgTypeKeys = keyof AllSvgType
 
 export interface SvgParams {
   id?: number
-  type: 'Rect' | 'Path' | 'Polyline'
+  type?: 'Rect' | 'Path' | 'Polyline'
   userId?: number
   mapId?: number
-  x: number
-  y: number
+  x?: number
+  y?: number
   name?: string
   width?: number
   height?: number
@@ -95,8 +95,8 @@ export default class Svgs extends VuexModule {
   }
 
   @Action
-  public addSvg(svg: SvgParams) {
-    $axios
+  public async addSvg(svg: SvgParams) {
+    await $axios
       .$post(`/api/v1/maps/${MapsStore.activeMap.id}/svgs`, { svg })
       .then((res) => this.addSvgMutation(res))
       .catch(() =>
@@ -127,7 +127,11 @@ export default class Svgs extends VuexModule {
     }
 
     if (!target) return
-    target.isUpdated = true
+
+    if(target.isUpdated !== undefined) {
+      target.isUpdated = true
+    }
+
     // @ts-ignore
     target[status] = value
   }

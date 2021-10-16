@@ -1,33 +1,35 @@
 <template>
-  <v-row>
-    <template v-if="$device.isDesktop">
-      <v-col cols="3">
-        <MapsEditSideBar />
-      </v-col>
+  <v-row v-if="$device.isDesktop && !isPlanActive">
+    <v-col cols="3">
+      <MapsEditSideBar />
+    </v-col>
 
-      <v-col max-width="100%" rounded cols="9">
-        <SvgsBase />
-        <MapsFooterBase
-          :justify-content="
-            hasActiveMap ? 'justify-sm-space-between' : 'justify-end'
-          "
-        >
-          <MapsFooterEdit v-if="hasActiveMap" :has-active-map="hasActiveMap" />
-        </MapsFooterBase>
-      </v-col>
-    </template>
-
-    <div v-else class="ma-2" style="color: white">
-      スマートフォンでのマップ編集は現在対応していません
-    </div>
+    <v-col max-width="100%" rounded cols="9">
+      <SvgsBase />
+      <MapsFooterBase
+        :justify-content="
+          hasActiveMap ? 'justify-sm-space-between' : 'justify-end'
+        "
+      >
+        <MapsFooterEdit v-if="hasActiveMap" :has-active-map="hasActiveMap" />
+      </MapsFooterBase>
+    </v-col>
 
     <MapsModal />
   </v-row>
+
+  <div v-else-if="isPlanActive" class="ma-2" style="color: white">
+    計画実行中は編集できません
+  </div>
+
+  <div v-else-if="$device.isMobile" class="ma-2" style="color: white">
+    スマートフォンでのマップ編集は現在対応していません
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import { MapsStore } from '~/store'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { MapsStore, PlansStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -36,13 +38,16 @@ export default defineComponent({
   middleware: ['initialize-store'],
 
   setup() {
-    setAppBarTabDialog('マップ作成')
-  },
+    const isPlanActive = computed(() => PlansStore.currentPlan?.active)
 
-  computed: {
-    hasActiveMap() {
-      return !!MapsStore.activeMap
-    },
+    if (!isPlanActive.value) {
+      setAppBarTabDialog('マップ作成')
+    }
+
+    return {
+      isPlanActive,
+      hasActiveMap: computed(() => !!MapsStore.activeMap),
+    }
   },
 })
 </script>

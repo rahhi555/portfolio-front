@@ -13,6 +13,10 @@ const isSomeTrueModes = computed(() => {
   return modes.isPathMode || modes.isPolylineMode || modes.isSpaceKeyPress
 })
 
+const isAddModes = computed(() => {
+  return modes.isPathMode || modes.isPolylineMode
+})
+
 const pathCursorStyle = `url(${require('@/assets/path.svg')}) 25 25, pointer`
 
 const polylineCursorStyle = `url(${require('@/assets/marker.svg')}) 10 10, pointer`
@@ -21,7 +25,6 @@ export default {
   mounted() {
     onMounted(() => {
       watchEffect(() => {
-        console.log('watchEffect')
         const svgBase = document.getElementById('svg-base')
 
         if (!svgBase) {
@@ -47,5 +50,7 @@ export default {
     })
   },
 
-  isSomeTrueModes  
+  isSomeTrueModes,
+
+  isAddModes
 }

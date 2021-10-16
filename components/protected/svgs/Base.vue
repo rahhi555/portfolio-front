@@ -13,19 +13,22 @@
       height="100%"
       :viewBox="viewBoxStr"
       xmlns="http://www.w3.org/2000/svg"
+      @pointerdown.left="
+        scrollBegin($event)
+        addPath($event)
+        addPolylineStart($event)
+      "
       @pointermove="
         scrollMiddle($event)
         dragMiddle($event)
         resizeMiddle($event)
+        addPolylineMiddle($event)
       "
       @pointerup="
         scrollEnd()
         dragStop()
         resizeStop()
-      "
-      @pointerdown.left="
-        scrollBegin($event)
-        addPath($event)
+        addPolylineStop()
       "
       @wheel.prevent="zoomInOut"
     >
@@ -85,11 +88,13 @@ import {
 import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
 import ViewBox from '~/utils/svgs/svg-viewbox'
-import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
+import SpaceKey from '~/utils/helpers/add-event-space-press'
 import Drag from '~/utils/svgs/svg-drag'
 import Resize from '~/utils/svgs/svg-resize'
 import Path from '~/utils/svgs/svg-add-path'
+import Polyline from '~/utils/svgs/svg-add-polyline'
 import Cursor from '~/utils/ui/svg-cursor'
+
 
 export default defineComponent({
   setup() {
@@ -98,12 +103,9 @@ export default defineComponent({
     const polylines = computed(() => SvgsStore.activeMapSvgs('Polyline'))
 
     ViewBox.mounted()
-    AddEventSpaceKey.mounted()
-    AddEventSpaceKey.unMounted()
+    SpaceKey.mounted()
+    SpaceKey.unMounted()
     Cursor.mounted()
-
-    // スペースキーの押下判定
-    const isSpaceKeyPress = AddEventSpaceKey.isSpaceKeyPress
 
     // 現在のページが編集ページかどうか
     const route = useRoute()
@@ -111,7 +113,10 @@ export default defineComponent({
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
-      if (!isSpaceKeyPress.value && isEditPage.value) return
+      // editページはスペースキーを押下する必要あり
+      if (!SpaceKey.isSpaceKeyPress.value && isEditPage.value) return
+      // 挿入モード中はスペースキーを押下する必要あり
+      if (!SpaceKey.isSpaceKeyPress.value && Cursor.isAddModes.value) return
       ViewBox.scrollBegin(e)
     }
 
@@ -135,6 +140,10 @@ export default defineComponent({
 
       addPath: (e: PointerEvent) => Path.addPath(e),
 
+      addPolylineStart: (e: PointerEvent) => Polyline.addPolylineStart(e),
+      addPolylineMiddle: (e: PointerEvent) => Polyline.addPolylineModeMiddle(e),
+      addPolylineStop: () => Polyline.addPolylineStop(),
+
       scrollBegin,
       scrollMiddle: (e: MouseEvent) => ViewBox.scrollMiddle(e),
       scrollEnd: () => ViewBox.scrollEnd(),
@@ -148,7 +157,6 @@ export default defineComponent({
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       reset: () => ViewBox.reset(),
       isEditPage,
-      isSpaceKeyPress,
     }
   },
 })

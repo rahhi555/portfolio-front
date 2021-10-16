@@ -1,5 +1,5 @@
 <template>
-  <v-sheet color="white" elevation="1">
+  <v-sheet v-if="!isPlanActive" color="white" elevation="1">
     <v-row>
       <v-col v-for="member in members" :key="member.id" md="3" sm="4">
         <MembersCard
@@ -10,6 +10,10 @@
 
     <RolesModal />
   </v-sheet>
+
+  <div v-else class="ma-2" style="color: white">
+    計画実行中は編集できません
+  </div>
 </template>
 
 <script lang="ts">
@@ -17,7 +21,7 @@ import {
   defineComponent,
   computed,
 } from '@nuxtjs/composition-api'
-import { MembersStore } from '~/store'
+import { MembersStore, PlansStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -28,12 +32,16 @@ export default defineComponent({
   ],
 
   setup() {
-    setAppBarTabDialog('ロール一覧')
+    const isPlanActive = computed(() => PlansStore.currentPlan?.active)
+    if(!isPlanActive.value) {
+      setAppBarTabDialog('ロール一覧')
+    }
 
     return {
       members: computed(() => {
         return MembersStore.members
       }),
+      isPlanActive
     }
   },
 })

@@ -9,7 +9,7 @@
       :fill="fill(rect)" 
       :stroke="rect.stroke"
       tabindex="0"
-      :class="{ 'grabbable': !isSomeTrueModes }"
+      :class="{ 'grabbable': isEditPage && !isSomeTrueModes }"
       @pointerdown.left="
         dragStart($event)
         selectRect($event)
@@ -67,8 +67,6 @@ import Drag from '~/utils/svgs/svg-drag'
 import Resize from '~/utils/svgs/svg-resize'
 import TodoListAttach from '~/utils/helpers/todo-list-attach'
 import ContextMenu from '~/utils/ui/svg-context-menu'
-import Path from '~/utils/svgs/svg-add-path'
-import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
 import Cursor from '~/utils/ui/svg-cursor'
 
 export default defineComponent({
@@ -86,8 +84,7 @@ export default defineComponent({
     // 編集ページ判定、ピン挿入モード判定、スクロールモード判定
     const modes = reactive({
       isEditPage: props.isEditPage,
-      isAddPathMode: Path.isAddPathMode,
-      isSpaceKeyPress: AddEventSpaceKey.isSpaceKeyPress
+      isSomeTrueModes: Cursor.isSomeTrueModes
     })
     
     // --- コンテキストメニュー表示 ---
@@ -99,7 +96,7 @@ export default defineComponent({
 
     // Rectの位置操作操作
     const dragStart = (e: PointerEvent) => {
-      if (modes.isSpaceKeyPress || !modes.isEditPage || modes.isAddPathMode) return
+      if (!modes.isEditPage || modes.isSomeTrueModes) return
       isShowMenu.value = false
       Drag.dragStart(e)
     }
@@ -113,7 +110,7 @@ export default defineComponent({
 
     // リサイズ操作
     const resizeStart = (e: PointerEvent) => {
-      if (modes.isSpaceKeyPress || !modes.isEditPage || modes.isAddPathMode) return
+      if (!modes.isEditPage || modes.isSomeTrueModes) return
       isShowMenu.value = false
       Resize.resizeStart(e)
     }
@@ -149,7 +146,7 @@ export default defineComponent({
 
     // 閲覧ページの場合にrectをクリックしたときの処理
     const selectRect = (e: PointerEvent) => {
-      if(modes.isEditPage || modes.isAddPathMode) return
+      if(modes.isEditPage || modes.isSomeTrueModes) return
       SvgsStore.setTargetId(e)
       const targetRect = SvgsStore.targetSvg
       if(!targetRect) return

@@ -3,18 +3,10 @@
     :id="'svg-' + polyline.id"
     :transform="'translate(' + polyline.x + ',' + polyline.y + ')'"
     style="cursor: pointer"
-    tabindex="0"
+    tabindex="100"
     @keydown.delete="deletePolyline(polyline.id)"
   >
-    <polyline fill="black" :points="polyline.drawPoints" />
-    <image
-      :href="avatar"
-      x="4.5"
-      y="-10"
-      height="50px"
-      width="50px"
-      class="polyline-avatar"
-    />
+    <polyline stroke="black" fill="none" stroke-width="5" :points="polyline.drawPoints" />
   </g>
 </template>
 

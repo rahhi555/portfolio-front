@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row v-if="!isPlanActive">
     <v-col sm="3">
       <TodoListsBase />
     </v-col>
@@ -9,10 +9,15 @@
 
     <TodoListsCreateModal />
   </v-row>
+
+  <div v-else class="ma-2" style="color: white">
+    計画実行中は編集できません
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { PlansStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -21,11 +26,14 @@ export default defineComponent({
   middleware: ['initialize-store'],
 
   setup(){
-    setAppBarTabDialog('Todoリスト新規作成')
-  
-    return {
-
+    const isPlanActive = computed(() => PlansStore.currentPlan?.active)
+    if(!isPlanActive.value) {
+      setAppBarTabDialog('Todoリスト新規作成')
     }
-  }
+
+    return {
+      isPlanActive
+    }
+  },
 })
 </script>
