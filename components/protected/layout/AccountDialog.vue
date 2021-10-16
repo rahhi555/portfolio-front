@@ -77,7 +77,7 @@
                   color="secondary"
                   label="Nick Name"
                   prepend-icon="mdi-account"
-                  disabled
+                  readonly
                   class="disabled-custom-color"
                 />
 
@@ -86,7 +86,7 @@
                   color="secondary"
                   label="Email*"
                   prepend-icon="mdi-email"
-                  disabled
+                  readonly
                   class="disabled-custom-color"
                 />
               </v-col>
@@ -144,10 +144,4 @@ export default defineComponent({
   .v-card--account,
   .v-card--account:before
     border-radius: 50%
-
-.disabled-custom-color.theme--light.v-input--is-disabled input
-  color: #333333 !important
-
-.theme--light.v-icon.v-icon.v-icon--disabled
-  color: #333333 !important
 </style>

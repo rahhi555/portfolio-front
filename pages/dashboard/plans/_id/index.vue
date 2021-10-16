@@ -2,7 +2,7 @@
   <v-row justify="center">
     <template v-if="active">
       <v-col cols="12">
-        <calendar></calendar>
+        <MapsCalendar :todos="progressHash.todos" />
       </v-col>
 
       <v-col cols="12" sm="8">
@@ -41,14 +41,9 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, SnackbarStore, TodoListsStore } from '~/store'
-import Calendar from '~/components/protected/maps/Calendar.vue'
+import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
 
 export default defineComponent({
-  components: {
-    Calendar,
-  },
-
   layout: 'protected',
 
   middleware: ['initialize-store'],
@@ -57,7 +52,16 @@ export default defineComponent({
     const { $axios } = useContext()
 
     const progressHash = computed(() => {
-      const todos = TodoListsStore.todoList.map((todoList) => todoList.todos)
+      // svgにアタッチされているtodoListのidを取得
+      const attachedTodoListIds = SvgsStore.allSvgs
+        .map((svg) => svg.todoListId)
+        .filter(Boolean)
+      // 取得したidの重複をなくす
+      const noDupTodoListIds = Array.from(new Set(attachedTodoListIds))
+
+      const todos = noDupTodoListIds.map(todoListId =>
+          TodoListsStore.todoList.find(todoList => todoList.id === todoListId)?.todos
+      )
 
       // todoの総数
       const allTodosLength = todos.reduce((prev, current) => {
@@ -81,6 +85,7 @@ export default defineComponent({
       )
 
       const progressHash = {
+        todos,
         allTodosLength,
         doneTodosLength,
         progressPercentage,

@@ -18,15 +18,20 @@
 
 <script lang="ts">
 import { defineComponent, useContext, computed } from '@nuxtjs/composition-api'
-import { TodoListsStore } from '~/store'
+import { Todo } from 'interface'
 
 export default defineComponent({
-  setup() {
+  props: {
+    todos: {
+      type: Array,
+      default: null
+    }
+  },
+
+  setup(props) {
     const { $dayjs } = useContext()
 
-    const allTodos = TodoListsStore.todoList.flatMap(
-      (todoList) => todoList.todos
-    )
+    const svgAttachedTodos = props.todos.flatMap(todo => todo) as Todo[]
     const today = $dayjs().format('YYYY-MM-DD')
     const getColor = (status: 'todo' | 'doing' | 'done') => {
       let color = ''
@@ -44,7 +49,7 @@ export default defineComponent({
       return color
     }
     const events = computed(() => {
-      return allTodos.map((todo) => ({
+      return svgAttachedTodos.map((todo) => ({
         name: todo?.title,
         start: `${today} ${todo?.beginTime}:00`,
         end: `${today} ${todo?.endTime}:00`,

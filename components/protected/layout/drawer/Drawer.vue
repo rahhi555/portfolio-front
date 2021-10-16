@@ -20,9 +20,9 @@
           v-for="(item, i) in visibleItems"
           :key="i"
           :to="item.to"
-          @click="item.click"
           router
           exact
+          @click="item.click"
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>

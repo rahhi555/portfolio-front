@@ -13,7 +13,7 @@ const tabRoutes: TabRoutes = {
     { name: 'ホーム', link: '/dashboard/plans/:id', selected: false},
     { name: 'マップ閲覧', link: '/dashboard/plans/:id/maps/show', selected: false},
     { name: 'Todoリスト', link: '/dashboard/plans/:id/todo-list', selected: false },
-    { name: 'マップ編集', link: '/dashboard/plans/:id/maps', selected: false },
+    { name: 'マップ編集', link: '/dashboard/plans/:id/maps/edit', selected: false },
     { name: 'メンバー一覧', link: '/dashboard/plans/:id/members', selected: false },
   ],
 }
@@ -23,7 +23,7 @@ const routePear = {
   'dashboard-plans-id': tabRoutes.dashboardPlansId,
   'dashboard-plans-id-maps-show': tabRoutes.dashboardPlansId,
   'dashboard-plans-id-todo-list': tabRoutes.dashboardPlansId,
-  'dashboard-plans-id-maps': tabRoutes.dashboardPlansId,
+  'dashboard-plans-id-maps-edit': tabRoutes.dashboardPlansId,
   'dashboard-plans-id-members': tabRoutes.dashboardPlansId,
 }
 

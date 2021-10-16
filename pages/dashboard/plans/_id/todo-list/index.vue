@@ -1,40 +1,39 @@
 <template>
-  <v-row>
+  <v-row v-if="!isPlanActive">
     <v-col sm="3">
-      <todo-lists />
+      <TodoListsBase />
     </v-col>
     <v-col sm="9">
-      <todos />
+      <TodosItems />
     </v-col>
 
-    <todo-list-create-modal />
+    <TodoListsCreateModal />
   </v-row>
+
+  <div v-else class="ma-2" style="color: white">
+    計画実行中は編集できません
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import TodoLists from '~/components/protected/todos/TodoLists.vue'
-import Todos from '~/components/protected/todos/Todos.vue'
-import TodoListCreateModal from '~/components/protected/todos/TodoListCreateModal.vue'
+import { defineComponent, computed } from '@nuxtjs/composition-api'
+import { PlansStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
-  components: {
-    TodoLists,
-    Todos,
-    TodoListCreateModal
-  },
-
   layout: 'protected',
 
   middleware: ['initialize-store'],
 
   setup(){
-    setAppBarTabDialog('Todoリスト新規作成')
-  
-    return {
-
+    const isPlanActive = computed(() => PlansStore.currentPlan?.active)
+    if(!isPlanActive.value) {
+      setAppBarTabDialog('Todoリスト新規作成')
     }
-  }
+
+    return {
+      isPlanActive
+    }
+  },
 })
 </script>

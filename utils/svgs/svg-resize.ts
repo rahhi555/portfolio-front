@@ -1,5 +1,5 @@
-import { SVGRectMouseEvent } from 'interface'
 import { SvgsStore } from '~/store'
+import SvgViewbox from '~/utils/svgs/svg-viewbox'
 
 // リサイズ中ならtrueになる
 let isResizing = false
@@ -15,8 +15,10 @@ const MULTIPLE_NUMBER = 20
 
 // 変化する値は式に一つまでにしないと急勾配な変化具合になってしまう
 // 上への引っ張りはheightを増加させると同時にyを減少させる
-const resizeMiddleTop = (e: SVGRectMouseEvent) => {
-  const resizeHeight = startHeight + startY - e.offsetY
+const resizeMiddleTop = (e: PointerEvent) => {
+  // zoom倍率で割った非zoomの値+スクロール分の値
+  const mouseEventY = (e.offsetY / SvgViewbox.zoomParcentHeight()) + SvgViewbox.minY.value
+  const resizeHeight = startHeight + startY - mouseEventY
   if (resizeHeight > 0) {
     SvgsStore.changeSvg({
       status: 'height',
@@ -24,13 +26,16 @@ const resizeMiddleTop = (e: SVGRectMouseEvent) => {
     })
     SvgsStore.changeSvg({
       status: 'y',
-      value: Math.floor(e.offsetY / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+      value: Math.floor(mouseEventY / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
     })
   }
 }
 
-const resizeMiddleRight = (e: SVGRectMouseEvent) => {
-  const resizeWidth = e.offsetX - SvgsStore.targetSvg!.x
+const resizeMiddleRight = (e: PointerEvent) => {
+  // zoom倍率で割った非zoomの値
+  const mouseEventX = e.offsetX / SvgViewbox.zoomParcentWidth() 
+  // マウス位置 - 図形の左端 + スクロール分
+  const resizeWidth = mouseEventX - SvgsStore.targetSvg!.x + SvgViewbox.minX.value
   if (resizeWidth > 0) {
     SvgsStore.changeSvg({
       status: 'width',
@@ -39,8 +44,9 @@ const resizeMiddleRight = (e: SVGRectMouseEvent) => {
   }
 }
 
-const resizeMiddleBottom = (e: SVGRectMouseEvent) => {
-  const resizeHeight = e.offsetY - SvgsStore.targetSvg!.y
+const resizeMiddleBottom = (e: PointerEvent) => {
+  const mouseEventY = e.offsetY / SvgViewbox.zoomParcentHeight()
+  const resizeHeight = mouseEventY - SvgsStore.targetSvg!.y + SvgViewbox.minY.value
   if (resizeHeight > 0) {
     SvgsStore.changeSvg({
       status: 'height',
@@ -50,9 +56,11 @@ const resizeMiddleBottom = (e: SVGRectMouseEvent) => {
 }
 
 // // 左への引っ張りはwidthを増加させると同時にxを減少させる
-const resizeMiddleLeft = (e: SVGRectMouseEvent) => {
+const resizeMiddleLeft = (e: PointerEvent) => {
+  // mouseEventXはマウスカーソル位置とviewboxの位置を足したもの
+  const mouseEventX = (e.offsetX / SvgViewbox.zoomParcentWidth()) + SvgViewbox.minX.value
   // 現在のxよりクリックしているx座標が低くなればwidthが増える
-  const resizeWidth = startWidth + startX - e.offsetX
+  const resizeWidth = startWidth + startX - mouseEventX
   if (resizeWidth > 0) {
     // widthは増えるので切り上げ、xは減るので切り捨てする
     SvgsStore.changeSvg({
@@ -61,20 +69,21 @@ const resizeMiddleLeft = (e: SVGRectMouseEvent) => {
     })
     SvgsStore.changeSvg({
       status: 'x',
-      value: Math.floor(e.offsetX / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
+      value: Math.floor(mouseEventX / MULTIPLE_NUMBER) * MULTIPLE_NUMBER,
     })
   }
 }
 
 // --- リサイズ処理 ---
 export default {
-  resizeStart(e: SVGRectMouseEvent): void {
+  resizeStart(e: PointerEvent): void {
     SvgsStore.setTargetId(e)
     if (typeof SvgsStore.targetSvg === 'undefined') {
       return
     }
     isResizing = true
-    direction = e.target.classList[0]
+    const target = e.target as SVGGElement
+    direction = target.classList[0]
     switch (direction) {
       case 'top-line':
         startY = SvgsStore.targetSvg.y
@@ -87,7 +96,7 @@ export default {
     }
   },
 
-  resizeMiddle(e: SVGRectMouseEvent) {
+  resizeMiddle(e: PointerEvent) {
     if (isResizing) {
       switch (direction) {
         case 'top-line':

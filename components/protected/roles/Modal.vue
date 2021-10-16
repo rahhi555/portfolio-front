@@ -17,8 +17,7 @@
                   <td>{{ role.name }}</td>
                   <td>{{ role.description }}</td>
                   <td v-if="currentUserAccept">
-                    <role-modal-button :role="role"
-                    ></role-modal-button>
+                    <RolesModalButton :role="role" />
                   </td>
                 </tr>
               </tbody>
@@ -83,13 +82,8 @@ import {
 } from '@nuxtjs/composition-api'
 import { RolesStore, PlansStore, MembersStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
-import RoleModalButton from '~/components/protected/roles/RoleModalButton.vue'
 
 export default defineComponent({
-  components: {
-    RoleModalButton,
-  },
-
   setup() {
     const roleParams = ref({
       name: '',

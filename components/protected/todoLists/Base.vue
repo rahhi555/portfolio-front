@@ -11,7 +11,7 @@
           color="primary"
         >
           <v-list-item v-for="todoList in todoLists" :key="todoList.id">
-            <todo-list-item :todo-list="todoList"/>
+            <TodoListsItem :todo-list="todoList"/>
           </v-list-item>
         </v-list-item-group>
       </v-list-group>
@@ -24,13 +24,8 @@
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
 import { TodoListsStore } from '~/store'
-import TodoListItem from '~/components/protected/todos/TodoListItem.vue'
 
 export default defineComponent({
-  components: {
-    TodoListItem
-  },
-
   computed: {
     todoLists() {
       return TodoListsStore.todoList

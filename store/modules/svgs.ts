@@ -1,14 +1,26 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import {
-  SvgType,
+  AllSvgType,
   Rect,
-  SVGRectMouseEvent,
-  SVGRectKeyboardEvent,
 } from 'interface'
 import { MapsStore, SnackbarStore } from '~/store'
 import { $axios } from '~/utils/axios-accessor'
 
-type SvgTypeKeys = keyof SvgType
+type AllSvgTypeKeys = keyof AllSvgType
+
+export interface SvgParams {
+  id?: number
+  type?: 'Rect' | 'Path' | 'Polyline'
+  userId?: number
+  mapId?: number
+  x?: number
+  y?: number
+  name?: string
+  width?: number
+  height?: number
+  drawPoints?: string
+  displayTime?: number
+}
 
 @Module({
   name: 'modules/svgs',
@@ -16,59 +28,58 @@ type SvgTypeKeys = keyof SvgType
   namespaced: true,
 })
 export default class Svgs extends VuexModule {
-  private svgsState: SvgType[] = []
+  private svgsState: AllSvgType[] = []
 
   // すべてのsvgを返す
-  public get allRects(): Rect[] {
+  public get allSvgs(): Rect[] {
     return this.svgsState
   }
 
   // 現在のマップのsvgを返す
-  public get activeMapRects(): Rect[] {
-    const activeMapId = MapsStore.activeMap?.id
-    const svgs = this.svgsState.filter(
-      (svg) => svg.mapId === activeMapId && svg.type === 'Rect'
-    ) as Rect[]
-    return svgs.concat()
+  public get activeMapSvgs() {
+    return (type: 'Rect' | 'Path' | 'Polyline') => {
+      const activeMapId = MapsStore.activeMap?.id
+      const svgs = this.svgsState.filter(
+        (svg) => svg.mapId === activeMapId && svg.type === type
+      )
+      return svgs
+    }
   }
 
   // 移動中のrectのidを固定する変数。これがないと素早くマウスを動かした時にイベントターゲットが存在せずエラーになる。
   private targetId: number = 0
 
-  // 操作中のsvgのElement。これを指定して表示順を操作する。
-  private targetElement: SVGGElement | null = null
 
   @Mutation
-  public setTargetId(e: SVGRectMouseEvent | SVGRectKeyboardEvent | number) {
+  public setTargetId(e: PointerEvent | KeyboardEvent | number) {
     if (typeof e === 'number') {
       this.targetId = e
-      this.targetElement = null
       return
     }
-    const parentSVG = e.target.parentNode
+    const target = e.target as SVGGElement
+    const parentSVG = target.parentNode
     if (!(parentSVG instanceof SVGGElement)) {
       return
     }
-    this.targetElement = parentSVG
 
-    const id = Number(parentSVG?.id.replace('rect-', ''))
+    const id = Number(parentSVG?.id.replace('svg-', ''))
     this.targetId = id
   }
 
-  public get targetSvg(): SvgType | undefined {
+  public get targetSvg(): AllSvgType | undefined {
     return this.svgsState.find((svg) => svg.id === this.targetId)
   }
 
   // svg全取得
   @Mutation
-  private setSvgsMutation(svgs: SvgType[]) {
+  private setSvgsMutation(svgs: AllSvgType[]) {
     this.svgsState = svgs
   }
 
   @Action
   public async indexSvgs(planId: string) {
     await $axios
-      .$get<SvgType[]>(`/api/v1/plans/${planId}/svgs`)
+      .$get<AllSvgType[]>(`/api/v1/plans/${planId}/svgs`)
       .then((svgs) => {
         for (const svg of svgs) {
           svg.isUpdated = false
@@ -79,21 +90,13 @@ export default class Svgs extends VuexModule {
 
   // svg作成
   @Mutation
-  private addSvgMutation(svg: SvgType) {
+  public addSvgMutation(svg: AllSvgType) {
     this.svgsState.push(svg)
   }
 
   @Action
-  public addRect() {
-    const svg = {
-      type: 'Rect',
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100,
-      name: 'new Rect',
-    }
-    $axios
+  public async addSvg(svg: SvgParams) {
+    await $axios
       .$post(`/api/v1/maps/${MapsStore.activeMap.id}/svgs`, { svg })
       .then((res) => this.addSvgMutation(res))
       .catch(() =>
@@ -111,11 +114,11 @@ export default class Svgs extends VuexModule {
     value,
     otherTargetId,
   }: {
-    status: SvgTypeKeys
+    status: AllSvgTypeKeys
     value: number | string
     otherTargetId?: number
   }) {
-    let target: SvgType | undefined
+    let target: AllSvgType | undefined
 
     if (otherTargetId) {
       target = this.svgsState.find((svg) => svg.id === otherTargetId)
@@ -124,12 +127,16 @@ export default class Svgs extends VuexModule {
     }
 
     if (!target) return
-    target.isUpdated = true
+
+    if(target.isUpdated !== undefined) {
+      target.isUpdated = true
+    }
+
     // @ts-ignore
     target[status] = value
   }
 
-  private get updatedSvgs(): SvgType[] {
+  private get updatedSvgs(): AllSvgType[] {
     return this.svgsState.filter((svg) => svg.isUpdated)
   }
 
@@ -178,13 +185,14 @@ export default class Svgs extends VuexModule {
 
   // svg削除
   @Mutation
-  private deleteSvgMutation() {
-    const index = this.svgsState.findIndex((svg) => svg.id === this.targetId)
+  public deleteSvgMutation(id?: number) {
+    const targetId = id === undefined ? this.targetId : id
+    const index = this.svgsState.findIndex((svg) => svg.id === targetId)
     this.svgsState.splice(index, 1)
   }
 
   @Action
-  public async deleteSvg(e: SVGRectKeyboardEvent) {
+  public async deleteSvg(e: KeyboardEvent | number | PointerEvent) {
     this.setTargetId(e)
     await $axios.$delete(`/api/v1/svgs/${this.targetId}`).then(() => {
       this.deleteSvgMutation()
@@ -194,7 +202,7 @@ export default class Svgs extends VuexModule {
 
   // svg並び替え
   @Mutation
-  private sortSvgs(sort: SvgTypeKeys) {
+  private sortSvgs(sort: AllSvgTypeKeys) {
     // @ts-ignore
     this.svgsState.sort((svg1, svg2) => svg1[sort] - svg2[sort])
   }
@@ -202,7 +210,7 @@ export default class Svgs extends VuexModule {
   // svg表示順変更
   @Action({ rawError: true })
   public changeOrder(order: 'top' | 'bottom' | 'up' | 'down') {
-    if (!this.targetElement || !this.targetSvg) {
+    if (!this.targetSvg) {
       return
     }
     const targetX = {
@@ -214,7 +222,7 @@ export default class Svgs extends VuexModule {
       end: this.targetSvg.y + this.targetSvg.height,
     }
     // 現在操作している図形に重なっている図形
-    const overlapRects: Rect[] = this.activeMapRects.filter((rect) => {
+    const overlapRects: Rect[] = this.activeMapSvgs('Rect').filter((rect) => {
       if (rect.id === this.targetSvg?.id) return false
 
       const rectX = { start: rect.x, end: rect.x + rect.width }
@@ -301,7 +309,7 @@ export default class Svgs extends VuexModule {
 
   // todoリストをsvgにアタッチまたはデタッチ
   @Mutation
-  private attachTodoListMutation(svg: SvgType) {
+  private attachTodoListMutation(svg: AllSvgType) {
     const target = this.svgsState.find(s => s.id === svg.id )
     target!.fill = svg.fill
     target!.todoListId = svg.todoListId

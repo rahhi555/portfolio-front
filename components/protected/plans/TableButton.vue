@@ -25,7 +25,9 @@
             v-text="'mdi-eye-remove'"
           />
           <v-icon
-            v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
+            v-else-if="
+              !isMyPlan(item) && myMember(item) && myMember(item).accept
+            "
             v-bind="attrs"
             v-on="on"
             v-text="'mdi-eye-check-outline'"
@@ -36,7 +38,10 @@
         <span v-else-if="isMyPlan(item) && !item.published"
           >マイ計画：非公開</span
         >
-        <span v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept">公開：承認済み</span>
+        <span
+          v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
+          >公開：承認済み</span
+        >
         <span v-else>公開：未承認</span>
       </v-tooltip>
     </app-btn>
@@ -60,7 +65,9 @@
             v-text="'mdi-eye-remove-outline'"
           />
         </template>
-        <span v-if="myMember(item) && myMember(item).accept">非公開：承認済み</span>
+        <span v-if="myMember(item) && myMember(item).accept"
+          >非公開：承認済み</span
+        >
         <span v-else>非公開：未承認</span>
       </v-tooltip>
     </app-btn>
@@ -77,14 +84,18 @@
             v-text="'mdi-import'"
           />
           <v-icon
-            v-else-if="!isMyPlan(item) && myMember(item) && !myMember(item).accept"
+            v-else-if="
+              !isMyPlan(item) && myMember(item) && !myMember(item).accept
+            "
             color="warning"
             v-bind="attrs"
             v-on="on"
             v-text="'mdi-import'"
           />
           <v-icon
-            v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
+            v-else-if="
+              !isMyPlan(item) && myMember(item) && myMember(item).accept
+            "
             color="success"
             v-bind="attrs"
             v-on="on"
@@ -100,17 +111,19 @@
           />
         </template>
         <span v-if="!isMyPlan(item) && !myMember(item)">承認リクエスト</span>
-        <span v-else-if="!isMyPlan(item) && myMember(item) && !myMember(item).accept"
+        <span
+          v-else-if="
+            !isMyPlan(item) && myMember(item) && !myMember(item).accept
+          "
           >承認待ち</span
         >
-        <span v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
+        <span
+          v-else-if="!isMyPlan(item) && myMember(item) && myMember(item).accept"
           >承認済み</span
         >
         <span v-else>削除</span>
       </v-tooltip>
     </app-btn>
-
-    
   </span>
 </template>
 
@@ -121,7 +134,10 @@ import { UserStore, SnackbarStore, PlansStore } from '~/store'
 
 export default defineComponent({
   props: {
-    item: Object,
+    item: {
+      type: Object,
+      default: null,
+    },
   },
 
   setup() {
@@ -148,7 +164,7 @@ export default defineComponent({
 
       $axios
         .$post(`/api/v1/plans/${item.id}/members`, { member })
-        .then(member => PlansStore.addMember({id: item.id, member}))
+        .then((member) => PlansStore.addMember({ id: item.id, member }))
         .catch(() => SnackbarStore.catchError())
         .finally(() =>
           SnackbarStore.CRUDvisible({ model: '承認リクエスト', crud: 'create' })
