@@ -6,7 +6,8 @@
       </v-col>
     </client-only>
 
-    <v-col max-width="100%" rounded cols="12" md="9">
+    <v-col max-width="100%" rounded cols="12" md="9" style="position: relative;">
+      <MapsGoogleMap />
       <SvgsBase />
       <MapsFooterBase
         :justify-content="

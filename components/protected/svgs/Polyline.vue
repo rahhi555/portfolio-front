@@ -19,6 +19,7 @@ import {
 } from '@nuxtjs/composition-api'
 import { Polyline } from 'interface'
 import { SvgsStore, MembersStore } from '~/store'
+import CommonUI from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -26,16 +27,13 @@ export default defineComponent({
       type: Object,
       default: null,
     },
-    isEditPage: {
-      type: Boolean,
-    },
   },
 
   setup(props) {
     const polyline = props.polyline as Polyline
 
     const deletePolyline = (id: number) => {
-      if (!props.isEditPage) return
+      if (!CommonUI.isEditPage.value) return
       SvgsStore.deleteSvg(id)
     }
 

@@ -30,9 +30,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, useRoute } from '@nuxtjs/composition-api'
+import { defineComponent, ref, computed } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
 import SvgContextMenu from '~/utils/ui/svg-context-menu'
+import CommonUI from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -60,15 +61,12 @@ export default defineComponent({
     const isShowMenu = ref(SvgContextMenu.isShowMenu)
     const position = SvgContextMenu.position
 
-    const route = useRoute()
-    const isEditPage = route.value.name?.endsWith('edit')
-
     return {
       hasTodoList,
       detachTodoList,
       isShowMenu,
       position,
-      isEditPage
+      isEditPage: CommonUI.isEditPage
     }
   },
 })

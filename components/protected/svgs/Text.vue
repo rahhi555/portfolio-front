@@ -35,6 +35,7 @@ import { Rect } from 'interface'
 import { SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
 import Path from '~/utils/svgs/svg-add-path'
 import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
+import CommonUI from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -42,9 +43,6 @@ export default defineComponent({
       type: Object,
       default: null,
     },
-    isEditPage: {
-      type: Boolean
-    }
   },
 
   setup(props) {
@@ -54,11 +52,9 @@ export default defineComponent({
       return Path.isAddPathMode.value || AddEventSpaceKey.isSpaceKeyPress.value
     })
 
-    const isEditPage = props.isEditPage
-
     const isEditSvgName = ref(false)
     const editSvgName = () => {
-      if(!isEditPage) return
+      if(!CommonUI.isEditPage.value) return
       isEditSvgName.value = true
       nextTick(() => {
         document.getElementById(`edit-svg-form-${rect.id}`)?.focus()
@@ -81,7 +77,8 @@ export default defineComponent({
       isEditSvgName,
       editSvgName,
       updateSvgName,
-      isAnyMode
+      isAnyMode,
+      isEditPage: CommonUI.isEditPage
     }
   },
 

@@ -52,7 +52,7 @@
       :class="{ 'left-line': isEditPage && !isSomeTrueModes }"
       @pointerdown.stop="resizeStart"
     />
-    <SvgsText :rect="rect" :is-edit-page="isEditPage"></SvgsText>
+    <SvgsText :rect="rect"></SvgsText>
   </g>
 </template>
 
@@ -60,6 +60,7 @@
 import {
   defineComponent,
   reactive,
+  useContext
 } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
 import { SvgsStore, TodoListsStore } from '~/store'
@@ -68,6 +69,7 @@ import Resize from '~/utils/svgs/svg-resize'
 import TodoListAttach from '~/utils/helpers/todo-list-attach'
 import ContextMenu from '~/utils/ui/svg-context-menu'
 import Cursor from '~/utils/ui/svg-cursor'
+import CommonUI from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -75,15 +77,12 @@ export default defineComponent({
       type: Object,
       default: null,
     },
-    isEditPage: {
-      type: Boolean
-    },
   },
 
-   setup(props) {
+   setup() {
     // 編集ページ判定、ピン挿入モード判定、スクロールモード判定
     const modes = reactive({
-      isEditPage: props.isEditPage,
+      isEditPage: CommonUI.isEditPage.value,
       isSomeTrueModes: Cursor.isSomeTrueModes
     })
     
@@ -122,25 +121,22 @@ export default defineComponent({
     }
 
     // svgの色。todoの進行状況によって変化する
-    const fill = (rect: Rect) => {
-      const NO_ATTACH_COLOR = 'white'
-      const TODO_COLOR = '#cccccc'
-      const DOING_COLOR = '#E6EE9C'
-      const DONE_COLOR = '#66BB6A'
+    const { $config } = useContext()
 
+    const fill = (rect: Rect) => {
       const { todoListId } = rect
-      if (!todoListId) return NO_ATTACH_COLOR
+      if (!todoListId) return $config.rectColors.NO_ATTACH_COLOR
 
       const todos = TodoListsStore.todoList.find(
         (todoList) => todoList.id === todoListId
       )?.todos
-      if (!todos || !todos.length) return NO_ATTACH_COLOR
+      if (!todos || !todos.length) return $config.rectColors.NO_ATTACH_COLOR
       if (todos.every((todo) => todo.status === 'todo')) {
-        return TODO_COLOR
+        return $config.rectColors.TODO_COLOR
       } else if (todos.every((todo) => todo.status === 'done')) {
-        return DONE_COLOR
+        return $config.rectColors.DONE_COLOR
       } else {
-        return DOING_COLOR
+        return $config.rectColors.DOING_COLOR
       }
     }
 
@@ -169,7 +165,8 @@ export default defineComponent({
       attachTodoListLeave: () => TodoListAttach.attachTodoListLeave(),
       fill,
       selectRect,
-      isSomeTrueModes: Cursor.isSomeTrueModes
+      isSomeTrueModes: Cursor.isSomeTrueModes,
+      isEditPage: modes.isEditPage
     }
   },
 })
