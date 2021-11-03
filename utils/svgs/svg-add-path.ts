@@ -1,16 +1,12 @@
-import { ref, computed } from '@nuxtjs/composition-api'
+import { ref } from '@nuxtjs/composition-api'
 import svgViewbox from './svg-viewbox'
 import { MapsStore, SvgsStore, UserStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
 import SpaceKey from '~/utils/helpers/add-event-space-press'
+import CommonUI from '~/utils/ui/common'
 
 // Path挿入モード判定
 const isAddPathMode = ref(false)
-// editページ判定
-const isEditPage = computed(() => {
-  if (process.server) return false
-  return window.$nuxt.$route.name?.endsWith('edit')
-})
 
 // displayTimeのない永続的パス。editページで挿入
 const addStaticPath = (e: PointerEvent) => {
@@ -52,7 +48,7 @@ export default {
   // showページ、editページによって処理を切り替える
   addPath: (e: PointerEvent) => {
     if (SpaceKey.isSpaceKeyPress.value || !isAddPathMode.value) return
-    if (isEditPage.value) {
+    if (CommonUI.isEditPage.value) {
       addStaticPath(e)
     } else {
       sendActivePath(e)

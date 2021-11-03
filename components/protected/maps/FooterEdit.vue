@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <v-row align="center">
     <v-btn-toggle v-model="selected" dense>
       <v-tooltip top>
         <template #activator="{ on, attrs }">
@@ -30,11 +30,20 @@
         <span>マーカー</span>
       </v-tooltip>
     </v-btn-toggle>
-  </span>
+
+    <v-row align="center" class="ml-4">
+      <v-switch
+        v-model="isGoogleMapEditMode"
+      ></v-switch>
+      <span :class="['switch-text',{'active-mode': !isGoogleMapEditMode}]">ミニマップ</span>
+      <span class="switch-text">/</span>
+      <span :class="['switch-text',{'active-mode': isGoogleMapEditMode}]">グーグルマップ</span>
+    </v-row>
+  </v-row>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
+import { defineComponent, ref, watch, useContext } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
 import Path from '~/utils/svgs/svg-add-path'
@@ -83,10 +92,22 @@ export default defineComponent({
       SvgsStore.addSvg(rect)
     }
 
+    const { $googleMap } = useContext()
+
     return {
       addRect,
       selected,
+      isGoogleMapEditMode: $googleMap.isGoogleMapEditMode
     }
   },
 })
 </script>
+
+<style scoped lang="sass">
+.switch-text
+  color: gray
+
+.active-mode
+  color: white
+  font-weight: bold
+</style>

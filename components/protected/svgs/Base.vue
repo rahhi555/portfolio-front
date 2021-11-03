@@ -1,15 +1,15 @@
 <template>
   <v-sheet
     ref="svgSheet"
-    style="touch-action: none"
-    color="gray"
     elevation="6"
-    height="75vh"
+    class="svg-base-sheet"
+    style="transrate: rotate(-30);"
   >
     <svg
+      v-if="!isGoogleMapEditMode"
       id="svg-base"
       :class="{ 'mysvg-edit': isEditPage }"
-      width="100%"
+      width="100%¥"
       height="100%"
       :viewBox="viewBoxStr"
       xmlns="http://www.w3.org/2000/svg"
@@ -32,26 +32,25 @@
       "
       @wheel.prevent="zoomInOut"
     >
-      <SvgsRect
-        v-for="rect in rects" 
-        :key="rect.id"
-        :rect="rect"
-        :is-edit-page="isEditPage"
-      ></SvgsRect>
+    
+    <SvgsRect
+      v-for="rect in rects" 
+      :key="rect.id"
+      :rect="rect"
+    ></SvgsRect>
 
-      <SvgsPath
-        v-for="path in paths"
-        :key="path.id"
-        :path="path"
-        :is-edit-page="isEditPage"
-      ></SvgsPath>
+    <SvgsPath
+      v-for="path in paths"
+      :key="path.id"
+      :path="path"
+    ></SvgsPath>
 
-      <SvgsPolyline
-        v-for="polyline in polylines"
-        :key="polyline.id"
-        :polyline="polyline"
-        :is-edit-page="isEditPage"
-      ></SvgsPolyline>
+    <SvgsPolyline
+      v-for="polyline in polylines"
+      :key="polyline.id"
+      :polyline="polyline"
+    ></SvgsPolyline>
+    
     </svg>
 
     <slot></slot>
@@ -65,7 +64,7 @@
       >
     </v-chip>
 
-    <v-tooltip top>
+    <v-tooltip v-if="!isGoogleMapEditMode" top>
       <template #activator="{ on, attrs }">
         <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on"
           >mdi-magnify-remove-outline</v-icon
@@ -83,7 +82,7 @@ import {
   defineComponent,
   computed,
   watch,
-  useRoute,
+  useContext,
 } from '@nuxtjs/composition-api'
 import { debounce } from 'mabiki'
 import { SvgsStore } from '~/store'
@@ -94,6 +93,7 @@ import Resize from '~/utils/svgs/svg-resize'
 import Path from '~/utils/svgs/svg-add-path'
 import Polyline from '~/utils/svgs/svg-add-polyline'
 import Cursor from '~/utils/ui/svg-cursor'
+import CommonUI from '~/utils/ui/common'
 
 
 export default defineComponent({
@@ -108,8 +108,11 @@ export default defineComponent({
     Cursor.mounted()
 
     // 現在のページが編集ページかどうか
-    const route = useRoute()
-    const isEditPage = computed(() => route.value.name?.endsWith('edit'))
+    const isEditPage = CommonUI.isEditPage
+
+    // 編集ページかつGoogleMap編集ページかどうか
+    const { $googleMap } = useContext()
+    const isGoogleMapEditMode = computed(() => isEditPage.value && $googleMap.isGoogleMapEditMode.value)
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
@@ -157,17 +160,22 @@ export default defineComponent({
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       reset: () => ViewBox.reset(),
       isEditPage,
+      isGoogleMapEditMode
     }
   },
 })
 </script>
 
 <style scoped lang="sass">
+.svg-base-sheet
+  height: 75vh
+  touch-action: none
+  background-color: transparent
+  
 .mysvg-edit
-  background-image: linear-gradient(90deg, transparent 19px, #333 20px), linear-gradient(0deg, transparent 19px, #333 20px)
+  background-image: linear-gradient(90deg, transparent 19px, #ddd 20px), linear-gradient(0deg, transparent 19px, #ddd 20px)
   background-size: 20px 20px
   background-repeat: repeat
-  background-color: #ddd
 
 .pointer
   cursor: pointer

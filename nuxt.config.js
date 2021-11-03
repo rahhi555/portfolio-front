@@ -23,7 +23,8 @@ export default {
     '~/plugins/axios.ts',
     '~/plugins/vee-validate.js',
     '~/plugins/auth.client.ts',
-    '~/plugins/actioncable.client.ts'
+    '~/plugins/actioncable.client.ts',
+    '~/plugins/googlemap.ts',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -41,7 +42,7 @@ export default {
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
     '@nuxtjs/composition-api/module',
-    '@nuxtjs/device'
+    '@nuxtjs/device',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -70,7 +71,14 @@ export default {
       serverMiddlewareURL: process.env.SERVER_MIDDLEWARE_URL || 'http://localhost/server',
       browserBaseURL: process.env.BROWSER_BASE_URL || 'http://localhost:3000',
     },
-    actioncable: process.env.ACTION_CABLE_URL || 'ws://localhost:3000/cable'
+    actioncable: process.env.ACTION_CABLE_URL || 'ws://localhost:3000/cable',
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+    rectColors: {
+      NO_ATTACH_COLOR: 'rgba(225,222,227,0.5)',
+      TODO_COLOR: 'rgba(127,124,128,0.5)',
+      DOING_COLOR: 'rgba(212,252,172,0.5)',
+      DONE_COLOR: 'rgba(82,245,54,0.6)'
+    }
   },
 
   privateRuntimeConfig: {
