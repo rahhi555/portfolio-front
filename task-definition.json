@@ -50,8 +50,8 @@
           "name": "ACTION_CABLE_URL"
         },
         {
-          "name": "GOOGLE_MAPS_API_KEY",
-          "valueFrom": "/front/googleMapsApiKey"
+          "valueFrom": "/front/googleMapsApiKey",
+          "name": "GOOGLE_MAPS_API_KEY"
         }
       ],
       "dockerSecurityOptions": null,
