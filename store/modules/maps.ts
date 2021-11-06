@@ -5,6 +5,17 @@ import { SnackbarStore } from '~/utils/store-accessor'
 
 const MODEL = 'マップ'
 
+interface MapParams {
+  id?: number
+  planId?: number
+  name?: string
+  isGoogleMap?: boolean
+  address?: string
+  lat?: number
+  lng?: number
+  zoom?: number
+}
+
 @Module({
   name: 'modules/maps',
   stateFactory: true,
@@ -53,13 +64,16 @@ export default class Maps extends VuexModule {
   private deleteMapMutation(id: number) {
     const index = this.mapsState.findIndex(map => map.id === id)
     this.mapsState.splice(index, 1)
+    if(index !== 0) {
+      this.activeIndexState = index - 1
+    }
   }
 
   @Mutation
-  private updateMapMutation(map: Map) {
-    const { id, name } = map
-    const target = this.mapsState?.find((value) => value.id === id)
-    target!.name = name
+  private updateMapMutation(newMap: Map) {
+    const { id } = newMap
+    const index = this.mapsState?.findIndex((map) => map.id === id)
+    this.mapsState.splice(index, 1, newMap)
   }
 
   @Action
@@ -71,8 +85,8 @@ export default class Maps extends VuexModule {
   }
 
   @Action
-  public async createMap({ planId, name }: { planId: string, name: string }) {
-    const map = { name }
+  public async createMap({ planId, name, isGoogleMap }: { planId: string, name: string, isGoogleMap: boolean }) {
+    const map = { name, isGoogleMap }
     await $axios
       .$post(`/api/v1/plans/${planId}/maps`, { map })
       .then(map => this.addMapMutation(map))
@@ -90,10 +104,10 @@ export default class Maps extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public async updateMap({ id, name }: { id: number, name: string }) {
-    const map = { name }
+  public async updateMap(params: MapParams) {
+    const map = params
     await $axios
-      .$patch(`/api/v1/maps/${id}`, { map })
+      .$patch(`/api/v1/maps/${params.id}`, { map })
       .then(res => this.updateMapMutation(res))
       .catch(() => SnackbarStore.catchError())
       .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'update' }))    

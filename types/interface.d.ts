@@ -68,6 +68,11 @@ declare module 'interface' {
     id: number
     planId: number
     name: string
+    isGoogleMap: boolean
+    address: string
+    lat: number
+    lng: number
+    zoom: number
   }
 
   export interface Todo {
