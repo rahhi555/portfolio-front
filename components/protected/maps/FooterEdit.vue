@@ -3,7 +3,7 @@
     <v-btn-toggle v-model="selected" dense>
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn @click="addRect">
+          <v-btn :disabled="isGoogleMapEditMode" @click="addRect">
             <v-icon large v-bind="attrs" v-on="on"
               >mdi-rectangle-outline</v-icon
             >
@@ -14,7 +14,7 @@
 
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn>
+          <v-btn :disabled="isGoogleMapEditMode">
             <v-icon large v-bind="attrs" v-on="on">mdi-map-marker</v-icon>
           </v-btn>
         </template>
@@ -23,7 +23,7 @@
 
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn>
+          <v-btn :disabled="isGoogleMapEditMode">
             <v-icon large v-bind="attrs" v-on="on">mdi-marker</v-icon>
           </v-btn>
         </template>

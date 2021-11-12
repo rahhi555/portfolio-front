@@ -73,12 +73,13 @@ export default {
     },
     actioncable: process.env.ACTION_CABLE_URL || 'ws://localhost:3000/cable',
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+    mapId: process.env.NODE_ENV === 'production' ? '4e384070ccf92e35' : '4dc9698e063c78e7',
     rectColors: {
       NO_ATTACH_COLOR: 'rgba(225,222,227,0.5)',
       TODO_COLOR: 'rgba(127,124,128,0.5)',
       DOING_COLOR: 'rgba(212,252,172,0.5)',
       DONE_COLOR: 'rgba(82,245,54,0.6)'
-    }
+    },
   },
 
   privateRuntimeConfig: {

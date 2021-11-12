@@ -70,9 +70,8 @@ declare module 'interface' {
     name: string
     isGoogleMap: boolean
     address: string
-    lat: number
-    lng: number
-    zoom: number
+    bounds: google.maps.LatLngBoundsLiteral
+    heading: number
   }
 
   export interface Todo {

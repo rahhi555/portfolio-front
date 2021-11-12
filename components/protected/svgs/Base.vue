@@ -1,18 +1,14 @@
 <template>
-  <v-sheet
-    ref="svgSheet"
-    elevation="6"
-    class="svg-base-sheet"
-    style="transrate: rotate(-30);"
-  >
+  <v-sheet ref="svgSheet" elevation="6" class="svg-base-sheet">
     <svg
-      v-if="!isGoogleMapEditMode"
+      v-show="!isGoogleMapEditMode"
       id="svg-base"
       :class="{ 'mysvg-edit': isEditPage }"
       width="100%"
       height="100%"
       :viewBox="viewBoxStr"
       xmlns="http://www.w3.org/2000/svg"
+      style="border: solid 2px black;"
       @pointerdown.left="
         scrollBegin($event)
         addPath($event)
@@ -32,25 +28,15 @@
       "
       @wheel.prevent="zoomInOut"
     >
-    
-    <SvgsRect
-      v-for="rect in rects" 
-      :key="rect.id"
-      :rect="rect"
-    ></SvgsRect>
+      <SvgsRect v-for="rect in rects" :key="rect.id" :rect="rect"></SvgsRect>
 
-    <SvgsPath
-      v-for="path in paths"
-      :key="path.id"
-      :path="path"
-    ></SvgsPath>
+      <SvgsPath v-for="path in paths" :key="path.id" :path="path"></SvgsPath>
 
-    <SvgsPolyline
-      v-for="polyline in polylines"
-      :key="polyline.id"
-      :polyline="polyline"
-    ></SvgsPolyline>
-    
+      <SvgsPolyline
+        v-for="polyline in polylines"
+        :key="polyline.id"
+        :polyline="polyline"
+      ></SvgsPolyline>
     </svg>
 
     <slot></slot>
@@ -64,7 +50,7 @@
       >
     </v-chip>
 
-    <v-tooltip v-if="!isGoogleMapEditMode" top>
+    <v-tooltip v-if="!isGoogleMapEditMode && activeMapDisabledGoogleMap" top>
       <template #activator="{ on, attrs }">
         <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on"
           >mdi-magnify-remove-outline</v-icon
@@ -85,7 +71,7 @@ import {
   useContext,
 } from '@nuxtjs/composition-api'
 import { debounce } from 'mabiki'
-import { SvgsStore } from '~/store'
+import { MapsStore, SvgsStore } from '~/store'
 import ViewBox from '~/utils/svgs/svg-viewbox'
 import SpaceKey from '~/utils/helpers/add-event-space-press'
 import Drag from '~/utils/svgs/svg-drag'
@@ -94,7 +80,6 @@ import Path from '~/utils/svgs/svg-add-path'
 import Polyline from '~/utils/svgs/svg-add-polyline'
 import Cursor from '~/utils/ui/svg-cursor'
 import CommonUI from '~/utils/ui/common'
-
 
 export default defineComponent({
   setup() {
@@ -109,10 +94,17 @@ export default defineComponent({
 
     // 現在のページが編集ページかどうか
     const isEditPage = CommonUI.isEditPage
-
-    // 編集ページかつGoogleMap編集ページかどうか
+    
     const { $googleMap } = useContext()
-    const isGoogleMapEditMode = computed(() => isEditPage.value && $googleMap.isGoogleMapEditMode.value)
+    // 編集ページかつGoogleMap編集ページかどうか
+    const isGoogleMapEditMode = computed(
+      () => isEditPage.value && $googleMap.isGoogleMapEditMode.value
+    )
+    // 現在マップのgoogleMapが無効かどうか(isGoogleMapがfalseか)
+    const activeMapDisabledGoogleMap = computed(() => { 
+      if(!MapsStore.activeMap) return false
+      return !MapsStore.activeMap.isGoogleMap
+    })
 
     // viewBox操作
     const scrollBegin = (e: MouseEvent) => {
@@ -160,7 +152,8 @@ export default defineComponent({
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
       reset: () => ViewBox.reset(),
       isEditPage,
-      isGoogleMapEditMode
+      isGoogleMapEditMode,
+      activeMapDisabledGoogleMap
     }
   },
 })
@@ -171,7 +164,7 @@ export default defineComponent({
   height: 75vh
   touch-action: none
   background-color: transparent
-  
+
 .mysvg-edit
   background-image: linear-gradient(90deg, transparent 19px, #ddd 20px), linear-gradient(0deg, transparent 19px, #ddd 20px)
   background-size: 20px 20px

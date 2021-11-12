@@ -11,9 +11,8 @@ interface MapParams {
   name?: string
   isGoogleMap?: boolean
   address?: string
-  lat?: number
-  lng?: number
-  zoom?: number
+  bounds?: google.maps.LatLngBoundsLiteral
+  heading?: number
 }
 
 @Module({
