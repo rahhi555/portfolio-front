@@ -20,8 +20,9 @@ export default defineNuxtPlugin(({ $config }, inject) => {
       class SVGOverlay extends google.maps.OverlayView {
         private bounds_: google.maps.LatLngBounds
         private svg_: HTMLElement | null
+        private isHeading_: boolean
 
-        constructor(bounds: google.maps.LatLngBoundsLiteral, svg: HTMLElement) {
+        constructor(bounds: google.maps.LatLngBoundsLiteral, svg: HTMLElement, isHeading: boolean) {
           super()
 
           this.bounds_ = new google.maps.LatLngBounds({
@@ -30,6 +31,7 @@ export default defineNuxtPlugin(({ $config }, inject) => {
             lat: bounds.north, lng: bounds.east
           })
           this.svg_ = svg
+          this.isHeading_ = isHeading
         }
 
         onAdd() {
@@ -49,6 +51,13 @@ export default defineNuxtPlugin(({ $config }, inject) => {
           )!
 
           if (this.svg_) {
+            // 傾きがある場合のオーバーレイがうまくいかないので暫定的にオミット
+            if(this.isHeading_) {
+              this.svg_.style.visibility = 'hidden'
+            } else {
+              this.svg_.style.visibility = 'visible'
+            }
+
             const s = this.svg_.style
             s.left = sw.x + 'px'
             s.top = ne.y + 'px'
@@ -67,9 +76,9 @@ export default defineNuxtPlugin(({ $config }, inject) => {
       Overlay.value = SVGOverlay
     })
   }
-  const initOverlay = (bounds: google.maps.LatLngBoundsLiteral, svg: HTMLElement, map: google.maps.Map) => {
-    const overlay = new Overlay.value(bounds, svg) as google.maps.OverlayView
-    overlay.setMap(map)
+  const initOverlay = (bounds: google.maps.LatLngBoundsLiteral, svg: HTMLElement, isHeading: boolean) => {
+    const overlay = new Overlay.value(bounds, svg, isHeading) as google.maps.OverlayView
+    overlay.setMap(map.value!)
     return overlay
   }
 
@@ -90,7 +99,7 @@ declare module '@nuxt/types' {
     $googleMap: {
       loader: Loader
       isGoogleMapEditMode: Ref<boolean>
-      initOverlay: (bounds: google.maps.LatLngBoundsLiteral, svg: HTMLElement, map: google.maps.Map) => google.maps.OverlayView
+      initOverlay: (bounds: google.maps.LatLngBoundsLiteral, svg: HTMLElement, isHeading: boolean) => google.maps.OverlayView
       map: Ref<google.maps.Map>
     }
   }

@@ -15,6 +15,7 @@
         <v-btn
           v-show="todoListTitle !== 'Not Selected' && isEdit"
           icon
+          outlined
           @click="createDialog = true"
         >
           <v-icon>mdi-plus</v-icon>

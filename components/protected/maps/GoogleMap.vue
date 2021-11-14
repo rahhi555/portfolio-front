@@ -48,7 +48,7 @@
           small
           v-bind="attrs"
           v-on="on"
-          @click="rotateMap(10)"
+          @click="rotateMap(3)"
           ><v-icon>mdi-rotate-left</v-icon></v-btn
         >
       </template>
@@ -65,7 +65,7 @@
           small
           v-bind="attrs"
           v-on="on"
-          @click="rotateMap(-10)"
+          @click="rotateMap(-3)"
           ><v-icon>mdi-rotate-right</v-icon></v-btn
         >
       </template>
@@ -123,7 +123,7 @@ export default defineComponent({
         })
       }, (e) => console.error(e), {
         enableHighAccuracy: false,
-        maximumAge: 5 * 60 * 1000,
+        maximumAge: 10 * 60 * 1000,
         timeout: 10 * 1000
       })
     }
@@ -178,8 +178,6 @@ export default defineComponent({
           }
         )
 
-        map.value.fitBounds(bounds, 0)
-
         const buttons: [string, google.maps.ControlPosition][] = [
           [
             'set-current-position-icon',
@@ -196,13 +194,19 @@ export default defineComponent({
           map.value.controls[position].push(button)
         })
       })
-      // 初回起動時のアドレス表示の見た目が良くないので遅延させる
+      // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
       setTimeout(() => {
+        map.value.fitBounds(bounds, 0)
+        map.value.setHeading(heading)
         isInitMap.value = true
-      }, 800)
+      }, 500)
     })
-
-    watch(activeMap, () => {
+    
+    // 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
+    const activeMapId = computed(() => {
+      return activeMap.value.id
+    })
+    watch(activeMapId, () => {
       $googleMap.isGoogleMapEditMode.value = false
       const { bounds, heading } = activeMapBoundsHeading.value
       
@@ -237,7 +241,7 @@ export default defineComponent({
         overlay.value = $googleMap.initOverlay(
           activeMapBoundsHeading.value.bounds,
           cloneSvgBase,
-          map.value!
+          !!activeMapBoundsHeading.value.heading,
         )
         map.value.setOptions({
           disableDefaultUI: false
@@ -248,6 +252,7 @@ export default defineComponent({
         })
         overlay.value?.onRemove()
         map.value.fitBounds(activeMapBoundsHeading.value.bounds, 0)
+        map.value.setHeading(activeMapBoundsHeading.value.heading)
       }
     })
 
