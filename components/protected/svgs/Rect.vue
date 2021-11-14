@@ -120,9 +120,9 @@ export default defineComponent({
       SvgsStore.deleteSvg(e)
     }
 
-    // svgの色。todoの進行状況によって変化する
     const { $config } = useContext()
 
+    // 図形の色をtodoのステータスに合わせて変化させる
     const fill = (rect: Rect) => {
       const { todoListId } = rect
       if (!todoListId) return $config.rectColors.NO_ATTACH_COLOR
@@ -166,7 +166,7 @@ export default defineComponent({
       fill,
       selectRect,
       isSomeTrueModes: Cursor.isSomeTrueModes,
-      isEditPage: modes.isEditPage
+      isEditPage: modes.isEditPage,
     }
   },
 })

@@ -2,6 +2,7 @@ import { watchEffect, reactive, onMounted, computed } from '@nuxtjs/composition-
 import SpaceKey from '~/utils/helpers/add-event-space-press'
 import Path from '~/utils/svgs/svg-add-path'
 import Polyline from '~/utils/svgs/svg-add-polyline'
+import { MapsStore } from '~/store'
 
 const modes = reactive({
   isSpaceKeyPress: SpaceKey.isSpaceKeyPress,
@@ -21,6 +22,11 @@ const pathCursorStyle = `url(${require('@/assets/path.svg')}) 25 25, pointer`
 
 const polylineCursorStyle = `url(${require('@/assets/marker.svg')}) 10 10, pointer`
 
+const activeMapEnabledGoogleMap = computed(() => {
+  if(!MapsStore.activeMap) return false
+  return MapsStore.activeMap.isGoogleMap
+})
+
 export default {
   mounted() {
     onMounted(() => {
@@ -33,7 +39,8 @@ export default {
 
         const childSvgs = svgBase.querySelectorAll("[id ^= 'svg-']") as NodeListOf<HTMLElement>
 
-        if (modes.isSpaceKeyPress) {
+        // スペースキーが押下され、現在のマップがグーグルマップを使用しない
+        if (modes.isSpaceKeyPress && !activeMapEnabledGoogleMap.value) {
           svgBase.style.cursor = 'move'
           childSvgs.forEach(svg => { svg.style.cursor = 'move' })    
         } else if (modes.isPathMode) {

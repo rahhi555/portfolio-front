@@ -3,7 +3,7 @@
     <v-btn-toggle v-model="selected" dense>
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn @click="addRect">
+          <v-btn :disabled="isGoogleMapEditMode" @click="addRect">
             <v-icon large v-bind="attrs" v-on="on"
               >mdi-rectangle-outline</v-icon
             >
@@ -14,7 +14,7 @@
 
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn>
+          <v-btn :disabled="isGoogleMapEditMode">
             <v-icon large v-bind="attrs" v-on="on">mdi-map-marker</v-icon>
           </v-btn>
         </template>
@@ -23,7 +23,7 @@
 
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn>
+          <v-btn :disabled="isGoogleMapEditMode">
             <v-icon large v-bind="attrs" v-on="on">mdi-marker</v-icon>
           </v-btn>
         </template>
@@ -31,7 +31,7 @@
       </v-tooltip>
     </v-btn-toggle>
 
-    <v-row align="center" class="ml-4">
+    <v-row v-if="enabledGoogleMap" align="center" class="ml-4">
       <v-switch
         v-model="isGoogleMapEditMode"
       ></v-switch>
@@ -43,8 +43,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, useContext } from '@nuxtjs/composition-api'
-import { SvgsStore } from '~/store'
+import { defineComponent, ref, watch, useContext, computed } from '@nuxtjs/composition-api'
+import { MapsStore, SvgsStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
 import Path from '~/utils/svgs/svg-add-path'
 import Polyline from '~/utils/svgs/svg-add-polyline'
@@ -94,10 +94,15 @@ export default defineComponent({
 
     const { $googleMap } = useContext()
 
+    const enabledGoogleMap = computed(() => {
+      return !!MapsStore.activeMap && MapsStore.activeMap.isGoogleMap
+    })
+
     return {
       addRect,
       selected,
-      isGoogleMapEditMode: $googleMap.isGoogleMapEditMode
+      isGoogleMapEditMode: $googleMap.isGoogleMapEditMode,
+      enabledGoogleMap
     }
   },
 })

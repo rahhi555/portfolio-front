@@ -1,4 +1,5 @@
-import { computed, ref, onMounted } from '@nuxtjs/composition-api'
+import { computed, ref, onMounted, watch } from '@nuxtjs/composition-api'
+import { MapsStore } from '~/store'
 
 // svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
 const svgSheet = ref<Vue | null>(null)
@@ -32,6 +33,17 @@ const zoom = (scale: number) => {
   height.value = zoomedHeight
 }
 
+// ビューボックスを初期状態にする
+const reset = () => {
+  minX.value = 0
+  minY.value = 0
+  width.value = defaultWidth
+  height.value = defaultHeight  
+}
+
+// activeMapをwatchするためcomputedで定義
+const activeMap = computed(() => MapsStore.activeMap)
+
 export default {
   svgSheet,
 
@@ -43,6 +55,7 @@ export default {
     onMounted(() => {
       width.value = defaultWidth = svgSheet.value!.$el.clientWidth
       height.value = defaultHeight = svgSheet.value!.$el.clientHeight
+      watch(activeMap, reset)
     })
   },
 
@@ -61,6 +74,9 @@ export default {
   },
 
   scrollBegin(e: MouseEvent) {
+    // グーグルマップが有効の場合、スクロールは無効にする
+    if(MapsStore.activeMap.isGoogleMap) return
+
     isScrolling = true
     startPoint.x = e.clientX - minX.value
     startPoint.y = e.clientY - minY.value
@@ -68,19 +84,22 @@ export default {
 
   scrollMiddle(e: MouseEvent) {
     if (!isScrolling) return
-    const newX = e.clientX - startPoint.x
+    const newX = e.clientX - startPoint.x            
     const newY = e.clientY - startPoint.y
     minX.value = newX
     minY.value = newY
   },
 
-  scrollEnd() {
+  scrollEnd() { 
     isScrolling = false
     startPoint.x = 0
     startPoint.y = 0
   },
 
   zoomInOut(e: WheelEvent | { deltaY: number }) {
+    // グーグルマップが有効の場合、ズームイン・アウトは無効にする
+    if(MapsStore.activeMap.isGoogleMap) return
+
     const SCALE = 1.1
     if (e.deltaY < 0) {
       zoom(1 / SCALE)
@@ -89,10 +108,5 @@ export default {
     }
   },
 
-  reset() {
-    minX.value = 0
-    minY.value = 0
-    width.value = defaultWidth
-    height.value = defaultHeight
-  }
+  reset
 }

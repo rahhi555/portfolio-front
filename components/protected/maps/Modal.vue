@@ -13,7 +13,10 @@
               </thead>
               <tbody>
                 <tr v-for="map in maps" :key="map.name">
-                  <td>{{ map.name }}</td>
+                  <td>
+                    {{ map.name }}
+                    <v-chip x-small>{{map.address ? map.address : 'アドレスなし'}}</v-chip>
+                  </td>
                   <td>
                     <MapsModalButton :map="map"></MapsModalButton>
                   </td>
@@ -37,11 +40,24 @@
                   name="名前"
                 >
                   <v-text-field
-                    v-model="name"
+                    v-model="params.name"
                     label="マップ名"
                     required
                     :error-messages="errors[0]"
                   ></v-text-field>
+                </ValidationProvider>
+
+                <ValidationProvider
+                  v-slot="{ errors }"
+                  rules="required"
+                  name="GoogleMap使用"
+                >
+                  <v-checkbox
+                    v-model="params.isGoogleMap"
+                    label="GoogleMap使用"
+                    :error-messages="errors[0]"
+                    required
+                  ></v-checkbox>
                 </ValidationProvider>
               </v-card-text>
               <v-card-actions>
@@ -71,8 +87,8 @@ import {
   defineComponent,
   inject,
   useRoute,
-  ref,
   computed,
+  reactive,
 } from '@nuxtjs/composition-api'
 import { MapsStore, UserStore, PlansStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
@@ -80,18 +96,23 @@ import { AppBarDialogKey } from '~/types/injection-key'
 export default defineComponent({
   setup() {
     const route = useRoute()
-    const name = ref('')
+    const params = reactive({
+      name: '',
+      isGoogleMap: false
+    })
 
     const createMap = async () => {
       await MapsStore.createMap({
         planId: route.value.params.id,
-        name: name.value,
+        name: params.name,
+        isGoogleMap: params.isGoogleMap
       })
-      name.value = ''
+      params.name = ''
+      params.isGoogleMap = false
     }
 
     return {
-      name,
+      params,
       createMap,
       dialog: inject(AppBarDialogKey),
       maps: computed(() => MapsStore.maps),

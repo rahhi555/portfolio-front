@@ -68,6 +68,10 @@ declare module 'interface' {
     id: number
     planId: number
     name: string
+    isGoogleMap: boolean
+    address: string
+    bounds: google.maps.LatLngBoundsLiteral
+    heading: number
   }
 
   export interface Todo {
