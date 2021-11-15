@@ -48,7 +48,7 @@
           small
           v-bind="attrs"
           v-on="on"
-          @click="rotateMap(10)"
+          @click="rotateMap(5)"
           ><v-icon>mdi-rotate-left</v-icon></v-btn
         >
       </template>
@@ -65,7 +65,7 @@
           small
           v-bind="attrs"
           v-on="on"
-          @click="rotateMap(-10)"
+          @click="rotateMap(-5)"
           ><v-icon>mdi-rotate-right</v-icon></v-btn
         >
       </template>
@@ -285,14 +285,15 @@ export default defineComponent({
       } else {
         map.value.setZoom(map.value.getZoom()! + 0.5)
       }
-
-      // if(heading !== 0) map.value.setZoom(map.value.getZoom()! + 1)
+      // ズームインしてからboundsを取得する
       const bounds = map.value?.getBounds()?.toJSON()
+      
       const location = map.value?.getCenter()
 
       if (!bounds || !Number.isInteger(heading) || !location) return
       const geocoding = new google.maps.Geocoder()
 
+      // 逆ジオで住所文字列取得
       let address!: string
       await geocoding
         .geocode({ location, bounds, region: 'JP' })
@@ -300,11 +301,18 @@ export default defineComponent({
           address = res.results[0].formatted_address.split(' ')[1]
         })
         .catch((e) => alert(e))
+
+      // 設定時の画面の縦横を取得し、どのデバイスごとの描写差をなくす
+      const width = map.value.getDiv().clientWidth
+      const height = map.value.getDiv().clientHeight
+
       await MapsStore.updateMap({
         id: activeMap.value.id,
         address,
         bounds,
         heading,
+        width,
+        height
       })
       $googleMap.isGoogleMapEditMode.value = false
     }
