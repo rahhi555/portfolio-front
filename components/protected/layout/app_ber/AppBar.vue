@@ -18,7 +18,7 @@
 
     <v-spacer />
 
-    <notifications />
+    <!-- <notifications /> -->
 
     <account />
   </v-app-bar>
@@ -28,7 +28,7 @@
 import { defineComponent } from '@nuxtjs/composition-api'
 import GoHome from './AppBarGoHome.vue'
 import DrawerToggle from './AppBarDrawerToggle.vue'
-import Notifications from './AppBarNotifications.vue'
+// import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { PlansStore } from '~/store'
@@ -37,7 +37,7 @@ export default defineComponent({
   components: {
     GoHome,
     DrawerToggle,
-    Notifications,
+    // Notifications,
     Account,
     Tab,
   },

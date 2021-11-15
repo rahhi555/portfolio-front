@@ -53,8 +53,10 @@ export default {
 
   mounted() {
     onMounted(() => {
-      width.value = defaultWidth = svgSheet.value!.$el.clientWidth
-      height.value = defaultHeight = svgSheet.value!.$el.clientHeight
+      defaultWidth = MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
+      defaultHeight = MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
+      width.value = defaultWidth
+      height.value = defaultHeight
       watch(activeMap, reset)
     })
   },

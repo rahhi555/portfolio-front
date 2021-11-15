@@ -6,6 +6,13 @@ const isEditPage = computed(() => {
   return window.$nuxt.$route.name?.endsWith('edit')
 })
 
+// showページ判定
+const isShowPage = computed(() => {
+  if (process.server) return false
+  return window.$nuxt.$route.name?.endsWith('show')
+})
+
 export default {
-  isEditPage
+  isEditPage,
+  isShowPage
 }

@@ -6,7 +6,7 @@
       </v-col>
     </client-only>
 
-    <v-col max-width="100%" rounded cols="12" md="9" style="position: relative;">
+    <v-col max-width="100%" rounded cols="12" md="9" style="position: relative">
       <MapsGoogleMap />
       <SvgsBase />
       <MapsFooterBase
@@ -27,7 +27,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import {
+  defineComponent,
+} from '@nuxtjs/composition-api'
 import { PlansStore } from '~/store'
 
 export default defineComponent({

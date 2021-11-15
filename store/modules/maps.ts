@@ -13,6 +13,8 @@ interface MapParams {
   address?: string
   bounds?: google.maps.LatLngBoundsLiteral
   heading?: number
+  width?: number
+  height?: number
 }
 
 @Module({

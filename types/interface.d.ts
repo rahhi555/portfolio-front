@@ -72,6 +72,8 @@ declare module 'interface' {
     address: string
     bounds: google.maps.LatLngBoundsLiteral
     heading: number
+    width: number
+    height: number
   }
 
   export interface Todo {
