@@ -48,7 +48,7 @@
           small
           v-bind="attrs"
           v-on="on"
-          @click="rotateMap(3)"
+          @click="rotateMap(10)"
           ><v-icon>mdi-rotate-left</v-icon></v-btn
         >
       </template>
@@ -65,7 +65,7 @@
           small
           v-bind="attrs"
           v-on="on"
-          @click="rotateMap(-3)"
+          @click="rotateMap(-10)"
           ><v-icon>mdi-rotate-right</v-icon></v-btn
         >
       </template>
@@ -114,18 +114,22 @@ export default defineComponent({
         alert('現在位置情報は使用不可です')
         return
       }
-      navigator.geolocation.getCurrentPosition((position) => {
-        if(skipSetCenter) return
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (skipSetCenter) return
 
-        map.value?.setCenter({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        })
-      }, (e) => console.error(e), {
-        enableHighAccuracy: false,
-        maximumAge: 10 * 60 * 1000,
-        timeout: 10 * 1000
-      })
+          map.value?.setCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          })
+        },
+        (e) => console.error(e),
+        {
+          enableHighAccuracy: false,
+          maximumAge: 10 * 60 * 1000,
+          timeout: 10 * 1000,
+        }
+      )
     }
 
     // 現在のマップのグーグルマップ使用フラグ
@@ -145,7 +149,7 @@ export default defineComponent({
       let bounds: google.maps.LatLngBoundsLiteral
       let heading: number
 
-      if(!activeMap.value) {
+      if (!activeMap.value) {
         bounds = DEFAULT_BOUNDS
         heading = 0
         return { bounds, heading }
@@ -158,7 +162,7 @@ export default defineComponent({
 
     // マップの初期化処理終了フラグ
     const isInitMap = ref(false)
-    
+
     // 初期化処理
     onMounted(() => {
       setCurrentPosition(true)
@@ -201,15 +205,16 @@ export default defineComponent({
         isInitMap.value = true
       }, 500)
     })
-    
+
     // 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
     const activeMapId = computed(() => {
+      if (!activeMap.value) return false
       return activeMap.value.id
     })
     watch(activeMapId, () => {
       $googleMap.isGoogleMapEditMode.value = false
       const { bounds, heading } = activeMapBoundsHeading.value
-      
+
       // mapのdom要素が表示されてからじゃないと失敗する
       nextTick(() => {
         map.value.fitBounds(bounds, 0)
@@ -221,6 +226,12 @@ export default defineComponent({
     const overlay = ref<google.maps.OverlayView>()
     watch($googleMap.isGoogleMapEditMode, () => {
       if ($googleMap.isGoogleMapEditMode.value) {
+        map.value.setOptions({
+          disableDefaultUI: false,
+        })
+
+        if (!activeMap.value.address) return
+
         // オーバーレイ削除時のミニマップ消失を防ぐため、複製したミニマップをオーバーレイ対象にする
         const svgBase = document.getElementById('svg-base')!
         const cloneSvgBase = svgBase.cloneNode(true) as HTMLElement
@@ -228,27 +239,27 @@ export default defineComponent({
         // ベースとなるミニマップは非表示にする
         cloneSvgBase.style.visibility = 'visible'
         // テキストの「ダブルクリックで名前変更」を非表示にする(v-bindが効かなかったため、直接クラスを削除する)
-        const childTexts = cloneSvgBase.querySelectorAll("[id ^= 'rect-text-']") as NodeListOf<SVGTextElement>
-        childTexts.forEach(text => {
+        const childTexts = cloneSvgBase.querySelectorAll(
+          "[id ^= 'rect-text-']"
+        ) as NodeListOf<SVGTextElement>
+        childTexts.forEach((text) => {
           text.classList.remove('tooltip-visible')
         })
         // Lineのクラスを削除し、ホバーした際のカーソルを初期化する
-        const childLines = cloneSvgBase.querySelectorAll("line") as NodeListOf<SVGLineElement>
-        childLines.forEach(line => {
+        const childLines = cloneSvgBase.querySelectorAll(
+          'line'
+        ) as NodeListOf<SVGLineElement>
+        childLines.forEach((line) => {
           line.setAttributeNS(null, 'class', '')
         })
 
         overlay.value = $googleMap.initOverlay(
           activeMapBoundsHeading.value.bounds,
-          cloneSvgBase,
-          !!activeMapBoundsHeading.value.heading,
+          cloneSvgBase
         )
-        map.value.setOptions({
-          disableDefaultUI: false
-        })
       } else {
         map.value.setOptions({
-          disableDefaultUI: true
+          disableDefaultUI: true,
         })
         overlay.value?.onRemove()
         map.value.fitBounds(activeMapBoundsHeading.value.bounds, 0)
@@ -261,8 +272,22 @@ export default defineComponent({
     })
 
     const updatePosition = async () => {
+      const heading = map.value?.getHeading()!
+
+      // 傾きが0と180のときは変化なし。その他は90と270に近いほどズームアウトしてしまうので、差をなくすためズームインする
+      if (heading === 0 || heading === 180) {
+        // empty
+      } else if (
+        (40 < heading && heading < 140) ||
+        (220 < heading && heading < 320)
+      ) {
+        map.value.setZoom(map.value.getZoom()! + 1)
+      } else {
+        map.value.setZoom(map.value.getZoom()! + 0.5)
+      }
+
+      // if(heading !== 0) map.value.setZoom(map.value.getZoom()! + 1)
       const bounds = map.value?.getBounds()?.toJSON()
-      const heading = map.value?.getHeading()
       const location = map.value?.getCenter()
 
       if (!bounds || !Number.isInteger(heading) || !location) return
@@ -270,22 +295,25 @@ export default defineComponent({
 
       let address!: string
       await geocoding
-        .geocode({ location ,bounds, region: 'JP' })
+        .geocode({ location, bounds, region: 'JP' })
         .then((res) => {
           address = res.results[0].formatted_address.split(' ')[1]
         })
         .catch((e) => alert(e))
-      MapsStore.updateMap({
+      await MapsStore.updateMap({
         id: activeMap.value.id,
         address,
         bounds,
-        heading
+        heading,
       })
+      $googleMap.isGoogleMapEditMode.value = false
     }
 
+    const heading = ref()
     // マップの回転処理
     const rotateMap = (amount: number) => {
       map.value.setHeading(map.value.getHeading()! + amount)
+      heading.value = map.value.getHeading()
     }
 
     return {
@@ -300,6 +328,7 @@ export default defineComponent({
         return activeMap.value.address || 'アドレス未指定'
       }),
       rotateMap,
+      heading,
     }
   },
 })
