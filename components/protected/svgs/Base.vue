@@ -59,6 +59,15 @@
       <span>表示リセット</span>
     </v-tooltip>
 
+    <v-tooltip v-if="!isGoogleMapEditMode && isEditPage" top>
+      <template #activator="{ on, attrs }">
+        <v-icon class="save-icon" large v-bind="attrs" @click="save" v-on="on"
+          >mdi-content-save</v-icon
+        >
+      </template>
+      <span>セーブ</span>
+    </v-tooltip>
+
     <SvgsContextMenu></SvgsContextMenu>
   </v-sheet>
 </template>
@@ -153,7 +162,8 @@ export default defineComponent({
       reset: () => ViewBox.reset(),
       isEditPage,
       isGoogleMapEditMode,
-      activeMapDisabledGoogleMap
+      activeMapDisabledGoogleMap,
+      save: () => SvgsStore.updateSvgs()
     }
   },
 })
@@ -177,6 +187,11 @@ export default defineComponent({
   cursor: move
 
 .zoom-chip
+  position: absolute
+  bottom: 80px
+  right: 70px
+
+.save-icon
   position: absolute
   bottom: 80px
   right: 30px

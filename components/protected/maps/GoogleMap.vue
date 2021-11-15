@@ -100,6 +100,8 @@ import {
   nextTick,
 } from '@nuxtjs/composition-api'
 import { MapsStore } from '~/store'
+import common from '~/utils/ui/common'
+import Marker from '~/utils/ui/google-map-marker'
 
 export default defineComponent({
   setup() {
@@ -197,6 +199,10 @@ export default defineComponent({
           const button = document.getElementById(id)
           map.value.controls[position].push(button)
         })
+
+        if(common.isShowPage.value) {
+          Marker.onMounted(map.value)
+        }
       })
       // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
       setTimeout(() => {
@@ -269,6 +275,7 @@ export default defineComponent({
 
     onUnmounted(() => {
       $googleMap.isGoogleMapEditMode.value = false
+      Marker.unMounted()
     })
 
     const updatePosition = async () => {
@@ -287,7 +294,7 @@ export default defineComponent({
       }
       // ズームインしてからboundsを取得する
       const bounds = map.value?.getBounds()?.toJSON()
-      
+
       const location = map.value?.getCenter()
 
       if (!bounds || !Number.isInteger(heading) || !location) return
@@ -312,7 +319,7 @@ export default defineComponent({
         bounds,
         heading,
         width,
-        height
+        height,
       })
       $googleMap.isGoogleMapEditMode.value = false
     }
@@ -337,6 +344,7 @@ export default defineComponent({
       }),
       rotateMap,
       heading,
+      isShowPage: common.isShowPage,
     }
   },
 })
