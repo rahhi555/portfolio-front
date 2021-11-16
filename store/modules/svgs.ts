@@ -91,6 +91,7 @@ export default class Svgs extends VuexModule {
   // svg作成
   @Mutation
   public addSvgMutation(svg: AllSvgType) {
+    svg.isUpdated = false
     this.svgsState.push(svg)
   }
 

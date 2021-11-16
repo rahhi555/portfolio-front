@@ -8,12 +8,22 @@ import CommonUI from '~/utils/ui/common'
 // Path挿入モード判定
 const isAddPathMode = ref(false)
 
+// 計算式
+const formula =  {
+  x: (e: PointerEvent) => {
+    return e.offsetX / svgViewbox.zoomParcentWidth() - 25 + svgViewbox.minX.value
+  },
+  y: (e: PointerEvent) => {
+    return e.offsetY / svgViewbox.zoomParcentHeight() - 25 + svgViewbox.minY.value
+  }
+}
+
 // displayTimeのない永続的パス。editページで挿入
 const addStaticPath = (e: PointerEvent) => {
   const path: SvgParams = {
     type: 'Path',
-    x: e.offsetX / svgViewbox.zoomParcentWidth() - 25 + svgViewbox.minX.value,
-    y: e.offsetY / svgViewbox.zoomParcentHeight() - 25 + svgViewbox.minY.value,
+    x: formula.x(e),
+    y: formula.y(e),
     name: 'new Static Path',
     drawPoints:
       'M44.5 15c0-8.271-6.729-15-15-15s-15 6.729-15 15c0 7.934 6.195 14.431 14 14.949v4.429c0 .553.448 3.56 1 3.56s1-3.007 1-3.56v-4.429c7.805-.518 14-7.015 14-14.949Z',
@@ -33,8 +43,8 @@ const sendActivePath = (e: PointerEvent) => {
     type: 'Path',
     userId: UserStore.currentUser.id,
     mapId: MapsStore.activeMap.id,
-    x: e.offsetX / svgViewbox.zoomParcentWidth() - 25 + svgViewbox.minX.value,
-    y: e.offsetY / svgViewbox.zoomParcentHeight() - 25 + svgViewbox.minY.value,
+    x: formula.x(e),
+    y: formula.y(e),
     displayTime: 4000,
     drawPoints:
       'M44.5 15c0-8.271-6.729-15-15-15s-15 6.729-15 15c0 7.934 6.195 14.431 14 14.949v4.429c0 .553.448 3.56 1 3.56s1-3.007 1-3.56v-4.429c7.805-.518 14-7.015 14-14.949Z',

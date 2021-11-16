@@ -11,11 +11,11 @@
         cols="12"
       >
         <h1 class="mb-12 text-h2 font-weight-light">
-          Pick the best plan for you
+          MiniMap
         </h1>
 
         <div class="text-body-1 font-weight-light grey--text text--lighten-2">
-          You have Free Unlimited Updates and Premium Support on&nbsp;<br class="hidden-sm-and-down">each package.
+          「進行状況」を「場所」と共に可視化する
         </div>
       </v-col>
 

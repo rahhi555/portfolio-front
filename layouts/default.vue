@@ -61,7 +61,7 @@ export default {
 
   computed: {
     src() {
-      return this.srcs[this.$route.path] || 'clint-mckoy.jpg'
+      return this.srcs[this.$route.path] || 'top-image.jpg'
     },
     snackParams: {
       get() {

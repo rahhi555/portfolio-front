@@ -59,14 +59,16 @@
       <span>表示リセット</span>
     </v-tooltip>
 
-    <v-tooltip v-if="!isGoogleMapEditMode && isEditPage" top>
-      <template #activator="{ on, attrs }">
-        <v-icon class="save-icon" large v-bind="attrs" @click="save" v-on="on"
-          >mdi-content-save</v-icon
-        >
-      </template>
-      <span>セーブ</span>
-    </v-tooltip>
+    <client-only>
+      <v-tooltip v-if="!isGoogleMapEditMode && isEditPage" top>
+        <template #activator="{ on, attrs }">
+          <v-icon class="save-icon" large v-bind="attrs" @click="save" v-on="on"
+            >mdi-content-save</v-icon
+          >
+        </template>
+        <span>セーブ</span>
+      </v-tooltip>
+    </client-only>
 
     <SvgsContextMenu></SvgsContextMenu>
   </v-sheet>

@@ -4,8 +4,8 @@ import { MapsStore } from '~/store'
 // svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
 const svgSheet = ref<Vue | null>(null)
 // 初期状態のwidth及びheight
-let defaultWidth: number
-let defaultHeight: number
+const defaultWidth = ref(0)
+const defaultHeight = ref(0)
 const minX = ref(0)
 const minY = ref(0)
 const width = ref(0)
@@ -37,8 +37,8 @@ const zoom = (scale: number) => {
 const reset = () => {
   minX.value = 0
   minY.value = 0
-  width.value = defaultWidth
-  height.value = defaultHeight  
+  width.value = defaultWidth.value
+  height.value = defaultHeight.value
 }
 
 // activeMapをwatchするためcomputedで定義
@@ -51,22 +51,26 @@ export default {
 
   minY,
 
+  defaultWidth,
+
+  defaultHeight,
+
   mounted() {
     onMounted(() => {
-      defaultWidth = MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
-      defaultHeight = MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
-      width.value = defaultWidth
-      height.value = defaultHeight
+      defaultWidth.value = MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
+      defaultHeight.value = MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
+      width.value = defaultWidth.value
+      height.value = defaultHeight.value
       watch(activeMap, reset)
     })
   },
 
   zoomParcentWidth() {
-    return defaultWidth / width.value 
+    return svgSheet.value!.$el.clientWidth / width.value 
   },
 
   zoomParcentHeight() {
-    return defaultHeight / height.value 
+    return svgSheet.value!.$el.clientHeight / height.value 
   },
 
   viewBoxStr() {
