@@ -1,7 +1,7 @@
 import { defineNuxtMiddleware } from '@nuxtjs/composition-api'
 import { UserStore } from '~/store'
 
-// 未ログインの場合ログインページに飛ばすs
+// 未ログインの場合ログインページに飛ばす
 export default defineNuxtMiddleware((ctx) => {
   if (!UserStore.isAuthenticated) {
     const snackbarPayload = JSON.stringify({

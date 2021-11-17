@@ -1,5 +1,5 @@
 <template>
-  <v-sheet ref="svgSheet" elevation="6" class="svg-base-sheet">
+  <v-sheet ref="svgSheet" elevation="6" class="svg-base-sheet" @touchmove="pinchInOut">
     <svg
       v-show="!isGoogleMapEditMode"
       id="svg-base"
@@ -40,15 +40,6 @@
     </svg>
 
     <slot></slot>
-
-    <v-chip v-show="!$device.isDesktop" class="zoom-chip">
-      <v-icon class="mr-3" @click="zoomInOut({ deltaY: 1 })"
-        >mdi-magnify-plus-outline</v-icon
-      >
-      <v-icon class="ml-3" @click="zoomInOut({ deltaY: -1 })"
-        >mdi-magnify-minus-outline</v-icon
-      >
-    </v-chip>
 
     <v-tooltip v-if="!isGoogleMapEditMode && activeMapDisabledGoogleMap" top>
       <template #activator="{ on, attrs }">
@@ -91,6 +82,7 @@ import Path from '~/utils/svgs/svg-add-path'
 import Polyline from '~/utils/svgs/svg-add-polyline'
 import Cursor from '~/utils/ui/svg-cursor'
 import CommonUI from '~/utils/ui/common'
+import { pinchInOut } from '~/utils/svgs/svg-pinch'
 
 export default defineComponent({
   setup() {
@@ -161,6 +153,7 @@ export default defineComponent({
       resizeStop: () => Resize.resizeStop(),
 
       zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
+      pinchInOut: (e: TouchEvent) => pinchInOut(e),
       reset: () => ViewBox.reset(),
       isEditPage,
       isGoogleMapEditMode,

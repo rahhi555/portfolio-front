@@ -102,14 +102,25 @@ export default {
     startPoint.y = 0
   },
 
-  zoomInOut(e: WheelEvent | { deltaY: number }) {
+  /**
+   * 引数eとしてWheelEventまたはnumberを渡し、ズームイン・アウトを実行する
+   * (numberを渡す場合は0未満ならズームアウト、0以上ならズームインになる)
+   */
+  zoomInOut(e: WheelEvent | number) {
     // グーグルマップが有効の場合、ズームイン・アウトは無効にする
     if(MapsStore.activeMap.isGoogleMap) return
 
+    let deltaY: number
+    if(typeof(e) === 'number' ) {
+      deltaY = e
+    } else {
+      deltaY = e.deltaY
+    }
+
     const SCALE = 1.1
-    if (e.deltaY < 0) {
+    if (deltaY < 0) {
       zoom(1 / SCALE)
-    } else if (e.deltaY > 0) {
+    } else if (deltaY > 0) {
       zoom(SCALE)
     }
   },
