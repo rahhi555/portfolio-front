@@ -26,6 +26,8 @@
             {{ snackParams.message }}
           </MaterialSnackbar>
 
+          <SmartphoneSideway />
+
           <Nuxt keep-alive />
 
           <Footer />
