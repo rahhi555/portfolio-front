@@ -169,6 +169,7 @@ export default defineComponent({
   height: 75vh
   touch-action: none
   background-color: transparent
+  user-select: none
 
 .mysvg-edit
   background-image: linear-gradient(90deg, transparent 19px, #ddd 20px), linear-gradient(0deg, transparent 19px, #ddd 20px)

@@ -1,4 +1,5 @@
 import { ref, reactive } from '@nuxtjs/composition-api'
+import { throttle } from 'mabiki'
 import svgViewbox from './svg-viewbox'
 import { MapsStore, SvgsStore, UserStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
@@ -36,11 +37,12 @@ export default {
     SvgsStore.addSvgMutation(Object.assign({}, targetPolyline))
   },
 
-  addPolylineModeMiddle(e: PointerEvent) {
+  // そのままだと滑らかすぎるので50msのスパンをおく
+  addPolylineModeMiddle: throttle((e: PointerEvent) => {
     if(!isAddPolylineMode.value || !targetPolyline.id) return
     targetPolyline.drawPoints += `${(e.offsetX / svgViewbox.zoomParcentWidth())},${(e.offsetY / svgViewbox.zoomParcentHeight())} `
     SvgsStore.changeSvg({ status: 'drawPoints', value: targetPolyline.drawPoints!, otherTargetId: targetPolyline.id }) 
-  },
+  }, 50),
 
   async addPolylineStop() {
     if(!isAddPolylineMode.value || !targetPolyline.id) return
@@ -53,5 +55,5 @@ export default {
       window.$nuxt.context.$planChannel[0].sendActiveSvg(targetPolyline)
     }
     targetPolyline = reactive<SvgParams>({})
-  }
+  },
 }
