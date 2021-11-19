@@ -165,8 +165,9 @@ export default defineComponent({
     // マップの初期化処理終了フラグ
     const isInitMap = ref(false)
 
-    // 初期化処理
-    onMounted(() => {
+    const initMap = () => {
+      window.$nuxt.$loading.start()
+
       setCurrentPosition(true)
       const { bounds, heading } = activeMapBoundsHeading.value
 
@@ -200,16 +201,25 @@ export default defineComponent({
           map.value.controls[position].push(button)
         })
 
-        if(common.isShowPage.value) {
+        if (common.isShowPage.value) {
           Marker.onMounted(map.value)
         }
+
+        // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
+        setTimeout(() => {
+          map.value.fitBounds(bounds, 0)
+          map.value.setHeading(heading)
+          isInitMap.value = true
+          window.$nuxt.$loading.finish()
+        }, 500)
       })
-      // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
-      setTimeout(() => {
-        map.value.fitBounds(bounds, 0)
-        map.value.setHeading(heading)
-        isInitMap.value = true
-      }, 500)
+    }
+
+    // 初期化処理
+    onMounted(() => {
+      nextTick(() => {
+        initMap()
+      })
     })
 
     // 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
