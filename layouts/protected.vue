@@ -11,6 +11,8 @@
       {{ snackParams.message }}
     </MaterialSnackbar>
 
+    <SmartphoneSideway />
+
     <drawer />
 
     <v-img

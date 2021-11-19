@@ -94,10 +94,17 @@ declare module 'interface' {
     todos?: Todo[]
   }
 
+  /**
+   * name: AppBarに表示される名前    
+   * link: url    
+   * selected: 該当ページにアクセス中かどうか    
+   * activePlanIgnore: trueなら計画実行中の場合表示しない    
+   */
   export interface AppBarTab {
     name: string
     link: string
     selected: boolean
+    activePlanIgnore: boolean
   }
 
   export interface AppBarFunc {

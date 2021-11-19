@@ -110,7 +110,7 @@ export default defineComponent({
     })
 
     // viewBox操作
-    const scrollBegin = (e: MouseEvent) => {
+    const scrollBegin = (e: PointerEvent) => {
       // editページはスペースキーを押下する必要あり
       if (!SpaceKey.isSpaceKeyPress.value && isEditPage.value) return
       // 挿入モード中はスペースキーを押下する必要あり
@@ -143,7 +143,7 @@ export default defineComponent({
       addPolylineStop: () => Polyline.addPolylineStop(),
 
       scrollBegin,
-      scrollMiddle: (e: MouseEvent) => ViewBox.scrollMiddle(e),
+      scrollMiddle: (e: PointerEvent) => ViewBox.scrollMiddle(e),
       scrollEnd: () => ViewBox.scrollEnd(),
 
       dragMiddle: (e: PointerEvent) => Drag.dragMiddle(e),

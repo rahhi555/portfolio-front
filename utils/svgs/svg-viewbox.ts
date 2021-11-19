@@ -44,6 +44,9 @@ const reset = () => {
 // activeMapをwatchするためcomputedで定義
 const activeMap = computed(() => MapsStore.activeMap)
 
+// pointerEventでマルチタップを検出するためのログ配列
+let evCache: PointerEvent[] = []
+
 export default {
   svgSheet,
 
@@ -79,17 +82,24 @@ export default {
     })
   },
 
-  scrollBegin(e: MouseEvent) {
+  scrollBegin(e: PointerEvent) {
     // グーグルマップが有効の場合、スクロールは無効にする
     if(MapsStore.activeMap.isGoogleMap) return
+    if(e.pointerType === 'touch') evCache.push(e)
 
     isScrolling = true
     startPoint.x = e.clientX - minX.value
     startPoint.y = e.clientY - minY.value
   },
 
-  scrollMiddle(e: MouseEvent) {
+  scrollMiddle(e: PointerEvent) {
     if (!isScrolling) return
+
+    // 2本指でタッチしている場合evCache.lengthが2になるので、その場合はスクロールしない
+    if(e.pointerType === 'touch' && evCache.length > 1) {
+      return
+    }
+
     const newX = e.clientX - startPoint.x            
     const newY = e.clientY - startPoint.y
     minX.value = newX
@@ -97,6 +107,7 @@ export default {
   },
 
   scrollEnd() { 
+    evCache = []
     isScrolling = false
     startPoint.x = 0
     startPoint.y = 0
