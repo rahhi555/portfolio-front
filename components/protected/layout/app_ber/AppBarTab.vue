@@ -30,15 +30,14 @@ import {
   computed,
 } from '@nuxtjs/composition-api'
 import { AppBarTab } from 'interface'
-import { AppBarTabKey, AppBarFuncKey } from '~/types/injection-key'
-import { getPear } from '~/utils/ui/app-bar-tab-routes'
+import { AppBarFuncKey } from '~/types/injection-key'
+import { setPear, appBarTab } from '~/utils/ui/app-bar-tab-routes'
 
 export default defineComponent({
   setup() {
     const router = useRouter()
 
-    const appBarTab = inject(AppBarTabKey)
-    appBarTab!.value = getPear()
+    setPear()
 
     const activeTab = computed(() => {
       return appBarTab?.value?.findIndex((tab) => tab.selected)
@@ -46,7 +45,8 @@ export default defineComponent({
 
     const clickTab = (tab: AppBarTab) => {
       if (tab.selected !== undefined) {
-        for (const t of appBarTab!.value) {
+        for (const t of appBarTab.value!) {
+          // @ts-ignore
           t.name === tab.name ? (t.selected = true) : (t.selected = false)
         }
       }
@@ -56,7 +56,7 @@ export default defineComponent({
     const appBarFunc = inject(AppBarFuncKey)
 
     router.afterEach(() => {
-      appBarTab!.value = getPear()
+      setPear()
       appBarFunc!.value = null
     })
 

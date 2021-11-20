@@ -3,6 +3,7 @@ import { Todo, TodoList } from 'interface'
 import { $axios } from '~/utils/axios-accessor'
 import { PlansStore } from '~/store'
 import { SnackbarStore } from '~/utils/store-accessor'
+import { setPear } from '~/utils/ui/app-bar-tab-routes'
 
 const MODEL = 'Todoリスト'
 
@@ -229,6 +230,11 @@ export default class TodoLists extends VuexModule {
       for (const todo of todos) {
         todo!.status = 'doing'
       }
+      SnackbarStore.visible({
+        color: 'success',
+        message: '計画を開始しました。頑張りましょう！',
+      })
+      setPear()
     }
   }
 
@@ -243,6 +249,11 @@ export default class TodoLists extends VuexModule {
       for (const todo of todos) {
         todo!.status = 'todo'
       }
+      SnackbarStore.visible({
+        color: 'success',
+        message: '計画を終了しました。お疲れさまでした。',
+      })
+      setPear()
     }
   }
 }
