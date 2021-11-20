@@ -6,6 +6,7 @@ export interface SendCurrentPositionParams {
   lat: number
   lng: number
   userId: number
+  name: string
 }
 
 /** 使用者本人の現在位置アイコン設定ファイル */
@@ -66,8 +67,9 @@ watch(currentPosition, throttle(() => {
   if(!marker) return
   const { lat, lng } = currentPosition
   const userId = UserStore.currentUser.id
+  const name = UserStore.currentUser.name
 
-  window.$nuxt.context.$planChannel[0].sendCurrentPosition({ lat, lng, userId })
+  window.$nuxt.context.$planChannel[0].sendCurrentPosition({ lat, lng, userId, name })
 }, 3000))
 
 export default {
