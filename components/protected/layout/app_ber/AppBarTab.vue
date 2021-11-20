@@ -40,6 +40,7 @@ export default defineComponent({
     setPear()
 
     const activeTab = computed(() => {
+      // @ts-ignore
       return appBarTab?.value?.findIndex((tab) => tab.selected)
     })
 
