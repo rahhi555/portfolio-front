@@ -40,10 +40,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, useContext, inject } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
 import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
-import { AppBarTabKey } from '~/types/injection-key'
-import { getPear } from '~/utils/ui/app-bar-tab-routes'
 
 export default defineComponent({
   layout: 'protected',
@@ -101,9 +99,6 @@ export default defineComponent({
       return PlansStore.currentPlan?.active
     })
 
-    // 計画の開始と終了でAppBarを更新する
-    const appBarTab = inject(AppBarTabKey)
-
     // 計画開始
     const beginPlan = () => {
       if (!confirm('計画を開始してもよろしいですか？')) return
@@ -115,11 +110,6 @@ export default defineComponent({
         .then((res) => {
           PlansStore.setCurrentPlanMutation(res)
           TodoListsStore.doingTodos(true)
-          SnackbarStore.visible({
-            color: 'success',
-            message: '計画を開始しました。頑張りましょう！',
-          })
-          appBarTab!.value = getPear()
         })
         .catch(() =>
           SnackbarStore.visible({
@@ -140,11 +130,6 @@ export default defineComponent({
         .then((res) => {
           PlansStore.setCurrentPlanMutation(res)
           TodoListsStore.resetTodos(true)
-          SnackbarStore.visible({
-            color: 'success',
-            message: '計画を終了しました。お疲れさまでした。',
-          })
-          appBarTab!.value = getPear()
         })
         .catch(() =>
           SnackbarStore.visible({

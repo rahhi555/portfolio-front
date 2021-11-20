@@ -4,13 +4,15 @@ import { AllSvgType } from 'interface'
 import { SvgsStore, TodoListsStore } from '~/store'
 import { ToggleStatusParams } from '~/store/modules/todoLists'
 import { SvgParams } from '~/store/modules/svgs'
-
+import { SendCurrentPositionParams } from '~/utils/ui/google-map-marker'
+import { getOtherMenberPosition } from '~/utils/ui/google-map-other-marker'
 
 export interface PlanChannel {
   toggleTodoStatus: ({ id, status }: ToggleStatusParams) => void
   beginPlan: () => void
   endPlan: () => void
   sendActiveSvg: (svg: SvgParams) => void
+  sendCurrentPosition: ({ userId, lat, lng }: SendCurrentPositionParams) => void
 }
 
 interface ReceivedParams {
@@ -18,6 +20,10 @@ interface ReceivedParams {
   id?: number
   status?: 'doing' | 'done'
   svg?: AllSvgType
+  userId?: number
+  lat?: number
+  lng?: number
+  name?: string
 }
 
 declare module 'actioncable' {
@@ -66,8 +72,11 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
             case 'sendActiveSvg':
               SvgsStore.addSvgMutation(data.svg!)
               break
+            case 'sendCurrentPosition':
+              getOtherMenberPosition({ userId: data.userId!, lat: data.lat!, lng: data.lng!, name: data.name! })
+              break
             default:
-              console.error('該当するアクションがありませんでした。')
+              console.error('該当するアクションがありませんでした。', data)
           }
         },
 
@@ -89,6 +98,10 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
 
         sendActiveSvg(svg: SvgParams) {
           this.perform('sendActiveSvg', { svg })
+        },
+
+        sendCurrentPosition({ userId, lat, lng, name }: SendCurrentPositionParams) {
+          this.perform('sendCurrentPosition', { userId, lat, lng, name })
         }
       }
     )
