@@ -52,7 +52,7 @@
       :class="{ 'left-line': isEditPage && !isSomeTrueModes }"
       @pointerdown.stop="resizeStart"
     />
-    <SvgsText :rect="rect"></SvgsText>
+    <SvgsText :svg="rect" :text-x="rect.width / 2" :text-y="rect.height / 1.5"></SvgsText>
   </g>
 </template>
 

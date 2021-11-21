@@ -1,5 +1,6 @@
 import { ref, reactive } from '@nuxtjs/composition-api'
 import { throttle } from 'mabiki'
+import simplify from 'simplify-js'
 import svgViewbox from './svg-viewbox'
 import { MapsStore, SvgsStore, UserStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
@@ -12,6 +13,15 @@ const isAddPolylineMode = ref(false)
 // Polyline作成中のターゲット
 let targetPolyline = reactive<SvgParams>({})
 
+// 最終的にsimplifyメソッドで綺麗にするための配列
+const targetPolylineArray: { x: number, y: number }[] = []
+
+// ズーム計算後のxかyを返す
+const calculateZoom = {
+  x: (e: PointerEvent) => { return e.offsetX / svgViewbox.zoomParcentWidth() },
+  y: (e: PointerEvent) => { return e.offsetY / svgViewbox.zoomParcentHeight() }
+}
+
 export default {
   isAddPolylineMode,
 
@@ -23,15 +33,16 @@ export default {
     // editページならdisplayTimeをなしにする
     const displayTime = CommonUI.isEditPage.value ? undefined : 4000
 
+    targetPolylineArray.push({ x: calculateZoom.x(e), y: calculateZoom.y(e) })
+
     targetPolyline.id = Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER - MIN_ACTIVE_SVG_ID + 1) + MIN_ACTIVE_SVG_ID)
     targetPolyline.type = 'Polyline'
     targetPolyline.x = svgViewbox.minX.value
     targetPolyline.y = svgViewbox.minY.value
     targetPolyline.displayTime = displayTime
-    targetPolyline.drawPoints = `${(e.offsetX / svgViewbox.zoomParcentWidth())},${(e.offsetY / svgViewbox.zoomParcentHeight())} `
-    targetPolyline.userId = UserStore.currentUser.id
+    targetPolyline.drawPoints = `${calculateZoom.x(e)},${calculateZoom.y(e)} `
     targetPolyline.mapId = MapsStore.activeMap.id
-    targetPolyline.name = 'new Polyline'
+    targetPolyline.name = UserStore.currentUser.name
       
     // @ts-ignore
     SvgsStore.addSvgMutation(Object.assign({}, targetPolyline))
@@ -40,20 +51,28 @@ export default {
   // そのままだと滑らかすぎるので50msのスパンをおく
   addPolylineModeMiddle: throttle((e: PointerEvent) => {
     if(!isAddPolylineMode.value || !targetPolyline.id) return
-    targetPolyline.drawPoints += `${(e.offsetX / svgViewbox.zoomParcentWidth())},${(e.offsetY / svgViewbox.zoomParcentHeight())} `
+
+    targetPolylineArray.push({ x: calculateZoom.x(e), y: calculateZoom.y(e) })
+    targetPolyline.drawPoints += `${calculateZoom.x(e)},${calculateZoom.y(e)} `
     SvgsStore.changeSvg({ status: 'drawPoints', value: targetPolyline.drawPoints!, otherTargetId: targetPolyline.id }) 
   }, 50),
 
   async addPolylineStop() {
     if(!isAddPolylineMode.value || !targetPolyline.id) return
+
+    const simplified = simplify(targetPolylineArray, 10)
+
+    targetPolyline.drawPoints = simplified.map(v => `${v.x},${v.y} `).join('')
+    SvgsStore.changeSvg({ status: 'drawPoints', value: targetPolyline.drawPoints!, otherTargetId: targetPolyline.id }) 
+
     if(CommonUI.isEditPage.value) {
-      const beforePolylineId = targetPolyline.id
+      SvgsStore.deleteSvgMutation(targetPolyline.id)
       delete targetPolyline.id
       await SvgsStore.addSvg(targetPolyline)
-      SvgsStore.deleteSvgMutation(beforePolylineId)
     } else {
       window.$nuxt.context.$planChannel[0].sendActiveSvg(targetPolyline)
     }
     targetPolyline = reactive<SvgParams>({})
+    targetPolylineArray.length = 0
   },
 }

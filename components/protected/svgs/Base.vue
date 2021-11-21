@@ -131,7 +131,9 @@ export default defineComponent({
       3000,
       { maxWait: 30000 }
     )
-    watch(SvgsStore.allSvgs, () => autosave())
+    watch(SvgsStore.allSvgs, () => {
+      if(isEditPage.value) autosave()
+    })
 
     return {
       rects,

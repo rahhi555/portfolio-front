@@ -2,19 +2,24 @@
   <g
     :id="'svg-' + path.id"
     :transform="'translate(' + path.x + ',' + path.y + ')'"
-    style="cursor: pointer"
-    tabindex="0"
-    @keydown.delete="deletePath(path.id)"
   >
-    <path fill="black" :d="path.drawPoints" />
+    <path
+      fill="black"
+      :d="path.drawPoints"
+    />
     <image
       :href="avatar"
+      tabindex="0"
       x="4.5"
       y="-10"
       height="50px"
       width="50px"
       class="path-avatar"
+      style="cursor: pointer"
+      @keydown.delete="deletePath(path.id)"
     />
+
+    <SvgsText :svg="path" :text-x="30" :text-y="-10" />
   </g>
 </template>
 

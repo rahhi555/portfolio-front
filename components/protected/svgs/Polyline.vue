@@ -2,44 +2,47 @@
   <g
     :id="'svg-' + polyline.id"
     :transform="'translate(' + polyline.x + ',' + polyline.y + ')'"
-    style="cursor: pointer"
-    tabindex="100"
-    @keydown.delete="deletePolyline(polyline.id)"
   >
-
     <defs>
+      <style>
+        #triangle, #dot {
+          fill-opacity: 0.8;
+        }
+      </style>
       <marker
         id="triangle"
         viewBox="0 0 10 10"
         refX="1"
         refY="5"
         markerUnits="strokeWidth"
-        markerWidth="3"
-        markerHeight="3"
         orient="auto"
       >
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="royalblue" />
       </marker>
       <marker
         id="dot"
         viewBox="0 0 10 10"
         refX="5"
         refY="5"
-        markerWidth="3"
-        markerHeight="3"
       >
-        <circle cx="5" cy="5" r="5" fill="black" />
+        <circle cx="5" cy="5" r="5" fill="royalblue" />
       </marker>
     </defs>
 
     <polyline
-      stroke="black"
       fill="none"
-      stroke-width="5"
+      stroke="black"
+      stroke-opacity="0.5"
+      stroke-width="3"
       :points="polyline.drawPoints"
       marker-start="url(#dot)"
       marker-end="url(#triangle)"
+      tabindex="1"
+      style="cursor: pointer"
+      @keydown.delete="deletePolyline(polyline.id)"
     />
+
+    <SvgsText :svg="polyline" :text-x="namePosition.x" :text-y="namePosition.y" />
   </g>
 </template>
 
@@ -87,11 +90,28 @@ export default defineComponent({
       }, polyline.displayTime)
     )
 
+    // nameの配置位置。drawPointsから最初のx,yを抜き出す。
+    const namePosition = computed(() => {
+      const firstXY = polyline.drawPoints.split(' ')[0].split(',')
+      const x = Number.parseFloat(firstXY[0])
+      const y = Number.parseFloat(firstXY[1]) + 25
+      return { x, y }
+    })
+
     return {
       deletePolyline,
       avatar,
       isDisplay,
+      namePosition
     }
   },
 })
 </script>
+
+<style scoped lang="sass">
+.text-tooltip
+  display: none
+
+.tooltip-visible:hover .text-tooltip
+  display: block
+</style>

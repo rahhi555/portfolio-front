@@ -246,8 +246,6 @@ export default defineComponent({
           disableDefaultUI: false,
         })
 
-        if (!activeMap.value.address) return
-
         // オーバーレイ削除時のミニマップ消失を防ぐため、複製したミニマップをオーバーレイ対象にする
         const svgBase = document.getElementById('svg-base')!
         const cloneSvgBase = svgBase.cloneNode(true) as HTMLElement
@@ -256,7 +254,7 @@ export default defineComponent({
         cloneSvgBase.style.visibility = 'visible'
         // テキストの「ダブルクリックで名前変更」を非表示にする(v-bindが効かなかったため、直接クラスを削除する)
         const childTexts = cloneSvgBase.querySelectorAll(
-          "[id ^= 'rect-text-']"
+          "[id ^= 'svg-text-']"
         ) as NodeListOf<SVGTextElement>
         childTexts.forEach((text) => {
           text.classList.remove('tooltip-visible')
