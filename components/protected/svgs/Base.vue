@@ -1,5 +1,10 @@
 <template>
-  <v-sheet ref="svgSheet" elevation="6" class="svg-base-sheet" @touchmove="pinchInOut">
+  <v-sheet
+    ref="svgSheet"
+    elevation="6"
+    class="svg-base-sheet"
+    @touchmove="pinchInOut"
+  >
     <svg
       v-show="!isGoogleMapEditMode"
       id="svg-base"
@@ -8,7 +13,7 @@
       height="100%"
       :viewBox="viewBoxStr"
       xmlns="http://www.w3.org/2000/svg"
-      style="border: solid 2px black;"
+      style="border: solid 2px black"
       @pointerdown.left="
         scrollBegin($event)
         addPath($event)
@@ -97,15 +102,15 @@ export default defineComponent({
 
     // 現在のページが編集ページかどうか
     const isEditPage = CommonUI.isEditPage
-    
+
     const { $googleMap } = useContext()
     // 編集ページかつGoogleMap編集ページかどうか
     const isGoogleMapEditMode = computed(
       () => isEditPage.value && $googleMap.isGoogleMapEditMode.value
     )
     // 現在マップのgoogleMapが無効かどうか(isGoogleMapがfalseか)
-    const activeMapDisabledGoogleMap = computed(() => { 
-      if(!MapsStore.activeMap) return false
+    const activeMapDisabledGoogleMap = computed(() => {
+      if (!MapsStore.activeMap) return false
       return !MapsStore.activeMap.isGoogleMap
     })
 
@@ -158,7 +163,7 @@ export default defineComponent({
       isEditPage,
       isGoogleMapEditMode,
       activeMapDisabledGoogleMap,
-      save: () => SvgsStore.updateSvgs()
+      save: () => SvgsStore.updateSvgs(),
     }
   },
 })

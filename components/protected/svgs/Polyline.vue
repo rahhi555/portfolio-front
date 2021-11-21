@@ -6,7 +6,40 @@
     tabindex="100"
     @keydown.delete="deletePolyline(polyline.id)"
   >
-    <polyline stroke="black" fill="none" stroke-width="5" :points="polyline.drawPoints" />
+
+    <defs>
+      <marker
+        id="triangle"
+        viewBox="0 0 10 10"
+        refX="1"
+        refY="5"
+        markerUnits="strokeWidth"
+        markerWidth="3"
+        markerHeight="3"
+        orient="auto"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
+      </marker>
+      <marker
+        id="dot"
+        viewBox="0 0 10 10"
+        refX="5"
+        refY="5"
+        markerWidth="3"
+        markerHeight="3"
+      >
+        <circle cx="5" cy="5" r="5" fill="black" />
+      </marker>
+    </defs>
+
+    <polyline
+      stroke="black"
+      fill="none"
+      stroke-width="5"
+      :points="polyline.drawPoints"
+      marker-start="url(#dot)"
+      marker-end="url(#triangle)"
+    />
   </g>
 </template>
 
