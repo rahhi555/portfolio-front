@@ -3,7 +3,7 @@ import {
   AllSvgType,
   Rect,
 } from 'interface'
-import { MapsStore, SnackbarStore } from '~/store'
+import { MapsStore, SnackbarStore, SvgsStore } from '~/store'
 import { $axios } from '~/utils/axios-accessor'
 
 type AllSvgTypeKeys = keyof AllSvgType
@@ -91,6 +91,9 @@ export default class Svgs extends VuexModule {
   // svg作成
   @Mutation
   public addSvgMutation(svg: AllSvgType) {
+    // アクションケーブル処理は自分自身に跳ね返るので、idが重複する恐れがある。左記を防止するため、idが重複していればリターンする
+    if(SvgsStore.svgsState.some(stateSvg => stateSvg.id === svg.id)) return
+    
     svg.isUpdated = false
     this.svgsState.push(svg)
   }
