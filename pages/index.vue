@@ -10,7 +10,7 @@
         class="mb-16"
         cols="12"
       >
-        <h1 class="mb-12 text-h2 font-weight-light">
+        <h1 class="mb-12 text-h2 font-weight-regular">
           MiniMap
         </h1>
 

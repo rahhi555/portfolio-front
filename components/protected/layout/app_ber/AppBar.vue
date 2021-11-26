@@ -7,6 +7,7 @@
     height="50"
     flat
     dark
+    :color="isPlanActive ? 'primary' : undefined"
   >
     <go-home class="hidden-xs-only" />
 
@@ -25,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, computed, useRoute } from '@nuxtjs/composition-api'
 import GoHome from './AppBarGoHome.vue'
 import DrawerToggle from './AppBarDrawerToggle.vue'
 // import Notifications from './AppBarNotifications.vue'
@@ -42,8 +43,16 @@ export default defineComponent({
     Tab,
   },
 
-  setup() {
+  setup(){
+    const route = useRoute()
+
+    const isPlanActive = computed(() => {
+      const isNotPlansPage = route.value.name !== 'dashboard-plans'
+      return !!PlansStore.currentPlan?.active && isNotPlansPage
+    })
+
     return {
+      isPlanActive
     }
   },
 
@@ -60,3 +69,8 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped lang="sass">
+.appbar-bg
+  background-color: pink
+</style>
