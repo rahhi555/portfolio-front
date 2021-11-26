@@ -12,7 +12,7 @@
           >mdi-account</v-icon
         >
       </template>
-      <span>承認済み</span>
+      <span>未承認にする</span>
     </v-tooltip>
     <v-tooltip v-else-if="!member.accept" bottom>
       <template #activator="{ on, attrs }">
@@ -26,7 +26,7 @@
           >mdi-account-alert</v-icon
         >
       </template>
-      <span>未承認</span>
+      <span>承認する</span>
     </v-tooltip>
 
     <v-avatar size="100%" height="200px" tile>

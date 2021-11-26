@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { Member } from 'interface'
+import { Member, Plan } from 'interface'
 import { $axios } from '~/utils/axios-accessor'
-import { SnackbarStore, UserStore } from '~/utils/store-accessor'
+import { SnackbarStore, UserStore, PlansStore } from '~/utils/store-accessor'
 
 const MODEL = 'メンバー'
 
@@ -26,6 +26,11 @@ export default class Members extends VuexModule {
   @Mutation
   private setMembersMutation(members: Member[]) {
     this.membersState = members
+  }
+
+  @Mutation
+  private addMembersMutation(member: Member) {
+    this.membersState?.push(member)
   }
 
   @Mutation
@@ -64,5 +69,29 @@ export default class Members extends VuexModule {
     .then(member => this.updateMemberMutation(member))
     .catch(() => SnackbarStore.catchError())
     .finally(() => SnackbarStore.CRUDvisible({model: MODEL, crud: 'update'}))
+  }
+
+  @Action({ rawError: true })
+  public async joinRequest(plan: Plan)  {
+    if (!confirm('承認リクエストを送信してよろしいですか？')) {
+      alert('承認リクエストをキャンセルしました')
+      return
+    }
+
+    const member = { user_id: UserStore.currentUser.id, accept: false }
+
+    const isIdPage = !!window.$nuxt.$route.params.id
+    console.log('isIdPage', isIdPage)
+
+    await $axios
+      .$post(`/api/v1/plans/${plan.id}/members`, { member })
+      .then((member: Member) => 
+        // 計画一覧ページならPlansStoreに追加、計画ページならMembersStoreに追加
+        isIdPage ? this.addMembersMutation(member) : PlansStore.addMember({ id: plan.id, member })       
+      )
+      .catch(() => SnackbarStore.catchError())
+      .finally(() =>
+        SnackbarStore.CRUDvisible({ model: '承認リクエスト', crud: 'create' })
+      )
   }
 }

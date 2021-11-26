@@ -34,7 +34,7 @@
         :loading="loading"
       >
         <template #[`item.actions`]="{ item }">
-          <PlansTableButton
+          <PlansTableButtons
             :item="item"
             @delete-handle="deletePlan(item)"
           />

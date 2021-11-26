@@ -1,5 +1,7 @@
 <template>
-  <v-row v-if="!isPlanActive">
+  <MapsUnApprovedBanner v-if="!accept" />
+
+  <v-row v-else-if="!isPlanActive">
     <v-col sm="3">
       <TodoListsBase />
     </v-col>
@@ -17,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from '@nuxtjs/composition-api'
-import { PlansStore } from '~/store'
+import { MembersStore, PlansStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -27,12 +29,14 @@ export default defineComponent({
 
   setup(){
     const isPlanActive = computed(() => PlansStore.currentPlan?.active)
-    if(!isPlanActive.value) {
+    const accept = computed(() => MembersStore.currentUserAccept)
+    if(!isPlanActive.value && accept.value) {
       setAppBarTabDialog('Todoリスト新規作成')
     }
 
     return {
-      isPlanActive
+      isPlanActive,
+      accept
     }
   },
 })

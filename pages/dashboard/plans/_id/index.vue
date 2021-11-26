@@ -24,7 +24,7 @@
         </v-card>
       </v-col>
 
-      <v-col cols="6" sm="2">
+      <v-col v-if="accept" cols="6" sm="2">
         <v-btn width="100%" color="secondary" @click="endPlan">計画終了</v-btn>
       </v-col>
     </template>
@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
+import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore, MembersStore } from '~/store'
 
 export default defineComponent({
   layout: 'protected',
@@ -144,6 +144,7 @@ export default defineComponent({
       active,
       beginPlan,
       endPlan,
+      accept: computed(() => MembersStore.currentUserAccept)
     }
   },
 })

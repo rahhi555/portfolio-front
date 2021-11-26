@@ -128,9 +128,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useRouter, useContext } from '@nuxtjs/composition-api'
+import { defineComponent, useRouter } from '@nuxtjs/composition-api'
 import { Plan, Member } from 'interface'
-import { UserStore, SnackbarStore, PlansStore } from '~/store'
+import { UserStore, MembersStore } from '~/store'
 
 export default defineComponent({
   props: {
@@ -142,7 +142,6 @@ export default defineComponent({
 
   setup() {
     const router = useRouter()
-    const { $axios } = useContext()
 
     const currentUserId = UserStore.currentUser.id
 
@@ -152,23 +151,6 @@ export default defineComponent({
 
     const editPlan = (item: Plan) => {
       router.push(`/dashboard/plans/${item.id}`)
-    }
-
-    const joinRequest = (item: Plan) => {
-      if (!confirm('承認リクエストを送信してよろしいですか？')) {
-        alert('承認リクエストをキャンセルしました')
-        return
-      }
-
-      const member = { user_id: currentUserId, accept: false }
-
-      $axios
-        .$post(`/api/v1/plans/${item.id}/members`, { member })
-        .then((member) => PlansStore.addMember({ id: item.id, member }))
-        .catch(() => SnackbarStore.catchError())
-        .finally(() =>
-          SnackbarStore.CRUDvisible({ model: '承認リクエスト', crud: 'create' })
-        )
     }
 
     const myMember = (item: Plan): Member | null => {
@@ -181,7 +163,7 @@ export default defineComponent({
     return {
       isMyPlan,
       editPlan,
-      joinRequest,
+      joinRequest: (item: Plan) => MembersStore.joinRequest(item),
       myMember,
     }
   },

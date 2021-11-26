@@ -42,11 +42,15 @@
                 >
                   <v-checkbox
                     :value="published"
-                    label="チェックを付けると公開します"
+                    label="公開"
                     :error-messages="errors[0]"
                     required
                     @click="$emit('update:published', !published)"
                   ></v-checkbox>
+                  <span class="caption">
+                    公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br/>
+                    非公開にすると承認するまで閲覧できません。
+                  </span>
                 </ValidationProvider>
               </v-col>
             </v-row>
