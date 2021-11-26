@@ -31,7 +31,6 @@
         :sort-by="['name', 'office']"
         :sort-desc="[false, true]"
         multi-sort
-        :loading="loading"
       >
         <template #[`item.actions`]="{ item }">
           <PlansTableButtons
@@ -50,13 +49,12 @@ import {
   reactive,
   ref,
   computed,
-  inject,
   watch,
   useFetch
 } from '@nuxtjs/composition-api'
 import { Plan } from 'interface'
 import { UserStore, PlansStore } from '~/store'
-import { AppBarTabKey } from '~/types/injection-key'
+import { appBarTab } from '~/utils/ui/app-bar-tab-routes'
 
 export default defineComponent({
   layout: 'protected',
@@ -110,9 +108,9 @@ export default defineComponent({
 
     const search = ref('')
 
-    const appBarTab = inject(AppBarTabKey)
-    watch(appBarTab!.value, () => {
-      const selectTab = appBarTab!.value.find(tab => tab.selected)
+    watch(appBarTab.value!, () => {
+      const selectTab = appBarTab.value!.find(tab => tab.selected)
+      
       if(selectTab?.name === '全計画') {
         search.value = ''
       } else if(selectTab?.name === 'マイ計画') {
@@ -127,7 +125,6 @@ export default defineComponent({
       planParams,
       createPlan,
       deletePlan,
-      loading: computed(() => { return !PlansStore.plans }),
     }
   },
 })

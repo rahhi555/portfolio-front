@@ -1,7 +1,5 @@
 import { InjectionKey, Ref } from '@nuxtjs/composition-api'
-import { AppBarTab, AppBarFunc } from 'interface'
-
-export const AppBarTabKey: InjectionKey<Ref<AppBarTab[]>> = Symbol('AppBarTabKey')
+import { AppBarFunc } from 'interface'
 
 export const AppBarFuncKey: InjectionKey<Ref<AppBarFunc | null>> = Symbol('AppBarFuncKey')
 

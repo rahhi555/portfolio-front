@@ -40,14 +40,12 @@ export default defineComponent({
     setPear()
 
     const activeTab = computed(() => {
-      // @ts-ignore
       return appBarTab?.value?.findIndex((tab) => tab.selected)
     })
 
     const clickTab = (tab: AppBarTab) => {
       if (tab.selected !== undefined) {
         for (const t of appBarTab.value!) {
-          // @ts-ignore
           t.name === tab.name ? (t.selected = true) : (t.selected = false)
         }
       }

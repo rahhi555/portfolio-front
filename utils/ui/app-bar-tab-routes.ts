@@ -44,7 +44,7 @@ const tabRoutesValuesMap = (func: (values: AppBarTab) => void) => {
 }
 
 /** 現在のペア */
-export const appBarTab = ref<TabRoutes[] | AppBarTab[]>()
+export const appBarTab = ref<AppBarTab[]>()
 
 export const setPear = () => {
   if(process.server) return
@@ -86,6 +86,5 @@ export const setPear = () => {
     return
   }
 
-  // @ts-ignore
-  appBarTab.value = routePear[routeName]
+  appBarTab.value = routePear[routeName!]
 }
