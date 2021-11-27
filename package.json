@@ -30,7 +30,7 @@
     "simplify-js": "^1.2.4",
     "universal-cookie": "^4.0.4",
     "vee-validate": "^3.4.11",
-    "vuetify": "^2.5.5"
+    "vuetify": "2.5.10"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
@@ -57,5 +57,8 @@
     "ts-jest": "^27.0.3",
     "vue-jest": "^3.0.4",
     "vuex-module-decorators": "^1.0.1"
+  },
+  "resolutions": {
+    "nuxt/**/glob-parent": "6.0.2"
   }
 }

@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { defineComponent, provide, ref } from '@nuxtjs/composition-api'
-import { AppBarTab, AppBarFunc } from 'interface'
+import { AppBarFunc } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
 import Footer from '~/components/default/Footer.vue'
@@ -49,7 +49,6 @@ import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
 import { SnackbarStore } from '~/store'
 import {
-  AppBarTabKey,
   AppBarFuncKey,
   AccountDialogKey,
   DrawerKey
@@ -69,9 +68,6 @@ export default defineComponent({
 
   setup() {
     const fixed = false
-
-    const appBarTab = ref<AppBarTab[]>([])
-    provide(AppBarTabKey, appBarTab)
 
     const appBarFunc = ref<AppBarFunc | null>(null)
     provide(AppBarFuncKey, appBarFunc)

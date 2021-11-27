@@ -54,6 +54,7 @@ export default {
     },
   },
 
+  // 'snackbar'というキーのクッキーがあればその値をスナックバーとして表示後、削除する
   mounted() {
     const cookie = new Cookies()
     const payload = cookie.get('snackbar')

@@ -24,13 +24,19 @@
         </v-card>
       </v-col>
 
-      <v-col cols="6" sm="2">
+      <v-col v-if="accept" cols="6" sm="2">
         <v-btn width="100%" color="secondary" @click="endPlan">計画終了</v-btn>
       </v-col>
     </template>
 
     <template v-else>
-      <v-col cols="6" sm="2">
+      <v-col cols="12" sm="8">
+        <MapsHomeOverView />
+      </v-col>
+
+    <v-col v-show="$vuetify.breakpoint.smAndUp" cols="12"  />
+
+      <v-col v-if="accept" cols="6" sm="2">
         <v-btn width="100%" color="secondary" @click="beginPlan"
           >計画開始</v-btn
         >
@@ -41,7 +47,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore } from '~/store'
+import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore, MembersStore } from '~/store'
 
 export default defineComponent({
   layout: 'protected',
@@ -144,6 +150,7 @@ export default defineComponent({
       active,
       beginPlan,
       endPlan,
+      accept: computed(() => MembersStore.currentUserAccept)
     }
   },
 })

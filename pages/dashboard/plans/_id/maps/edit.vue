@@ -1,5 +1,7 @@
 <template>
-  <v-row v-if="$device.isDesktop && !isPlanActive">
+  <MapsUnApprovedBanner v-if="!accept" />
+
+  <v-row v-else-if="$device.isDesktop && !isPlanActive">
     <v-col cols="3">
       <MapsEditSideBar />
     </v-col>
@@ -30,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from '@nuxtjs/composition-api'
-import { MapsStore, PlansStore } from '~/store'
+import { MapsStore, PlansStore, MembersStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -40,14 +42,16 @@ export default defineComponent({
 
   setup() {
     const isPlanActive = computed(() => PlansStore.currentPlan?.active)
+    const accept = computed(() => MembersStore.currentUserAccept)
 
-    if (!isPlanActive.value) {
+    if (!isPlanActive.value && accept.value) {
       setAppBarTabDialog('マップ作成')
     }
     
     return {
       isPlanActive,
       hasActiveMap: computed(() => !!MapsStore.activeMap),
+      accept
     }
   },
 })

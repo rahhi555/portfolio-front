@@ -7,6 +7,7 @@
     height="50"
     flat
     dark
+    :color="isPlanActive ? 'primary' : undefined"
   >
     <go-home class="hidden-xs-only" />
 
@@ -32,6 +33,7 @@ import DrawerToggle from './AppBarDrawerToggle.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { PlansStore } from '~/store'
+import common from '~/utils/ui/common'
 
 export default defineComponent({
   components: {
@@ -42,8 +44,9 @@ export default defineComponent({
     Tab,
   },
 
-  setup() {
+  setup(){
     return {
+      isPlanActive: common.isPlanActive
     }
   },
 

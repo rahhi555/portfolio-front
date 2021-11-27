@@ -10,6 +10,7 @@ export default defineNuxtMiddleware((ctx) => {
     })
     const encodedPayload = encodeURI(snackbarPayload)
 
+    // 'snackbar'キーでクッキーをセットすることで、MaterialSnackbar.vueのonMounted処理でスナックバーを表示できる
     ctx.res.setHeader('Set-Cookie', `snackbar=${encodedPayload};Path=/`)
     return ctx.redirect('/auth/login')
   }

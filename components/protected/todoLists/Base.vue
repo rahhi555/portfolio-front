@@ -1,7 +1,7 @@
 <template>
   <v-card class="mx-auto" max-width="300" tile>
     <v-list dense>
-      <v-list-group v-if="todoLists.length" :value="true">
+      <v-list-group v-if="todoLists.length" :value="true" disabled>
           <template #activator>
               <v-list-item-title>Todoリスト</v-list-item-title>
           </template>
