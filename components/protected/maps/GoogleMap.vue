@@ -27,6 +27,7 @@
           v-show="isGoogleMapEditMode"
           id="set-center-icon"
           class="mr-3 mb-2"
+          color="primary"
           fab
           small
           v-bind="attrs"

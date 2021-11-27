@@ -1,5 +1,5 @@
 <template>
-  <v-simple-table class="mx-15 pa-5">
+  <v-simple-table class="mx-15 pa-3">
     <template #default>
       <tbody>
         <tr
