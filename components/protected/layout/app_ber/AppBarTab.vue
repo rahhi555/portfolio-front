@@ -28,12 +28,11 @@ import {
   inject,
   useRouter,
   computed,
-  useRoute
 } from '@nuxtjs/composition-api'
 import { AppBarTab } from 'interface'
 import { AppBarFuncKey } from '~/types/injection-key'
 import { setPear, appBarTab } from '~/utils/ui/app-bar-tab-routes'
-import { PlansStore } from '~/store'
+import common from '~/utils/ui/common'
 
 export default defineComponent({
   setup() {
@@ -61,19 +60,12 @@ export default defineComponent({
       appBarFunc!.value = null
     })
 
-    // 計画がアクティブならバーの色をプライマリにする。その際フォントを太くしないと見づらくなる
-    const route = useRoute()
-    const isPlanActive = computed(() => {
-      const isNotPlansPage = route.value.name !== 'dashboard-plans'
-      return !!PlansStore.currentPlan?.active && isNotPlansPage
-    })
-
     return {
       appBarTab,
       clickTab,
       appBarFunc,
       activeTab,
-      isPlanActive
+      isPlanActive: common.isPlanActive
     }
   },
 })

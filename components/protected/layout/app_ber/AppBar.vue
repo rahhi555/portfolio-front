@@ -26,13 +26,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, useRoute } from '@nuxtjs/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import GoHome from './AppBarGoHome.vue'
 import DrawerToggle from './AppBarDrawerToggle.vue'
 // import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { PlansStore } from '~/store'
+import common from '~/utils/ui/common'
 
 export default defineComponent({
   components: {
@@ -44,15 +45,8 @@ export default defineComponent({
   },
 
   setup(){
-    const route = useRoute()
-
-    const isPlanActive = computed(() => {
-      const isNotPlansPage = route.value.name !== 'dashboard-plans'
-      return !!PlansStore.currentPlan?.active && isNotPlansPage
-    })
-
     return {
-      isPlanActive
+      isPlanActive: common.isPlanActive
     }
   },
 
@@ -69,8 +63,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style scoped lang="sass">
-.appbar-bg
-  background-color: pink
-</style>

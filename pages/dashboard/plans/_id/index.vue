@@ -30,6 +30,10 @@
     </template>
 
     <template v-else>
+      <v-col cols="12">
+        <MapsHomeOverView />
+      </v-col>
+
       <v-col cols="6" sm="2">
         <v-btn width="100%" color="secondary" @click="beginPlan"
           >計画開始</v-btn

@@ -38,27 +38,21 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
 
   // チャンネル作成
   const createSubscription = (planId: string) => {
-    console.log('planId', planId)
     
     cable.subscriptions.create(
       { channel: 'PlanChannel', plan_id: Number.parseInt(planId) },
       {
         // --- アクションケーブル固有メソッド ---
         connected() {
-          console.log('actioncable connected')
         },
 
         disconnected() {
-          console.log('actincable disconnected')
         },
 
         rejected() {
-          console.log('actincable rejected')
         },
 
         received(data: ReceivedParams) {
-          console.log(data)
-
           switch (data.action) {
             case 'beginPlan':
               TodoListsStore.doingTodos()
@@ -121,8 +115,6 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
     }
 
     createSubscription(to.params.id)
-
-    console.log('planChannel', cable.subscriptions.subscriptions)
   })
   
   inject('planChannel', cable.subscriptions.subscriptions)

@@ -81,7 +81,6 @@ export default class Members extends VuexModule {
     const member = { user_id: UserStore.currentUser.id, accept: false }
 
     const isIdPage = !!window.$nuxt.$route.params.id
-    console.log('isIdPage', isIdPage)
 
     await $axios
       .$post(`/api/v1/plans/${plan.id}/members`, { member })
