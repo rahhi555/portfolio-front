@@ -18,8 +18,6 @@
     <v-img
       :src="require(`@/assets/login_gray.png`)"
       gradient="to top, #00000080, #00000080"
-      min-height="100vh"
-      :height="$vuetify.breakpoint.mdAndUp ? '100vh' : undefined"
     >
       <app-bar />
 

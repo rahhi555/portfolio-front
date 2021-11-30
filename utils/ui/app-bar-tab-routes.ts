@@ -77,9 +77,9 @@ export const setPear = () => {
     return
   }
 
-  // スマホかタブレットならマップ編集を削除する
+  // 計画ページかつスマホかタブレットなら、マップ編集を削除する
   const isMobileOrTablet = window.$nuxt.context.$device.isMobileOrTablet
-  if(isMobileOrTablet) {
+  if(routeName !== 'dashboard-plans' && isMobileOrTablet) {
     appBarTab.value = cloneTabRoutes.dashboardPlansId.filter((route) => {
       return route.name !== 'マップ編集'
     })
