@@ -114,9 +114,10 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
 
     // ページ遷移前が計画ページかつ遷移後が計画ページじゃない場合、現在のplanChannelを破棄する
     if (from.params.id && !to.params.id) {
-      cable.subscriptions.subscriptions.forEach((planChannel) => {
-        cable.subscriptions.remove(planChannel)
-      })
+      // cable.subscriptions.subscriptions.forEach((planChannel) => {
+      //   cable.subscriptions.remove(planChannel)
+      // })
+      cable.disconnect()
       return
     }
 

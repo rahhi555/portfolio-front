@@ -109,12 +109,13 @@ export default defineComponent({
   setup(props) {
     const dialog = ref(false)
 
-    const deleteMap = (map: Map) => {
+    const deleteMap = async (map: Map) => {
       if (!window.confirm('マップを削除してもよろしいですか？')) {
         window.alert('キャンセルしました')
         return
       }
-      MapsStore.deleteMap(map.id)
+      await MapsStore.deleteMap(map.id)
+      MapsStore.setActiveIndex(MapsStore.maps.length - 1)
     }
 
     const mapParams = Object.assign({}, props.map) as Map
