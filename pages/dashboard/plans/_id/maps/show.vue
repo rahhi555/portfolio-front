@@ -7,8 +7,8 @@
     </client-only>
 
     <v-col max-width="100%" rounded cols="12" md="9" style="position: relative">
-      <MapsGoogleMap />
-      <SvgsBase />
+      <MapsGoogleMap v-show="hasActiveMap" />
+      <SvgsBase v-show="hasActiveMap" />
       <MapsFooterBase
         :justify-content="
           isPlanActive ? 'justify-sm-space-between' : 'justify-end'
@@ -30,7 +30,7 @@
 import {
   defineComponent,
 } from '@nuxtjs/composition-api'
-import { PlansStore } from '~/store'
+import { PlansStore, MapsStore } from '~/store'
 
 export default defineComponent({
   layout: 'protected',
@@ -45,6 +45,9 @@ export default defineComponent({
     isPlanActive() {
       return PlansStore.currentPlan?.active
     },
+    hasActiveMap() {
+      return !!MapsStore.activeMap
+    }
   },
 })
 </script>

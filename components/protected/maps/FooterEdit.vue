@@ -50,12 +50,6 @@ import Path from '~/utils/svgs/svg-add-path'
 import Polyline from '~/utils/svgs/svg-add-polyline'
 
 export default defineComponent({
-  props: {
-    hasActiveMap: {
-      type: Boolean,
-    },
-  },
-
   setup() {
     const selected = ref<number | undefined>(undefined)
     watch(selected, () => {

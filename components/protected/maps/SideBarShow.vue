@@ -1,7 +1,6 @@
 <template>
   <TodosItems
-    :cols="cols"
-    :is-edit="false">
+    :cols="cols">
   ></TodosItems>
 </template>
 

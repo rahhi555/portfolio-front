@@ -7,7 +7,6 @@
           :key="i"
           class="text-center"
           cols="6"
-          md="auto"
         >
           <a
             :href="link.href"
@@ -23,7 +22,7 @@
 
         <v-spacer class="hidden-sm-and-down" />
 
-        <v-col cols="12" md="auto">
+        <v-col cols="12">
           <div class="text-body-1 font-weight-light pt-6 pt-md-0 text-center">
             &copy; {{ new Date().getFullYear() }}, Made by
             <v-icon>mdi-vuetify</v-icon>

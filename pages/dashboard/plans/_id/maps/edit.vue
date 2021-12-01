@@ -7,14 +7,15 @@
     </v-col>
 
     <v-col max-width="100%" rounded cols="9" style="position: relative">
-      <MapsGoogleMap />
-      <SvgsBase />
+      <MapsGoogleMap v-show="hasActiveMap"/>
+      <SvgsBase v-show="hasActiveMap" />
+      
       <MapsFooterBase
         :justify-content="
           hasActiveMap ? 'justify-sm-space-between' : 'justify-end'
         "
       >
-        <MapsFooterEdit v-if="hasActiveMap" :has-active-map="hasActiveMap" />
+        <MapsFooterEdit v-if="hasActiveMap" />
       </MapsFooterBase>
     </v-col>
 
@@ -47,11 +48,12 @@ export default defineComponent({
     if (!isPlanActive.value && accept.value) {
       setAppBarTabDialog('マップ作成')
     }
+
     
     return {
       isPlanActive,
       hasActiveMap: computed(() => !!MapsStore.activeMap),
-      accept
+      accept,
     }
   },
 })

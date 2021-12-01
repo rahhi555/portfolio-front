@@ -6,10 +6,10 @@
     <rect
       :width="rect.width"
       :height="rect.height"
-      :fill="fill(rect)" 
+      :fill="fill"
       :stroke="rect.stroke"
       tabindex="0"
-      :class="{ 'grabbable': isEditPage && !isSomeTrueModes }"
+      :class="{ grabbable: isEditPage && !isSomeTrueModes }"
       @pointerdown.left="
         dragStart($event)
         selectRect($event)
@@ -25,7 +25,7 @@
       y1="0"
       :x2="rect.width"
       y2="0"
-      :class="{'top-line': isEditPage && !isSomeTrueModes }"
+      :class="{ 'top-line': isEditPage && !isSomeTrueModes }"
       @pointerdown.stop="resizeStart"
     />
     <line
@@ -52,7 +52,11 @@
       :class="{ 'left-line': isEditPage && !isSomeTrueModes }"
       @pointerdown.stop="resizeStart"
     />
-    <SvgsText :svg="rect" :text-x="rect.width / 2" :text-y="rect.height / 1.5"></SvgsText>
+    <SvgsText
+      :svg="rect"
+      :text-x="rect.width / 2"
+      :text-y="rect.height / 1.5"
+    ></SvgsText>
   </g>
 </template>
 
@@ -60,10 +64,11 @@
 import {
   defineComponent,
   reactive,
-  useContext
+  useContext,
+  computed,
 } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
-import { SvgsStore, TodoListsStore } from '~/store'
+import { SvgsStore, TodoListsStore, TodoStatusesStore, PlansStore } from '~/store'
 import Drag from '~/utils/svgs/svg-drag'
 import Resize from '~/utils/svgs/svg-resize'
 import TodoListAttach from '~/utils/helpers/todo-list-attach'
@@ -79,16 +84,18 @@ export default defineComponent({
     },
   },
 
-   setup() {
+  setup(props) {
+    const rect = props.rect as Rect
+
     // 編集ページ判定、ピン挿入モード判定、スクロールモード判定
     const modes = reactive({
       isEditPage: CommonUI.isEditPage.value,
-      isSomeTrueModes: Cursor.isSomeTrueModes
+      isSomeTrueModes: Cursor.isSomeTrueModes,
     })
-    
+
     // --- コンテキストメニュー表示 ---
-    const showMenu = (e: PointerEvent) => { 
-      if(!modes.isEditPage) return
+    const showMenu = (e: PointerEvent) => {
+      if (!modes.isEditPage) return
       ContextMenu.showMenu(e)
     }
     const isShowMenu = ContextMenu.isShowMenu
@@ -97,12 +104,11 @@ export default defineComponent({
     const dragStart = (e: PointerEvent) => {
       if (!modes.isEditPage || modes.isSomeTrueModes) return
       isShowMenu.value = false
-      Drag.dragStart(e)
-    }
+      Drag.dragStart(e)    }
 
     // 方向キーのドラッグ操作
     const moveRectArrowKey = (e: KeyboardEvent) => {
-      if(!modes.isEditPage) return
+      if (!modes.isEditPage) return
       isShowMenu.value = false
       Drag.moveRectArrowKey(e)
     }
@@ -116,38 +122,41 @@ export default defineComponent({
 
     // --- svg削除 ---
     const deleteSvg = (e: KeyboardEvent) => {
-      if(!modes.isEditPage) return
+      if (!modes.isEditPage) return
       SvgsStore.deleteSvg(e)
     }
-
+    
     const { $config } = useContext()
+    const { NO_ATTACH_COLOR, TODO_COLOR, DONE_COLOR, DOING_COLOR } = $config.rectColors
 
-    // 図形の色をtodoのステータスに合わせて変化させる
-    const fill = (rect: Rect) => {
-      const { todoListId } = rect
-      if (!todoListId) return $config.rectColors.NO_ATTACH_COLOR
+    /** 図形の色をtodoのステータスに合わせて変化させる */
+    const fill = computed(() => {
+      // 図形にtodoリストがアタッチされていないなければNO_ATTACH_COLORを返す
+      if (!rect.todoListId) return NO_ATTACH_COLOR
+      // 計画がアクティブでなければTODO_COLORを返す
+      if (!PlansStore.currentPlan?.active) return TODO_COLOR
 
-      const todos = TodoListsStore.todoList.find(
-        (todoList) => todoList.id === todoListId
-      )?.todos
-      if (!todos || !todos.length) return $config.rectColors.NO_ATTACH_COLOR
-      if (todos.every((todo) => todo.status === 'todo')) {
-        return $config.rectColors.TODO_COLOR
-      } else if (todos.every((todo) => todo.status === 'done')) {
-        return $config.rectColors.DONE_COLOR
+      const todos = TodoStatusesStore.getTodoStatusesBySvgId(rect.id)!
+
+      if (todos.every((todo) => todo.status === 'done')) {
+        return DONE_COLOR
+      } else if (todos.some((todo) => todo.status === 'done')) {
+        return DOING_COLOR
       } else {
-        return $config.rectColors.DOING_COLOR
+        return TODO_COLOR
       }
-    }
+    })
 
     // 閲覧ページの場合にrectをクリックしたときの処理
     const selectRect = (e: PointerEvent) => {
-      if(modes.isEditPage || modes.isSomeTrueModes) return
+      if (modes.isEditPage || modes.isSomeTrueModes) return
       SvgsStore.setTargetId(e)
       const targetRect = SvgsStore.targetSvg
-      if(!targetRect) return
-      const todoListIndex = TodoListsStore.todoList.findIndex(todoList => todoList.id === targetRect.todoListId) 
-      if(todoListIndex === -1) {
+      if (!targetRect) return
+      const todoListIndex = TodoListsStore.todoLists.findIndex(
+        (todoList) => todoList.id === targetRect.todoListId
+      )
+      if (todoListIndex === -1) {
         TodoListsStore.setSelectedTodoListIndex(null)
         return
       }
@@ -187,5 +196,4 @@ export default defineComponent({
   cursor: col-resize
   stroke-width: 15
   stroke: transparent
-
 </style>

@@ -83,7 +83,6 @@ declare module 'interface' {
     body: string
     beginTime: Date
     endTime: Date
-    status: 'todo' | 'doing' | 'done'
     images: string[]
   }
 
@@ -92,6 +91,15 @@ declare module 'interface' {
     planId: number
     title: string
     todos?: Todo[]
+  }
+
+  /** todoにマージする際にidキーが重複するため、todoStatusIdに代入し、idをdeleteする */
+  export interface TodoStatus {
+    id?: number
+    todoStatusId?: number
+    svgId: number
+    todoId: number
+    status: 'todo' | 'doing' | 'done'
   }
 
   /**

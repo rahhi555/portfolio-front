@@ -1,6 +1,7 @@
 /* eslint-disable new-cap */
 import { Loader } from '@googlemaps/js-api-loader'
 import { defineNuxtPlugin, ref, Ref } from '@nuxtjs/composition-api'
+import { MapsStore } from '~/store'
 
 export default defineNuxtPlugin(({ $config }, inject) => {
   const isGoogleMapEditMode = ref(false)
@@ -41,8 +42,9 @@ export default defineNuxtPlugin(({ $config }, inject) => {
 
         draw() {
           // 0と180以外の傾きのオーバーレイがうまくいかないので暫定的にオミット
+          // 初期位置も同様
           const heading = map.value?.getHeading()
-          if(heading === 0 || heading === 180) {
+          if((heading === 0 || heading === 180) && !!MapsStore.activeMap?.address) {
             this.svg_!.style.visibility = 'visible'
           } else {
             this.svg_!.style.visibility = 'hidden'
@@ -69,6 +71,8 @@ export default defineNuxtPlugin(({ $config }, inject) => {
         onRemove() {
           if (this.svg_) {
             const panes = this.getPanes()
+            if(!panes) return
+
             panes?.overlayMouseTarget.removeChild(this.svg_)
           }
         }

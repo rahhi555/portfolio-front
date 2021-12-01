@@ -6,11 +6,7 @@
     title="計画一覧"
   >
     <v-card-text>
-      <PlansCreateModal
-        :name.sync="planParams.name"
-        :published.sync="planParams.published"
-        @create-handle="createPlan"
-      />
+      <PlansCreateModal />
 
       <v-text-field
         v-model="search"
@@ -46,7 +42,6 @@
 <script lang="ts">
 import {
   defineComponent,
-  reactive,
   ref,
   computed,
   watch,
@@ -63,16 +58,6 @@ export default defineComponent({
     useFetch(async () => {
       await PlansStore.indexPlans()
     })
-
-    const planParams = reactive({
-      name: '',
-      published: false,
-    })
-
-    const createPlan = () => {
-      const { name, published } = planParams
-      PlansStore.createPlan({ name, published })
-    }
 
     const deletePlan = (item: Plan) => {
       PlansStore.deletePlan(item)
@@ -122,8 +107,6 @@ export default defineComponent({
       headers,
       items: computed(() => { return PlansStore.plans }),
       search,
-      planParams,
-      createPlan,
       deletePlan,
     }
   },

@@ -1,5 +1,5 @@
 <template>
-  <v-sheet v-if="!isPlanActive" color="white" elevation="1">
+  <v-sheet v-if="!isPlanActive" color="white" elevation="1" max-height="85vh" class="overflow-y-auto pa-3">
     <v-row>
       <v-col v-for="member in members" :key="member.id" md="3" sm="4">
         <MembersCard

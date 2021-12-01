@@ -18,6 +18,7 @@
     <v-img
       :src="require(`@/assets/login_gray.png`)"
       gradient="to top, #00000080, #00000080"
+      :max-height="isPlanIdPageAndLargeDevice ? '100vh' : 'none'"
     >
       <app-bar />
 
@@ -26,18 +27,18 @@
           <Nuxt />
         </v-container>
       </v-main>
-
+    
+      <Footer v-if="!isPlanIdPageAndLargeDevice" />
       <account-dialog />
 
       <mini-snackbar />
     </v-img>
 
-    <Footer />
   </v-app>
 </template>
 
 <script lang="ts">
-import { defineComponent, provide, ref } from '@nuxtjs/composition-api'
+import { defineComponent, provide, ref, useRoute, computed, useContext } from '@nuxtjs/composition-api'
 import { AppBarFunc } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
@@ -56,6 +57,7 @@ export default defineComponent({
   components: {
     MaterialSnackbar,
     AppBar,
+    // 圧迫感があるため一旦フッター削除
     Footer,
     AccountDialog,
     Drawer,
@@ -76,8 +78,16 @@ export default defineComponent({
     const drawer = ref(false)
     provide(DrawerKey, drawer)
 
+    const route = useRoute()
+    const { $vuetify } = useContext()
+    /** いずれかの計画idページかつデバイスが大きいときtrueを返す */
+    const isPlanIdPageAndLargeDevice = computed(() => {
+      return route.value.name!.startsWith('dashboard-plans-id') && $vuetify.breakpoint.lgAndUp
+    })
+
     return {
       fixed,
+      isPlanIdPageAndLargeDevice
     }
   },
 

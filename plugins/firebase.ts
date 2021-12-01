@@ -17,7 +17,8 @@ if(!firebase.apps.length){
 
 if (process.env.NODE_ENV !== "production") {
   const auth = firebase.auth()
-  auth.useEmulator('http://localhost:9099')
+  // @ts-ignore
+  auth.useEmulator('http://localhost:9099', { disableWarnings: true })
 }
 
 firebase.auth().onAuthStateChanged((user) => {

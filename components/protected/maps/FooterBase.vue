@@ -3,18 +3,18 @@
     <div :class="'text-center d-flex align-center map-page ' + justifyContent">
       <slot />
 
-      <template v-if="activeMap">
-        <span>
-          <v-chip>{{ activeMap.name }}</v-chip>
-          <v-pagination
-            v-model="activeIndex"
-            :length="maps.length"
-            style="display: inline-block"
-          ></v-pagination>
-        </span>
-      </template>
-      <v-chip v-else disabled>マップがありません</v-chip>
+      <span v-if="activeMap">
+        <v-chip style="max-width: 45%">{{ activeMap.name }}</v-chip>
+        <v-pagination
+          v-model="activeIndex"
+          :length="maps.length"
+          style="display: inline-block;"
+          :total-visible="5"
+        ></v-pagination>
+      </span>
     </div>
+
+    <v-banner v-if="!activeMap" color="info" icon="mdi-alert-circle-outline">マップが作成されていません</v-banner>
   </v-col>
 </template>
 
@@ -48,3 +48,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped>
+/deep/ .v-pagination__more{
+  color: white;
+}
+</style>

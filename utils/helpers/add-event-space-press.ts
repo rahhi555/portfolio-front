@@ -9,8 +9,9 @@ const spaceKeyPress = (e: KeyboardEvent) => {
 }
 
 const unSpaceKeyPress = (e: KeyboardEvent) => {
+  
   if (e.code === 'Space') {
-    isSpaceKeyPress.value = false
+     isSpaceKeyPress.value = false
   }
 }
 

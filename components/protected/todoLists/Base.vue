@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" max-width="300" tile>
-    <v-list dense>
+    <v-list dense class="overflow-y-auto" max-height="85vh">
       <v-list-group v-if="todoLists.length" :value="true" disabled>
           <template #activator>
               <v-list-item-title>Todoリスト</v-list-item-title>
@@ -28,7 +28,7 @@ import { TodoListsStore } from '~/store'
 export default defineComponent({
   computed: {
     todoLists() {
-      return TodoListsStore.todoList
+      return TodoListsStore.todoLists
     },
     selectedTodoListIndex: {
       get() {

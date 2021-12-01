@@ -31,8 +31,8 @@ export default defineComponent({
       { name: '更新日時', value: PlansStore.currentPlan!.updatedAt },
       { name: '人数', value: `認証済み: ${asseptedMemberCount.value},  未認証:${MembersStore.members!.length - asseptedMemberCount.value},  計:${MembersStore.members?.length}`},
       { name: 'マップ数', value: MapsStore.maps.length },
-      { name: 'Todoリスト数', value: TodoListsStore.todoList.length },
-      { name: 'Todo数', value: TodoListsStore.todoList.reduce((result, todoList) => { 
+      { name: 'Todoリスト数', value: TodoListsStore.todoLists.length },
+      { name: 'Todo数', value: TodoListsStore.todoLists.reduce((result, todoList) => { 
         if(!todoList.todos) return result
         return result + todoList.todos.length 
       }, 0) }
