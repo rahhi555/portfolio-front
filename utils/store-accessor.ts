@@ -1,3 +1,4 @@
+/* eslint-disable import/no-mutable-exports */
 import { Store } from 'vuex'
 import { getModule } from 'vuex-module-decorators'
 import Snackbar from '~/store/ui/snackbar'
@@ -8,6 +9,7 @@ import Members from '~/store/modules/members'
 import Maps from '~/store/modules/maps'
 import Svgs from '~/store/modules/svgs'
 import TodoLists from '~/store/modules/todoLists'
+import TodoStatuses from '~/store/modules/todoStatuses'
 
 let SnackbarStore: Snackbar
 let UserStore: User
@@ -17,6 +19,7 @@ let MembersStore: Members
 let MapsStore: Maps
 let SvgsStore: Svgs
 let TodoListsStore: TodoLists
+let TodoStatusesStore: TodoStatuses
 
 function initialiseStores(store: Store<any>): void {
   SnackbarStore = getModule(Snackbar, store)
@@ -27,6 +30,7 @@ function initialiseStores(store: Store<any>): void {
   MapsStore = getModule(Maps, store)
   SvgsStore = getModule(Svgs, store)
   TodoListsStore = getModule(TodoLists, store)
+  TodoStatusesStore = getModule(TodoStatuses, store)
 }
 
 export {
@@ -38,5 +42,6 @@ export {
   MembersStore,
   MapsStore,
   SvgsStore,
-  TodoListsStore
+  TodoListsStore,
+  TodoStatusesStore
 }

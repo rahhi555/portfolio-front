@@ -82,7 +82,7 @@ export default defineComponent({
   computed: {
     todoListTitle() {
       const svg = this.svg as Rect
-      const todoList = TodoListsStore.todoList.find(
+      const todoList = TodoListsStore.todoLists.find(
         (todoList) => todoList.id === svg.todoListId
       )
       return todoList?.title

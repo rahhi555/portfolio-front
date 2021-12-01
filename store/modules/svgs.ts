@@ -66,6 +66,7 @@ export default class Svgs extends VuexModule {
     this.targetId = id
   }
 
+  /** ターゲットSvgを返す */
   public get targetSvg(): AllSvgType | undefined {
     return this.svgsState.find((svg) => svg.id === this.targetId)
   }

@@ -1,12 +1,12 @@
 <template>
-  <v-card class="mx-auto" max-width="300" tile color="primary">
+  <v-card class="mx-auto overflow-y-auto" max-height="85vh" max-width="300" tile color="primary">
     <v-card-title class="edit-sidebar-title">
       <span v-if="todoLists.length">図形にドラッグ＆ドロップ</span>
       <span v-else>Todoリストがありません</span>
     </v-card-title>
 
     <v-expansion-panels v-model="selectedTodoListIndex">
-      <v-expansion-panel v-for="(todoList, i) in todoLists" :key="i">
+      <v-expansion-panel v-for="(todoList, i) in todoLists" :key="i" >
         <v-expansion-panel-header
           :id="`todo-list-id-${todoList.id}`"
           class="edit-sidebar-body"
@@ -16,7 +16,7 @@
           @dragstart="attachTodoListStart"
           @dragend="attachTodoListEnd"
           >
-          <span>
+          <span style="max-width: 90%;">
             <span class="font-weight-medium mr-4">{{ todoList.title }}</span>
             <span class="text-caption">{{ todoList.todos.length }}todo</span>
           </span>
@@ -45,7 +45,7 @@ export default defineComponent({
 
   computed: {
     todoLists() {
-      return TodoListsStore.todoList
+      return TodoListsStore.todoLists
     },
     selectedTodoListIndex: {
       get() {

@@ -29,32 +29,17 @@ export default defineComponent({
   },
 
   setup(props) {
-    const { $dayjs, $config } = useContext()
+    const { $dayjs } = useContext()
 
     const svgAttachedTodos = props.todos.flatMap(todo => todo) as Todo[]
     const today = $dayjs().format('YYYY-MM-DD')
-    const getColor = (status: 'todo' | 'doing' | 'done') => {
-      let color = ''
-      switch (status) {
-        case 'todo':
-          color = $config.rectColors.TODO_COLOR
-          break;
-        case 'doing':
-          color = $config.rectColors.DOING_COLOR
-          break;
-        case 'done':
-          color = $config.rectColors.DONE_COLOR
-          break;
-      }
-      return color
-    }
     const events = computed(() => {
       return svgAttachedTodos.map((todo) => ({
         name: todo?.title,
         start: `${today} ${todo?.beginTime}:00`,
         end: `${today} ${todo?.endTime}:00`,
         timed: true,
-        color: getColor(todo?.status!)
+        color: 'info'
       }))
     })
 

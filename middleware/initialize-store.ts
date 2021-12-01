@@ -1,5 +1,5 @@
 import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
-import { PlansStore, MapsStore, MembersStore, RolesStore, SvgsStore, TodoListsStore } from "~/store";
+import { PlansStore, MapsStore, MembersStore, RolesStore, SvgsStore, TodoListsStore, TodoStatusesStore } from "~/store";
 
 const initializeStore = async (planId: string): Promise<void> => {
   await Promise.all([
@@ -10,6 +10,8 @@ const initializeStore = async (planId: string): Promise<void> => {
     RolesStore.indexRoles(planId),
     TodoListsStore.indexTodoLists(planId)
   ])
+  // 取得した計画がアクティブだったならtodoステータスを取得する
+  if (PlansStore.currentPlan?.active) await TodoStatusesStore.indexTodoStatuses(planId)
 } 
 
 export default defineNuxtMiddleware(async ({route, app, redirect, res}) => {

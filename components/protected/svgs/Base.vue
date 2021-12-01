@@ -173,7 +173,7 @@ export default defineComponent({
 
 <style scoped lang="sass">
 .svg-base-sheet
-  height: 75vh
+  height: 80vh
   touch-action: none
   background-color: transparent
   user-select: none

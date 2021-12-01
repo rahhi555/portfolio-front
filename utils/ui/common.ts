@@ -23,5 +23,5 @@ const isPlanActive = computed(() => {
 export default {
   isEditPage,
   isShowPage,
-  isPlanActive
+  isPlanActive,
 }

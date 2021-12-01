@@ -92,15 +92,17 @@ export default class Plans extends VuexModule {
   }
 
   @Mutation
-  public beginPlan() {
+  public activatePlan() {
     if(!this.currentPlanState) return
     this.currentPlanState.active = true
+    SnackbarStore.visible({ color: 'success', message: '計画を開始しました。頑張りましょう！' })
   }
 
   @Mutation
-  public endPlan() {
+  public inactivatePlan() {
     if(!this.currentPlanState) return
     this.currentPlanState.active = false
+    SnackbarStore.visible({ color: 'success', message: '計画を終了しました。お疲れさまでした。' })
   }
 
 }

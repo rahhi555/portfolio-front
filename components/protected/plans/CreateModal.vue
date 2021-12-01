@@ -27,31 +27,21 @@
                   name="名前"
                 >
                   <v-text-field
-                    :value="name"
+                    v-model="planParams.name"
                     label="Name..."
                     required
                     :error-messages="errors[0]"
-                    @input="$emit('update:name', $event)"
                   ></v-text-field>
                 </ValidationProvider>
 
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  rules="required"
-                  name="公開設定"
-                >
-                  <v-checkbox
-                    :value="published"
-                    label="公開"
-                    :error-messages="errors[0]"
-                    required
-                    @click="$emit('update:published', !published)"
-                  ></v-checkbox>
-                  <span class="text-caption" style="line-height: 1.5rem;">
-                    公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br/>
-                    非公開にすると承認するまで閲覧できません。
-                  </span>
-                </ValidationProvider>
+                <v-checkbox
+                  v-model="planParams.published"
+                  label="公開"
+                ></v-checkbox>
+                <span class="text-caption" style="line-height: 1.5rem;">
+                  公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br/>
+                  非公開にすると承認するまで閲覧できません。
+                </span>
               </v-col>
             </v-row>
           </v-container>
@@ -67,7 +57,7 @@
             text
             @click="
               dialog = false
-              $emit('create-handle')
+              createPlan()
             "
           >
             Create
@@ -79,25 +69,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from '@nuxtjs/composition-api'
+import { defineComponent, ref, reactive } from '@nuxtjs/composition-api'
+import {  PlansStore } from '~/store'
 
 export default defineComponent({
-  props: {
-    name: {
-      type: String,
-      default: '',
-    },
-    published: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
   setup() {
     const dialog = ref(false)
 
+    const planParams = reactive({
+      name: '',
+      published: false,
+    })
+
+    const createPlan = () => {
+      const { name, published } = planParams
+      PlansStore.createPlan({ name, published })
+    }
+
     return {
       dialog,
+      planParams,
+      createPlan
     }
   },
 })

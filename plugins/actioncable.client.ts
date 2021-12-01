@@ -1,16 +1,17 @@
 import { defineNuxtPlugin } from '@nuxtjs/composition-api'
 import actioncable from 'actioncable'
-import { AllSvgType } from 'interface'
-import { SvgsStore, TodoListsStore } from '~/store'
-import { ToggleStatusParams } from '~/store/modules/todoLists'
+import { AllSvgType, TodoStatus } from 'interface'
+import { PlansStore, SvgsStore, TodoStatusesStore } from '~/store'
+import { ChangeStatusParams } from '~/store/modules/todoStatuses'
 import { SvgParams } from '~/store/modules/svgs'
 import { SendCurrentPositionParams } from '~/utils/ui/google-map-marker'
 import { getOtherMenberPosition } from '~/utils/ui/google-map-other-marker'
 
+
 export interface PlanChannel {
-  toggleTodoStatus: ({ id, status }: ToggleStatusParams) => void
-  beginPlan: () => void
-  endPlan: () => void
+  changeTodoStatus: ({ id, status }: ChangeStatusParams) => void
+  activatePlan: () => void
+  inactivatePlan: () => void
   sendActiveSvg: (svg: SvgParams) => void
   sendCurrentPosition: ({ userId, lat, lng }: SendCurrentPositionParams) => void
 }
@@ -24,6 +25,7 @@ interface ReceivedParams {
   lat?: number
   lng?: number
   name?: string
+  todoStatuses?: TodoStatus[]
 }
 
 declare module 'actioncable' {
@@ -54,14 +56,16 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
 
         received(data: ReceivedParams) {
           switch (data.action) {
-            case 'beginPlan':
-              TodoListsStore.doingTodos()
+            case 'activatePlan':
+              PlansStore.activatePlan()
+              TodoStatusesStore.initTodoStatuses(data.todoStatuses!)
               break
-            case 'endPlan':
-              TodoListsStore.resetTodos()
+            case 'inactivatePlan':
+              PlansStore.inactivatePlan()
+              TodoStatusesStore.clearTodoStatuses()
               break
-            case 'toggleTodoStatus':
-              TodoListsStore.toggleTodoStatusMutation({ id: data.id!, status: data.status! })
+            case 'changeTodoStatus':
+              TodoStatusesStore.changeTodoStatus({ id: data.id!, status: data.status! })
               break
             case 'sendActiveSvg':
               SvgsStore.addSvgMutation(data.svg!)
@@ -75,19 +79,21 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
         },
 
         // --- 独自メソッド ---
-        toggleTodoStatus({ id, status }: ToggleStatusParams) {
-          this.perform('toggleTodoStatus', {
+        changeTodoStatus({ id, status }: ChangeStatusParams) {
+          this.perform('changeTodoStatus', {
             id,
             status
           })
         },
 
-        beginPlan() {
-          this.perform('beginPlan', {})
+        activatePlan() {
+          if (!confirm('計画を開始してもよろしいですか？')) return
+          this.perform('activatePlan', {})
         },
 
-        endPlan() {
-          this.perform('endPlan', {})
+        inactivatePlan() {
+          if (!confirm('計画を終了してもよろしいですか？')) return
+          this.perform('inactivatePlan', {})
         },
 
         sendActiveSvg(svg: SvgParams) {
@@ -122,6 +128,9 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
 
 declare module '@nuxt/types' {
   interface Context {
+  /** $planChannel[0]が現在のチャンネル。チャンネルを直接変数に代入しようとするとundefinedになるので、配列ごと代入している。  
+   * [0]以外の用途はなく、代入されることも無いはず
+   */
     $planChannel: PlanChannel[]
   }
 }

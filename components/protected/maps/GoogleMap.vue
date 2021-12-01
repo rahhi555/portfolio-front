@@ -361,14 +361,14 @@ export default defineComponent({
 
 <style scoped lang="sass">
 #google-map
-  height: 75vh
+  height: 80vh
   width: 98%
   position: absolute
   top: 12px
   background-color: gray
 
 .disabled-google-map
-  height: 75vh
+  height: 80vh
   width: 98%
   position: absolute
   top: 12px

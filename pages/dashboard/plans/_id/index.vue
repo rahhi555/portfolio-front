@@ -25,19 +25,19 @@
       </v-col>
 
       <v-col v-if="accept" cols="6" sm="2">
-        <v-btn width="100%" color="secondary" @click="endPlan">計画終了</v-btn>
+        <v-btn width="100%" color="secondary" @click="inactivatePlan">計画終了</v-btn>
       </v-col>
     </template>
 
     <template v-else>
-      <v-col cols="12" sm="8">
+      <v-col cols="12" md="9">
         <MapsHomeOverView />
       </v-col>
 
     <v-col v-show="$vuetify.breakpoint.smAndUp" cols="12"  />
 
       <v-col v-if="accept" cols="6" sm="2">
-        <v-btn width="100%" color="secondary" @click="beginPlan"
+        <v-btn width="100%" color="secondary" @click="activatePlan"
           >計画開始</v-btn
         >
       </v-col>
@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, SnackbarStore, SvgsStore, TodoListsStore, MembersStore } from '~/store'
+import { PlansStore, TodoListsStore, MembersStore, TodoStatusesStore } from '~/store'
 
 export default defineComponent({
   layout: 'protected',
@@ -55,35 +55,18 @@ export default defineComponent({
   middleware: ['initialize-store'],
 
   setup() {
-    const { $axios } = useContext()
+    const { $planChannel } = useContext()
 
     const progressHash = computed(() => {
-      // svgにアタッチされているtodoListのidを取得
-      const attachedTodoListIds = SvgsStore.allSvgs
-        .map((svg) => svg.todoListId)
-        .filter(Boolean)
-      // 取得したidの重複をなくす
-      const noDupTodoListIds = Array.from(new Set(attachedTodoListIds))
-
-      const todos = noDupTodoListIds.map(todoListId =>
-          TodoListsStore.todoList.find(todoList => todoList.id === todoListId)?.todos
-      )
+      const todos = TodoListsStore.todoLists.flatMap(todoList => todoList.todos)
 
       // todoの総数
-      const allTodosLength = todos.reduce((prev, current) => {
-        return prev + current!.length
-      }, 0)
+      const allTodosLength = TodoStatusesStore.getAllTodoStatuses.length
 
       // ステータスがdoneであるtodoの総数
-      const doneTodosLength = todos.reduce((prev, current) => {
-        return (
-          prev +
-          current!.reduce((prev, current) => {
-            if (current.status === 'done') return prev + 1
-            return prev
-          }, 0)
-        )
-      }, 0)
+      const doneTodosLength = TodoStatusesStore.getAllTodoStatuses.filter(todoStatus => {
+        return todoStatus.status === 'done'
+      }).length
 
       // 進行状況を百分率で算出
       const progressPercentage = Math.ceil(
@@ -105,51 +88,11 @@ export default defineComponent({
       return PlansStore.currentPlan?.active
     })
 
-    // 計画開始
-    const beginPlan = () => {
-      if (!confirm('計画を開始してもよろしいですか？')) return
-
-      $axios
-        .$patch(`/api/v1/plans/${PlansStore.currentPlan!.id}`, {
-          plan: { active: true },
-        })
-        .then((res) => {
-          PlansStore.setCurrentPlanMutation(res)
-          TodoListsStore.doingTodos(true)
-        })
-        .catch(() =>
-          SnackbarStore.visible({
-            color: 'error',
-            message: '計画の開始に失敗しました',
-          })
-        )
-    }
-
-    // 計画終了
-    const endPlan = () => {
-      if (!confirm('計画を終了してもよろしいですか？')) return
-
-      $axios
-        .$patch(`/api/v1/plans/${PlansStore.currentPlan!.id}`, {
-          plan: { active: false },
-        })
-        .then((res) => {
-          PlansStore.setCurrentPlanMutation(res)
-          TodoListsStore.resetTodos(true)
-        })
-        .catch(() =>
-          SnackbarStore.visible({
-            color: 'error',
-            message: '計画の終了に失敗しました',
-          })
-        )
-    }
-
     return {
       progressHash,
       active,
-      beginPlan,
-      endPlan,
+      activatePlan: () => $planChannel[0].activatePlan(),
+      inactivatePlan: () => $planChannel[0].inactivatePlan(),
       accept: computed(() => MembersStore.currentUserAccept)
     }
   },
