@@ -137,7 +137,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { $axios, app, $planChannel } = useContext()
+    const { $axios, app, $planChannelPeformMethods } = useContext()
     const route = useRoute()
 
     /** Todoリストページ判定 */
@@ -204,7 +204,7 @@ export default defineComponent({
       // eslint-disable-next-line prefer-const
       let { todoStatusId, status }  = todo
       status = status === 'todo' ? 'done' : 'todo'
-      $planChannel[0].changeTodoStatus({ id: todoStatusId, status })
+      $planChannelPeformMethods('changeTodoStatus', { id: todoStatusId, status })
     }
 
     return {

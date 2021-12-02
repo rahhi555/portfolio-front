@@ -50,7 +50,7 @@ const sendActivePath = (e: PointerEvent) => {
     drawPoints:
       'M44.5 15c0-8.271-6.729-15-15-15s-15 6.729-15 15c0 7.934 6.195 14.431 14 14.949v4.429c0 .553.448 3.56 1 3.56s1-3.007 1-3.56v-4.429c7.805-.518 14-7.015 14-14.949Z',
   }
-  window.$nuxt.context.$planChannel[0].sendActiveSvg(path)
+  window.$nuxt.context.$planChannelPeformMethods('sendActiveSvg', path)
 }
 
 export default {

@@ -109,6 +109,7 @@ export default defineComponent({
       })
       params.name = ''
       params.isGoogleMap = false
+      MapsStore.setActiveIndex(MapsStore.maps.length - 1)
     }
 
     return {

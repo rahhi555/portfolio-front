@@ -1,5 +1,10 @@
-import { computed, ref, onMounted, watch } from '@nuxtjs/composition-api'
-import { MapsStore } from '~/store'
+import {
+  computed,
+  ref,
+  onMounted,
+  watch,
+} from '@nuxtjs/composition-api'
+import { MapsStore, SnackbarStore } from '~/store'
 
 // svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
 const svgSheet = ref<Vue | null>(null)
@@ -60,20 +65,30 @@ export default {
 
   mounted() {
     onMounted(() => {
-      defaultWidth.value = MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
-      defaultHeight.value = MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
+      const svgSheetEl = svgSheet.value?.$el as HTMLDivElement
+      if(!svgSheetEl) SnackbarStore.visible({ color: 'error', message: 'シート初期化に失敗しました' })
+
+      // マップが一件も無いときはv-showで隠しているが、その状態だとwidthとheightが取得できないため
+      // 一旦表示させて値を取得してから再度隠す
+      const isSvgSheetDisplayNone = svgSheetEl.style.display === 'none'
+      if(isSvgSheetDisplayNone) svgSheetEl.style.display = ''
+      defaultWidth.value =
+        MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
+      defaultHeight.value =
+        MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
       width.value = defaultWidth.value
       height.value = defaultHeight.value
-      watch(activeMap, reset)
+      if(isSvgSheetDisplayNone) svgSheetEl.style.display = 'none'
+      watch(activeMap,  reset)
     })
   },
 
   zoomParcentWidth() {
-    return svgSheet.value!.$el.clientWidth / width.value 
+    return svgSheet.value!.$el.clientWidth / width.value
   },
 
   zoomParcentHeight() {
-    return svgSheet.value!.$el.clientHeight / height.value 
+    return svgSheet.value!.$el.clientHeight / height.value
   },
 
   viewBoxStr() {
@@ -84,8 +99,8 @@ export default {
 
   scrollBegin(e: PointerEvent) {
     // グーグルマップが有効の場合、スクロールは無効にする
-    if(MapsStore.activeMap.isGoogleMap) return
-    if(e.pointerType === 'touch') evCache.push(e)
+    if (MapsStore.activeMap.isGoogleMap) return
+    if (e.pointerType === 'touch') evCache.push(e)
 
     isScrolling = true
     startPoint.x = e.clientX - minX.value
@@ -96,17 +111,17 @@ export default {
     if (!isScrolling) return
 
     // 2本指でタッチしている場合evCache.lengthが2になるので、その場合はスクロールしない
-    if(e.pointerType === 'touch' && evCache.length > 1) {
+    if (e.pointerType === 'touch' && evCache.length > 1) {
       return
     }
 
-    const newX = e.clientX - startPoint.x            
+    const newX = e.clientX - startPoint.x
     const newY = e.clientY - startPoint.y
     minX.value = newX
     minY.value = newY
   },
 
-  scrollEnd() { 
+  scrollEnd() {
     evCache = []
     isScrolling = false
     startPoint.x = 0
@@ -119,10 +134,10 @@ export default {
    */
   zoomInOut(e: WheelEvent | number) {
     // グーグルマップが有効の場合、ズームイン・アウトは無効にする
-    if(MapsStore.activeMap.isGoogleMap) return
+    if (MapsStore.activeMap.isGoogleMap) return
 
     let deltaY: number
-    if(typeof(e) === 'number' ) {
+    if (typeof e === 'number') {
       deltaY = e
     } else {
       deltaY = e.deltaY
@@ -136,5 +151,5 @@ export default {
     }
   },
 
-  reset
+  reset,
 }

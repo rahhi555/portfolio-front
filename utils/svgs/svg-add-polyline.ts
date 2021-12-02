@@ -70,7 +70,7 @@ export default {
       delete targetPolyline.id
       await SvgsStore.addSvg(targetPolyline)
     } else {
-      window.$nuxt.context.$planChannel[0].sendActiveSvg(targetPolyline)
+      window.$nuxt.context.$planChannelPeformMethods('sendActiveSvg', targetPolyline)
     }
     targetPolyline = reactive<SvgParams>({})
     targetPolylineArray.length = 0
