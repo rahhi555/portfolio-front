@@ -69,7 +69,7 @@ watch(currentPosition, throttle(() => {
   const userId = UserStore.currentUser.id
   const name = UserStore.currentUser.name
 
-  window.$nuxt.context.$planChannel[0].sendCurrentPosition({ lat, lng, userId, name })
+  window.$nuxt.context.$planChannelPeformMethods('sendCurrentPosition', { lat, lng, userId, name })
 }, 3000))
 
 export default {

@@ -1,7 +1,7 @@
-import { defineNuxtPlugin } from '@nuxtjs/composition-api'
+import { defineNuxtPlugin, ref, computed } from '@nuxtjs/composition-api'
 import actioncable from 'actioncable'
 import { AllSvgType, TodoStatus } from 'interface'
-import { PlansStore, SvgsStore, TodoStatusesStore } from '~/store'
+import { PlansStore, SvgsStore, TodoStatusesStore, SnackbarStore, MapsStore } from '~/store'
 import { ChangeStatusParams } from '~/store/modules/todoStatuses'
 import { SvgParams } from '~/store/modules/svgs'
 import { SendCurrentPositionParams } from '~/utils/ui/google-map-marker'
@@ -15,6 +15,8 @@ export interface PlanChannel {
   sendActiveSvg: (svg: SvgParams) => void
   sendCurrentPosition: ({ userId, lat, lng }: SendCurrentPositionParams) => void
 }
+
+type PlanChannelPeformMethodsPayload = ChangeStatusParams | SvgParams | SendCurrentPositionParams
 
 interface ReceivedParams {
   action: keyof PlanChannel
@@ -35,23 +37,27 @@ declare module 'actioncable' {
   }
 }
 
-export default defineNuxtPlugin(({ app, $config }, inject) => {
-  const cable = actioncable.createConsumer($config.actioncable)
-
+export default defineNuxtPlugin(({ app, $config, route }, inject) => {
+  const cable = ref<actioncable.Cable>()
+  
   // チャンネル作成
   const createSubscription = (planId: string) => {
+    cable.value = actioncable.createConsumer($config.actioncable)
     
-    cable.subscriptions.create(
+    cable.value.subscriptions.create(
       { channel: 'PlanChannel', plan_id: Number.parseInt(planId) },
       {
         // --- アクションケーブル固有メソッド ---
         connected() {
+          console.log('connected')
         },
 
         disconnected() {
+          console.log('disconnected')
         },
 
         rejected() {
+          SnackbarStore.visible({ color: 'error', message: '処理に失敗しました。リロードをお試しください。'  })
         },
 
         received(data: ReceivedParams) {
@@ -87,6 +93,11 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
         },
 
         activatePlan() {
+          if(!MapsStore.maps.length) {
+            SnackbarStore.visible({ color: 'warning', message: 'マップが存在しない状態で計画を開始することはできません' })
+            return
+          }
+
           if (!confirm('計画を開始してもよろしいですか？')) return
           this.perform('activatePlan', {})
         },
@@ -114,24 +125,60 @@ export default defineNuxtPlugin(({ app, $config }, inject) => {
 
     // ページ遷移前が計画ページかつ遷移後が計画ページじゃない場合、現在のplanChannelを破棄する
     if (from.params.id && !to.params.id) {
-      // cable.subscriptions.subscriptions.forEach((planChannel) => {
-      //   cable.subscriptions.remove(planChannel)
-      // })
-      cable.disconnect()
+      cable.value?.disconnect()
+      return
+    }
+    cable.value = undefined
+    createSubscription(to.params.id)
+  })
+
+  // 名前が長いため用意した省略用変数
+  const subscription = computed(() => {
+    return cable.value?.subscriptions.subscriptions[0]
+  })
+  
+  const planChannelPeformMethods = async (callMethod: keyof PlanChannel, payload?: PlanChannelPeformMethodsPayload) => {
+    if(!subscription.value) {
+      SnackbarStore.visible({ color: 'warning', message: '通信を再接続します。少々お待ち下さい...' })
+      cable.value = undefined
+      createSubscription(route.params.id)
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+    }
+
+    if(!subscription.value) {
+      SnackbarStore.visible({ color: 'error', message: '通信の接続に失敗しました。リロードをお試しください。' })
       return
     }
 
-    createSubscription(to.params.id)
-  })
-  
-  inject('planChannel', cable.subscriptions.subscriptions)
+    switch(callMethod) {
+      case 'activatePlan':
+        subscription.value!.activatePlan()
+        break;
+      case 'inactivatePlan':
+        cable.value?.subscriptions.subscriptions[0].inactivatePlan()
+        break;
+      case 'changeTodoStatus':
+        if('status' in payload!) {
+          cable.value?.subscriptions.subscriptions[0].changeTodoStatus(payload)
+        }
+        break;
+      case 'sendActiveSvg':
+        if('type' in payload!) {
+          cable.value?.subscriptions.subscriptions[0].sendActiveSvg(payload)
+        }
+        break;
+      case 'sendCurrentPosition':
+        if('lat' in payload!) {
+          cable.value?.subscriptions.subscriptions[0].sendCurrentPosition(payload)
+        }
+    }
+  }
+
+  inject('planChannelPeformMethods', planChannelPeformMethods)
 })
 
 declare module '@nuxt/types' {
   interface Context {
-  /** $planChannel[0]が現在のチャンネル。チャンネルを直接変数に代入しようとするとundefinedになるので、配列ごと代入している。  
-   * [0]以外の用途はなく、代入されることも無いはず
-   */
-    $planChannel: PlanChannel[]
+    $planChannelPeformMethods: (callMethod: keyof PlanChannel, payload?: PlanChannelPeformMethodsPayload) => Promise<void>
   }
 }

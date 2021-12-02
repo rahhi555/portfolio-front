@@ -55,7 +55,7 @@ export default defineComponent({
   middleware: ['initialize-store'],
 
   setup() {
-    const { $planChannel } = useContext()
+    const { $planChannelPeformMethods } = useContext()
 
     const progressHash = computed(() => {
       const todos = TodoListsStore.todoLists.flatMap(todoList => todoList.todos)
@@ -91,8 +91,8 @@ export default defineComponent({
     return {
       progressHash,
       active,
-      activatePlan: () => $planChannel[0].activatePlan(),
-      inactivatePlan: () => $planChannel[0].inactivatePlan(),
+      activatePlan: () => $planChannelPeformMethods('activatePlan'),
+      inactivatePlan: () => $planChannelPeformMethods('inactivatePlan'),
       accept: computed(() => MembersStore.currentUserAccept)
     }
   },
