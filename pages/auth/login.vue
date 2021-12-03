@@ -77,6 +77,52 @@
                 >
                   Let's Go
                 </v-btn>
+
+                <v-spacer />
+
+                <v-dialog v-model="isVisiblePasswordResetModal" max-width="500">
+                  <template #activator="{ on, attrs }">
+                    <v-chip
+                      class="my-2"
+                      small
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon left>
+                        mdi-information-outline
+                      </v-icon>
+                      パスワードを忘れた方
+                    </v-chip>
+                  </template>
+
+                  <material-card
+                    icon="mdi-email-outline"
+                    icon-small
+                    title="パスワード再設定リクエスト送信"
+                    color="accent"
+                  >
+                    <v-card-text>
+                      <v-form>
+                        <v-text-field
+                          v-model="passwordResetEmail"
+                          class="mb-5"
+                          label="Email..."
+                          hint="登録中のメールアドレスを入力して「送信」ボタンをクリックしてください。
+                                パスワードの再設定のメールが届きますので、メールに記載の指示に従ってください。"
+                          persistent-hint
+                        />
+                      </v-form>
+
+                      <v-btn
+                        color="accent"
+                        min-width="80"
+                        @click="sendPasswordResetEmail"
+                      >
+                        送信
+                      </v-btn>
+                    </v-card-text>
+                  </material-card>
+                </v-dialog>
               </v-card-text>
             </ValidationObserver>
           </MaterialCard>
@@ -90,7 +136,8 @@
 import {
   defineComponent,
   reactive,
-  useContext
+  useContext,
+  ref,
 } from '@nuxtjs/composition-api'
 
 export default defineComponent({
@@ -110,7 +157,16 @@ export default defineComponent({
 
     const googleLogin = (): void => {
       $auth.googleLogin()
-      
+    }
+
+    const isVisiblePasswordResetModal = ref(false)
+    const passwordResetEmail = ref('')
+    const sendPasswordResetEmail = () => {
+      if (!confirm('メールを送信してもよろしいですか？')) return
+
+      isVisiblePasswordResetModal.value = false
+      $auth.sendPasswordResetEmail(passwordResetEmail.value)
+      passwordResetEmail.value = ''
     }
 
     return {
@@ -118,6 +174,9 @@ export default defineComponent({
       isShowPassword,
       emailAndPasswordLogin,
       googleLogin,
+      isVisiblePasswordResetModal,
+      sendPasswordResetEmail,
+      passwordResetEmail,
     }
   },
 })
