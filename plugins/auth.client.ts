@@ -43,8 +43,8 @@ export default defineNuxtPlugin((ctx, inject) => {
         url,
         data: {
           user: {
-            name: payloadName
-          }
+            name: payloadName,
+          },
         },
       })
       .then(async () => {
@@ -252,13 +252,20 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // ログアウト
   const logout = () => {
-    firebase.auth().signOut().then(() => {
-      UserStore.removeUser()
-      payload = { color: 'success', message: 'ログアウトしました' }
-      ctx.app.router?.push('/')
-    }).catch(e => {
-      errorPayload(e.code)
-    }).finally(() => { finallyFunc() })
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        UserStore.removeUser()
+        payload = { color: 'success', message: 'ログアウトしました' }
+        ctx.app.router?.push('/')
+      })
+      .catch((e) => {
+        errorPayload(e.code)
+      })
+      .finally(() => {
+        finallyFunc()
+      })
   }
 
   // ユーザー退会
@@ -289,6 +296,24 @@ export default defineNuxtPlugin((ctx, inject) => {
       })
   }
 
+  /** パスワード再設定メール送信 */
+  const sendPasswordResetEmail = (email: string) => {
+    ctx.app.loading = true
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        payload = {
+          color: 'success',
+          message: 'パスワード再設定メールを送信しました',
+        }
+      })
+      .catch((e) => {
+        errorPayload(e.code)
+      })
+      .finally(() => finallyFunc())
+  }
+
   // $auth.メソッド()のようにアクセスできるようにする
   inject('auth', {
     emailAndPasswordRegister: (value: RegisterValues) =>
@@ -301,6 +326,7 @@ export default defineNuxtPlugin((ctx, inject) => {
       emailAndPasswordCredential(value),
     googleCredential: () => googleCredential(),
     unRegister: () => unRegister(),
+    sendPasswordResetEmail: (email: string) => sendPasswordResetEmail(email)
   })
 })
 
@@ -315,6 +341,7 @@ declare module '@nuxt/types' {
       emailAndPasswordCredential: (registerValues: RegisterValues) => void
       googleCredential: () => void
       unRegister: () => void
+      sendPasswordResetEmail: (email: string) => void
     }
   }
 }

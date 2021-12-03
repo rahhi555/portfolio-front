@@ -33,7 +33,8 @@
       "@nuxtjs/device",
       "@nuxtjs/dayjs",
       "@types/actioncable",
-      "@types/google.maps"
+      "@types/google.maps",
+      "@types/jest"
     ]
   },
   "exclude": [
