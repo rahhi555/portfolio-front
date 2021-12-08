@@ -36,7 +36,7 @@ const onMounted = (map: google.maps.Map) => {
     currentPosition.lat = pos.coords.latitude
     currentPosition.lng = pos.coords.longitude
     currentPosition.heading = pos.coords.heading!
-  })
+  }, () => {}, { enableHighAccuracy: true })
 
   marker = new google.maps.Marker({
     position: { lat: currentPosition.lat, lng: currentPosition.lng },
@@ -52,15 +52,15 @@ const unMounted = () => {
   marker.setMap(null)
 }
 
-/** 現在位置が変更されるたびに作動し、マーカーを設置し直す。負荷軽減のため500msに一度処理する。 */
-watch(currentPosition, throttle(() => {
+/** 現在位置が変更されるたびに作動し、マーカーを設置し直す */
+watch(currentPosition, () => {
   if(!marker) return
   const { lat, lng } = currentPosition
   marker.setPosition({ lat, lng })
   const activeMapHeading = MapsStore.activeMap?.heading || 0
   svgMarker.rotation! =  Math.abs(activeMapHeading - currentPosition.heading)
   marker.setIcon(svgMarker)
-}, 500))
+})
 
 /** 現在位置が変更されるたびに作動し、位置情報を送信する。負荷軽減のため3000msに一度処理する。 */
 watch(currentPosition, throttle(() => {

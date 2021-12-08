@@ -8,19 +8,7 @@ import { $axios } from '~/utils/axios-accessor'
 
 type AllSvgTypeKeys = keyof AllSvgType
 
-export interface SvgParams {
-  id?: number
-  type?: 'Rect' | 'Path' | 'Polyline'
-  userId?: number
-  mapId?: number
-  x?: number
-  y?: number
-  name?: string
-  width?: number
-  height?: number
-  drawPoints?: string
-  displayTime?: number
-}
+export type SvgParams = {[K in keyof AllSvgType]?: AllSvgType[K]}
 
 @Module({
   name: 'modules/svgs',

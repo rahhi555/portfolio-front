@@ -3,12 +3,7 @@ import { Role } from 'interface'
 import { $axios } from '~/utils/axios-accessor'
 import { SnackbarStore } from '~/store'
 
-interface RoleParams {
-  id?: number | string
-  name: string
-  description: string
-  planId?: number | string
-}
+type RoleParams = {[K in keyof Role]?: Role[K]}
 
 const MODEL = 'ロール'
 

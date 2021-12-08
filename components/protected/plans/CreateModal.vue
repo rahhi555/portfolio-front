@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" max-width="600px">
     <template #activator="{ on, attrs }">
       <v-btn
+        data-tutorial="create-plan-btn"
         color="secondary"
         class="mr-2 mb-2 float-left"
         v-bind="attrs"
@@ -25,6 +26,7 @@
                   v-slot="{ errors }"
                   rules="max:50|required"
                   name="名前"
+                  data-tutorial="create-plan-input"
                 >
                   <v-text-field
                     v-model="planParams.name"
@@ -34,13 +36,15 @@
                   ></v-text-field>
                 </ValidationProvider>
 
-                <v-checkbox
-                  v-model="planParams.published"
-                  label="公開"
-                ></v-checkbox>
-                <span class="text-caption" style="line-height: 1.5rem;">
-                  公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br/>
-                  非公開にすると承認するまで閲覧できません。
+                <span data-tutorial="create-plan-check">
+                  <v-checkbox
+                    v-model="planParams.published"
+                    label="公開"
+                  ></v-checkbox>
+                  <span class="text-caption" style="line-height: 1.5rem;">
+                    公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br/>
+                    非公開にすると承認するまで閲覧できません。
+                  </span>
                 </span>
               </v-col>
             </v-row>

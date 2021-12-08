@@ -56,6 +56,8 @@ export default defineComponent({
 
   setup() {
     useFetch(async () => {
+      // チュートリアル対象者の場合データフェッチをしない
+      if (UserStore.needTutorial) return
       await PlansStore.indexPlans()
     })
 

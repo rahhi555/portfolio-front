@@ -5,17 +5,7 @@ import { SnackbarStore } from '~/utils/store-accessor'
 
 const MODEL = 'マップ'
 
-interface MapParams {
-  id?: number
-  planId?: number
-  name?: string
-  isGoogleMap?: boolean
-  address?: string
-  bounds?: google.maps.LatLngBoundsLiteral
-  heading?: number
-  width?: number
-  height?: number
-}
+type MapParams = {[K in keyof Map]?: Map[K]}
 
 @Module({
   name: 'modules/maps',

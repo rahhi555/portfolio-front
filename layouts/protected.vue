@@ -15,6 +15,10 @@
 
     <drawer />
 
+    <client-only>
+      <LayoutTutorialBase />
+    </client-only>
+
     <v-img
       :src="require(`@/assets/login_gray.png`)"
       gradient="to top, #00000080, #00000080"

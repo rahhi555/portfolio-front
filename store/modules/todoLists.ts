@@ -6,14 +6,7 @@ import { SnackbarStore } from '~/utils/store-accessor'
 
 const MODEL = 'Todoリスト'
 
-interface TodoParams {
-  id?: number
-  title?: string
-  body?: string
-  beginTime?: string
-  endTime?: string
-  images?: File[]
-}
+type TodoParams = {[K in keyof Todo]?: Todo[K]}
 
 @Module({
   name: 'modules/todoLists',
