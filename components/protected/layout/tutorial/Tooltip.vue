@@ -1,6 +1,6 @@
 <template>
-  <div v-show="message && isRunningTutorial" id="tutorial-tooltip">
-    <p>{{ message }}</p>
+  <div v-show="tooltip && isRunningTutorial" id="tutorial-tooltip">
+    <p>{{ tooltip }}</p>
   </div>
 </template>
 
@@ -21,13 +21,13 @@ export default defineComponent({
   },
 
   setup() {
-    const message = ref<string>()
+    const tooltip = ref<string>()
 
     onMounted(async () => {
       // 遅延読み込みしないと何故かトップページアクセス時にtutorial-tablesが読み込まれてしまい、document is not defined エラーが発生する
-      const nowTooltipMessage = (
+      const nowTooltip = (
         await import('~/utils/tutorial/tutorial-tables')
-      ).nowTooltipMessage
+      ).nowTooltip
       const targetElement = (
         await import('~/utils/tutorial/tutorial-tables')
       ).targetElement
@@ -46,7 +46,7 @@ export default defineComponent({
 
           if(!tutorialTooltip) return
 
-          message.value = nowTooltipMessage.value
+          tooltip.value = nowTooltip.value
 
           tutorialTooltip.style.top = `${
             targetElement.value.getBoundingClientRect().bottom
@@ -61,7 +61,7 @@ export default defineComponent({
     })
 
     return {
-      message
+      tooltip
     }
   },
 })

@@ -34,6 +34,7 @@
       </v-col>
     </v-row>
     <LayoutTutorialTooltip :is-running-tutorial="isRunningTutorial" />
+    <LayoutTutorialStepper />
   </div>
 </template>
 

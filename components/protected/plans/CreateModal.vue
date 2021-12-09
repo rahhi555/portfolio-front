@@ -56,6 +56,7 @@
             Close
           </v-btn>
           <v-btn
+            data-tutorial="create-plan-submit"
             color="blue darken-1"
             :disabled="invalid"
             text
