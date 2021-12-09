@@ -8,6 +8,7 @@
       min-width="0"
       small
       text
+      data-tutorial='plan-show-btn'
       @click="editPlan(item)"
     >
       <v-tooltip bottom>

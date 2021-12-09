@@ -34,18 +34,18 @@
       </v-col>
     </v-row>
     <LayoutTutorialTooltip :is-running-tutorial="isRunningTutorial" />
-    <LayoutTutorialStepper />
+    <LayoutTutorialStepper :is-running-tutorial="isRunningTutorial" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from '@nuxtjs/composition-api'
 import { UserStore, PlansStore } from '~/store'
+import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 export default defineComponent({
   setup() {
     const tutorialDialog = ref(false)
-    const isRunningTutorial = ref(false)
 
     const startTutorial = () => {
       tutorialDialog.value = false

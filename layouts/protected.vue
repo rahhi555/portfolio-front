@@ -54,7 +54,7 @@ import { SnackbarStore } from '~/store'
 import {
   AppBarFuncKey,
   AccountDialogKey,
-  DrawerKey
+  DrawerKey,
 } from '~/types/injection-key'
 
 export default defineComponent({

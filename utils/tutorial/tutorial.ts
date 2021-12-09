@@ -5,8 +5,8 @@ import { targetElement } from '~/utils/tutorial/tutorial-tables'
 /** チュートリアルで最前面に表示されるDiv要素。全画面を覆いつつclipPathスタイルを指定して切り抜くことで、特定箇所のみユーザー操作を許可する。 */
 const tutorialDiv = document.getElementById('tutorial-div') as HTMLDivElement
 
-/** チュートリアル実行中かどうか */
-export const isRunningTutorial = ref(true)
+/** 現在のメッセージが表示し終えたか */
+export const isFinishedDisplayMsg = ref(false)
 
 /** エラーハンドラ */
 const tutorialErrorHandler = async () => {
@@ -21,10 +21,13 @@ const tutorialErrorHandler = async () => {
   // window.$nuxt.$router.go({ path: 'dashboard/plans', force: true })
 }
 
-/** 選択箇所が変更されるたび、グラデーションを選択箇所に沿って中抜きする */
-const tutorialWatchStopHandle = watch(targetElement, async () => {
+/** メッセージが表示し終えるたび、グラデーションを選択箇所に沿って中抜きする */
+const tutorialWatchStopHandle = watch(() => [isFinishedDisplayMsg.value, targetElement.value], async () => {
   // 中抜きリセット
   tutorialDiv.style.clipPath = ''
+
+  // メッセージが表示し終えていなければリターン
+  if(!isFinishedDisplayMsg.value) return
 
   await nextTick()
   // DOMが中途半端に更新された状態で取得され、更にその後watchが発火しないため、遅延させ最終的なDOMを取得する

@@ -76,6 +76,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive } from '@nuxtjs/composition-api'
 import {  PlansStore } from '~/store'
+import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 export default defineComponent({
   setup() {
@@ -86,7 +87,10 @@ export default defineComponent({
       published: false,
     })
 
+    /** チュートリアル中ならリターン */
     const createPlan = () => {
+      if(isRunningTutorial.value) return
+      
       const { name, published } = planParams
       PlansStore.createPlan({ name, published })
     }

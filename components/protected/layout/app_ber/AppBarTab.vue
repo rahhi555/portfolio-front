@@ -16,6 +16,7 @@
       :absolute="!$nuxt.context.$vuetify.breakpoint.xs"
       :right="!$nuxt.context.$vuetify.breakpoint.xs"
       min-width="130"
+      data-tutorial="app-bar-btn"
       @click="appBarFunc.func"
       >{{ appBarFunc.name }}</v-btn
     >

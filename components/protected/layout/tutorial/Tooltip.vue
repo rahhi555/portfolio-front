@@ -5,13 +5,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  watch,
-  nextTick,
-  ref,
-  onMounted,
-} from '@nuxtjs/composition-api'
+import { defineComponent, watch, nextTick, ref } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   props: {
@@ -20,40 +14,36 @@ export default defineComponent({
     },
   },
 
-  setup() {
+  setup(props) {
     const tooltip = ref<string>()
 
-    onMounted(async () => {
-      // 遅延読み込みしないと何故かトップページアクセス時にtutorial-tablesが読み込まれてしまい、document is not defined エラーが発生する
-      const nowTooltip = (
-        await import('~/utils/tutorial/tutorial-tables')
-      ).nowTooltip
-      const targetElement = (
-        await import('~/utils/tutorial/tutorial-tables')
-      ).targetElement
+    watch(props, async () => {
+      // 遅延読み込みしないとトップページアクセス時にtutorial-tablesが読み込まれてしまい、document is not defined エラーが発生する
+      const nowTooltip = (await import('~/utils/tutorial/tutorial-tables')).nowTooltip
+      const targetElement = (await import('~/utils/tutorial/tutorial-tables')).targetElement
+      const isFinishedDisplayMsg = (await import('~/utils/tutorial/tutorial')).isFinishedDisplayMsg
 
       watch(
-        targetElement,
+        () => [isFinishedDisplayMsg.value, targetElement.value],
         async () => {
-          if (process.server || !targetElement.value) return
+          if (!targetElement.value) return
 
           await nextTick()
           await await new Promise((resolve) => setTimeout(resolve, 300))
 
-          const tutorialTooltip = document.getElementById(
-            'tutorial-tooltip'
-          ) as HTMLDivElement
+          const tutorialTooltip = document.getElementById('tutorial-tooltip') as HTMLDivElement
 
-          if(!tutorialTooltip) return
+          if (!tutorialTooltip) return
+
+          if (!isFinishedDisplayMsg.value) {
+            tutorialTooltip.style.visibility = 'hidden'
+            return
+          }
 
           tooltip.value = nowTooltip.value
 
-          tutorialTooltip.style.top = `${
-            targetElement.value.getBoundingClientRect().bottom
-          }px`
-          tutorialTooltip.style.left = `${
-            targetElement.value.getBoundingClientRect().left
-          }px`
+          tutorialTooltip.style.top = `${targetElement.value.getBoundingClientRect().bottom}px`
+          tutorialTooltip.style.left = `${targetElement.value.getBoundingClientRect().left}px`
           tutorialTooltip.style.visibility = 'visible'
         },
         { immediate: true }
@@ -61,7 +51,7 @@ export default defineComponent({
     })
 
     return {
-      tooltip
+      tooltip,
     }
   },
 })

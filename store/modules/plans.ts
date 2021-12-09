@@ -39,7 +39,7 @@ export default class Plans extends VuexModule {
   }
 
   @Mutation
-  private addPlansMutation(plan: Plan) {
+  public addPlansMutation(plan: Plan) {
     this.plansState?.push(plan)
   }
 

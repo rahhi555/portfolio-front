@@ -30,6 +30,7 @@
     "simplify-js": "^1.2.4",
     "universal-cookie": "^4.0.4",
     "vee-validate": "^3.4.11",
+    "vue-typer": "^1.2.0",
     "vuetify": "2.5.10"
   },
   "devDependencies": {

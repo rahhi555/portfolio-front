@@ -37,11 +37,11 @@ declare module 'interface' {
   export interface Member {
     id: number
     userId: number
-    roleId: number
+    roleId?: number
     planId: number
     accept: boolean
     userName: string
-    roleName: string
+    roleName?: string
     avatar?: string
   }
   

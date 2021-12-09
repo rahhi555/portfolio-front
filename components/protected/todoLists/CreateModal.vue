@@ -14,6 +14,7 @@
                   v-slot="{ errors }"
                   rules="max:50|required"
                   name="タイトル"
+                  data-tutorial="create-todo-list-input"
                 >
                   <v-text-field
                     v-model="title"
@@ -35,6 +36,7 @@
             color="blue darken-1"
             :disabled="invalid"
             text
+            data-tutorial="create-todo-list-submit"
             @click="createTodoList"
           >
             Create
@@ -49,6 +51,7 @@
 import { defineComponent, ref, inject } from '@nuxtjs/composition-api'
 import { AppBarDialogKey } from '~/types/injection-key'
 import { TodoListsStore } from '~/store'
+import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 export default defineComponent({
   setup() {
@@ -56,6 +59,8 @@ export default defineComponent({
     const dialog = inject(AppBarDialogKey)
     const createTodoList = async () => {
       dialog!.value = false
+      // チュートリアル中ならリターン
+      if(isRunningTutorial.value) return
       await TodoListsStore.createTodoList(title.value)
       title.value = ''
     }
