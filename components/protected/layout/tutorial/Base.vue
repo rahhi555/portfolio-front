@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isRunningTutorial" id="tutorial-div"></div>
+    <div v-show="isRunningTutorial" id="tutorial-div"></div>
     <v-row justify="space-around">
       <v-col cols="auto">
         <v-dialog
@@ -33,26 +33,25 @@
         </v-dialog>
       </v-col>
     </v-row>
-    <LayoutTutorialTooltip :is-running-tutorial="isRunningTutorial" />
-    <LayoutTutorialStepper :is-running-tutorial="isRunningTutorial" />
+    <LayoutTutorialTooltip />
+    <LayoutTutorialMsgWindow />
+    <LayoutTutorialStepper />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from '@nuxtjs/composition-api'
+import { defineComponent, onMounted, ref, useContext } from '@nuxtjs/composition-api'
 import { UserStore, PlansStore } from '~/store'
-import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 export default defineComponent({
   setup() {
     const tutorialDialog = ref(false)
+    const { $tutorial } = useContext()
 
     const startTutorial = () => {
       tutorialDialog.value = false
-      isRunningTutorial.value = true
-      import('~/utils/tutorial/tutorial').then(({ initTutorial }) =>
-        initTutorial()
-      )
+      $tutorial.isRunningTutorial.value = true
+      $tutorial.initTutorial()
     }
 
     onMounted(() => {
@@ -64,9 +63,9 @@ export default defineComponent({
 
     return {
       tutorialDialog,
-      isRunningTutorial,
       startTutorial,
       indexPlans: () => PlansStore.indexPlans(),
+      isRunningTutorial: $tutorial.isRunningTutorial
     }
   },
 })

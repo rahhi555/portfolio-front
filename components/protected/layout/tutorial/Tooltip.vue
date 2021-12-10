@@ -5,53 +5,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, nextTick, ref } from '@nuxtjs/composition-api'
+import { defineComponent, watch, nextTick, ref, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent({
-  props: {
-    isRunningTutorial: {
-      type: Boolean,
-    },
-  },
-
-  setup(props) {
+  setup() {
+    const { $tutorial } = useContext()
     const tooltip = ref<string>()
 
-    watch(props, async () => {
-      // 遅延読み込みしないとトップページアクセス時にtutorial-tablesが読み込まれてしまい、document is not defined エラーが発生する
-      const nowTooltip = (await import('~/utils/tutorial/tutorial-tables')).nowTooltip
-      const targetElement = (await import('~/utils/tutorial/tutorial-tables')).targetElement
-      const isFinishedDisplayMsg = (await import('~/utils/tutorial/tutorial')).isFinishedDisplayMsg
+    watch(
+      () => [$tutorial.isFinishedDisplayMsg.value, $tutorial.targetElement.value],
+      async () => {
+        if (!$tutorial.targetElement.value) return
 
-      watch(
-        () => [isFinishedDisplayMsg.value, targetElement.value],
-        async () => {
-          if (!targetElement.value) return
+        await nextTick()
+        await await new Promise((resolve) => setTimeout(resolve, 300))
 
-          await nextTick()
-          await await new Promise((resolve) => setTimeout(resolve, 300))
+        const tutorialTooltip = document.getElementById('tutorial-tooltip') as HTMLDivElement
 
-          const tutorialTooltip = document.getElementById('tutorial-tooltip') as HTMLDivElement
+        if (!tutorialTooltip) return
 
-          if (!tutorialTooltip) return
+        if (!$tutorial.isFinishedDisplayMsg.value) {
+          tutorialTooltip.style.visibility = 'hidden'
+          return
+        }
 
-          if (!isFinishedDisplayMsg.value) {
-            tutorialTooltip.style.visibility = 'hidden'
-            return
-          }
+        tooltip.value = $tutorial.nowTooltip.value
 
-          tooltip.value = nowTooltip.value
-
-          tutorialTooltip.style.top = `${targetElement.value.getBoundingClientRect().bottom}px`
-          tutorialTooltip.style.left = `${targetElement.value.getBoundingClientRect().left}px`
-          tutorialTooltip.style.visibility = 'visible'
-        },
-        { immediate: true }
-      )
-    })
+        tutorialTooltip.style.top = `${$tutorial.targetElement.value.getBoundingClientRect().bottom}px`
+        tutorialTooltip.style.left = `${$tutorial.targetElement.value.getBoundingClientRect().left}px`
+        tutorialTooltip.style.visibility = 'visible'
+      },
+      { immediate: true }
+    )
 
     return {
       tooltip,
+      isRunningTutorial: $tutorial.isRunningTutorial
     }
   },
 })
@@ -68,7 +57,7 @@ export default defineComponent({
   color: #555
   font-size: 16px
   background: #e0edff
-  z-index: 204
+  z-index: 205
   visibility: hidden
 
 #tutorial-tooltip:before

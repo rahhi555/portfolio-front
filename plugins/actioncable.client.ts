@@ -6,7 +6,6 @@ import { ChangeStatusParams } from '~/store/modules/todoStatuses'
 import { SvgParams } from '~/store/modules/svgs'
 import { SendCurrentPositionParams } from '~/utils/ui/google-map-marker'
 import { getOtherMenberPosition } from '~/utils/ui/google-map-other-marker'
-import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 export interface PlanChannel {
   changeTodoStatus: ({ id, status }: ChangeStatusParams) => void
@@ -37,7 +36,7 @@ declare module 'actioncable' {
   }
 }
 
-export default defineNuxtPlugin(({ app, $config, route }, inject) => {
+export default defineNuxtPlugin(({ app, $config, route, $tutorial }, inject) => {
   const cable = ref<actioncable.Cable>()
   
   // チャンネル作成
@@ -121,7 +120,7 @@ export default defineNuxtPlugin(({ app, $config, route }, inject) => {
   // ページ遷移のチャンネル作成及び破棄
   app.router?.afterEach((to, from) => {
     // チュートリアル中ならリターン
-    if(isRunningTutorial.value)
+    if(process.client && $tutorial.isRunningTutorial.value) return
 
     // ページ遷移先が同じ計画の場合、チャンネルを作成しない
     if (from.params.id === to.params.id) return

@@ -48,19 +48,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject } from '@nuxtjs/composition-api'
+import { defineComponent, ref, inject, useContext } from '@nuxtjs/composition-api'
 import { AppBarDialogKey } from '~/types/injection-key'
 import { TodoListsStore } from '~/store'
-import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 export default defineComponent({
   setup() {
     const title = ref('')
     const dialog = inject(AppBarDialogKey)
+
+    const { $tutorial } = useContext()
     const createTodoList = async () => {
       dialog!.value = false
       // チュートリアル中ならリターン
-      if(isRunningTutorial.value) return
+      if($tutorial.isRunningTutorial.value) return
       await TodoListsStore.createTodoList(title.value)
       title.value = ''
     }

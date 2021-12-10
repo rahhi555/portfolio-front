@@ -80,10 +80,10 @@ declare module 'interface' {
     id: number
     todoListId: number
     title: string
-    body: string
-    beginTime: Date
-    endTime: Date
-    images: string[]
+    body?: string
+    beginTime?: string
+    endTime?: string
+    images?: string[]
   }
 
   export interface TodoList {

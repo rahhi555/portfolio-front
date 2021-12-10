@@ -23,6 +23,7 @@ export default {
     '~/plugins/axios.ts',
     '~/plugins/vee-validate.js',
     '~/plugins/auth.client.ts',
+    '~/plugins/tutorial.client.ts',
     '~/plugins/actioncable.client.ts',
     '~/plugins/googlemap.ts',
   ],

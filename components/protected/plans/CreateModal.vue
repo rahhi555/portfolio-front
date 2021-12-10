@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600px">
+  <v-dialog v-model="dialog" max-width="600px" persistent>
     <template #activator="{ on, attrs }">
       <v-btn
         data-tutorial="create-plan-btn"
@@ -60,10 +60,7 @@
             color="blue darken-1"
             :disabled="invalid"
             text
-            @click="
-              dialog = false
-              createPlan()
-            "
+            @click="createPlan"
           >
             Create
           </v-btn>
@@ -74,9 +71,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from '@nuxtjs/composition-api'
-import {  PlansStore } from '~/store'
-import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
+import { defineComponent, ref, reactive, useContext } from '@nuxtjs/composition-api'
+import { PlansStore } from '~/store'
 
 export default defineComponent({
   setup() {
@@ -87,9 +83,11 @@ export default defineComponent({
       published: false,
     })
 
+    const { $tutorial } = useContext()
     /** チュートリアル中ならリターン */
     const createPlan = () => {
-      if(isRunningTutorial.value) return
+      dialog.value = false
+      if($tutorial.isRunningTutorial.value) return
       
       const { name, published } = planParams
       PlansStore.createPlan({ name, published })

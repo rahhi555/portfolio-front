@@ -1,6 +1,5 @@
 import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
 import { PlansStore, MapsStore, MembersStore, RolesStore, SvgsStore, TodoListsStore, TodoStatusesStore } from "~/store";
-import { isRunningTutorial } from '~/utils/tutorial/tutorial-is-running'
 
 const initializeStore = async (planId: string): Promise<void> => {
   await Promise.all([
@@ -15,10 +14,9 @@ const initializeStore = async (planId: string): Promise<void> => {
   if (PlansStore.currentPlan?.active) await TodoStatusesStore.indexTodoStatuses(planId)
 } 
 
-export default defineNuxtMiddleware(async ({route, app, redirect, res}) => {
-  console.log(isRunningTutorial.value)
+export default defineNuxtMiddleware(async ({route, app, redirect, res, $tutorial}) => {
   // チュートリアル中ならリターン
-  if(isRunningTutorial.value) return
+  if(process.client && $tutorial.isRunningTutorial.value) return
 
   const planId = route.params.id
 

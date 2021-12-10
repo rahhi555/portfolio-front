@@ -39,7 +39,7 @@ export default class TodoLists extends VuexModule {
   }
 
   @Mutation
-  private addTodoListsMutation(todoList: TodoList) {
+  public addTodoListsMutation(todoList: TodoList) {
     this.todoListsState.push(todoList)
   }
 
@@ -119,7 +119,7 @@ export default class TodoLists extends VuexModule {
   }
 
   @Mutation
-  private addTodoMutation(todo: Todo) {
+  public addTodoMutation(todo: Todo) {
     const target = this.todoListsState[this.selectedTodoListIndexState!]
     target?.todos?.push(todo)
   }

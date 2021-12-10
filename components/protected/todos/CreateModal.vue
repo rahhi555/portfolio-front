@@ -14,6 +14,7 @@
                   v-slot="{ errors }"
                   rules="max:50|required"
                   name="タイトル"
+                  data-tutorial='create-todo-input'
                 >
                   <v-text-field
                     v-model="todoParams.title"
@@ -156,6 +157,7 @@
             color="blue darken-1"
             :disabled="invalid"
             text
+            data-tutorial="create-todo-submit"
             @click="createTodo"
           >
             Create
@@ -167,7 +169,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from '@nuxtjs/composition-api'
+import { defineComponent, reactive, useContext } from '@nuxtjs/composition-api'
 import { TodoListsStore } from '~/store'
 
 export default defineComponent({
@@ -196,7 +198,13 @@ export default defineComponent({
       context.emit('closeDialogHandle')
     }
 
+    const { $tutorial } = useContext()
+
     const createTodo = async () => {
+      dialogClose()
+      // チュートリアル中ならリターン
+      if($tutorial.isRunningTutorial.value) return
+
       await TodoListsStore.createTodo(todoParams)
       for (const key in todoParams) {
         if (key === 'images') {
@@ -205,7 +213,6 @@ export default defineComponent({
         }
         todoParams[key] = ''
       }
-      dialogClose()
     }
 
     return {

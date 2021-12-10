@@ -25,9 +25,7 @@ export default class Members extends VuexModule {
 
   @Mutation
   public setMembersMutation(members: Member[]) {
-    console.log(members)
     this.membersState = members
-    console.log(members)
   }
 
   @Mutation

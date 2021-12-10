@@ -16,6 +16,7 @@
           v-show="todoListTitle !== 'Not Selected' && isTodoListEditPage"
           icon
           outlined
+          data-tutorial='create-todo-btn'
           @click="createDialog = true"
         >
           <v-icon>mdi-plus</v-icon>
