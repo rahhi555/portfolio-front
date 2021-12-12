@@ -47,7 +47,7 @@ export default class Maps extends VuexModule {
   }
 
   @Mutation
-  private addMapMutation(map: Map) {
+  public addMapMutation(map: Map) {
     this.mapsState.push(map)
   }
 
@@ -61,7 +61,7 @@ export default class Maps extends VuexModule {
   }
 
   @Mutation
-  private updateMapMutation(newMap: Map) {
+  public updateMapMutation(newMap: Map) {
     const { id } = newMap
     const index = this.mapsState?.findIndex((map) => map.id === id)
     this.mapsState.splice(index, 1, newMap)

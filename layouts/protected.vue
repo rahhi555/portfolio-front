@@ -20,7 +20,7 @@
     </client-only>
 
     <v-img
-      :src="require(`@/assets/login_gray.png`)"
+      :src="require(`@/assets/login_gray.jpg`)"
       gradient="to top, #00000080, #00000080"
       :max-height="isPlanIdPageAndLargeDevice ? '100vh' : 'none'"
     >

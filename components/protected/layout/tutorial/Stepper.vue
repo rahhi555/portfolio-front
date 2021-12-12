@@ -1,11 +1,5 @@
 <template>
-  <v-stepper
-    v-show="isRunningTutorial"
-    id="tutorial-stepper"
-    v-model="currentStep"
-    v-top
-    style="position: absolute; z-index: 204; width: 100%"
-  >
+  <v-stepper v-show="isRunningTutorial" id="tutorial-stepper" v-model="currentStep" v-top>
     <v-stepper-header style="height: 50px">
       <template v-for="(step, i) in steps">
         <v-stepper-step
@@ -23,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, computed, useContext } from '@nuxtjs/composition-api'
+import { defineComponent, nextTick, ref, watch, useContext } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   directives: {
@@ -39,28 +33,30 @@ export default defineComponent({
 
   setup() {
     const { $tutorial } = useContext()
-    const steps = ['計画作成', 'Todo作成', 'マップ作成', 'メンバー認証', '計画実行']
-    const currentStep = computed(() => {
-      let step!: number
-      switch ($tutorial.nowScenarioKey.value) {
-        case 'show-todo-list':
-        case 'app-bar-btn':
-        case 'create-todo-list-input':
-        case 'create-todo-list-submit':
-          step = 2
-          break
-        default:
-          step = 1
-          break
+
+    /** 現在のステップをカウントする変数 */
+    const currentStep = ref(1)
+
+    /** シナリオの進行度を監視し、特定のシナリオでカウントをインクリメントまたはステップバーを非表示にする */
+    watch($tutorial.nowScenarioKey, () => {
+      const incrementScenarioList = ['show-todo-list', 'show-edit-map']
+      if (incrementScenarioList.includes($tutorial.nowScenarioKey.value)) currentStep.value++
+
+      const hideScenarioList = ['change-google-map-mode', 'after-set-address']
+      const stepperStyle = document.getElementById('tutorial-stepper')!.style
+      if (hideScenarioList.includes($tutorial.nowScenarioKey.value)) {
+        stepperStyle.visibility = 'hidden'
+      } else {
+        stepperStyle.visibility = 'visible'
       }
-      return step
     })
 
     return {
-      steps,
+      steps: ['計画作成', 'Todo作成', 'マップ作成', 'メンバー認証', '計画実行'],
       currentStep,
       // 空文字だとエラーが発生するので空白を入れている
       isRunningTutorial: $tutorial.isRunningTutorial,
+      visible: ref(true),
     }
   },
 })
@@ -69,4 +65,9 @@ export default defineComponent({
 .vue-typer
   .custom.char
     color: white
+
+#tutorial-stepper
+  position: absolute
+  z-index: 204
+  width: 100%
 </style>

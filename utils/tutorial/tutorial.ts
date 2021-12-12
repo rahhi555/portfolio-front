@@ -1,21 +1,5 @@
 import { computed, ref, watch, nextTick } from '@nuxtjs/composition-api'
-import { tutorialPlanCreate, tutorialTodoListCreate, tutorialTodoCreate } from '~/utils/tutorial/tutorial-store'
-
-/** 全ての[data-tutorial]に指定されている値(便宜上キーと呼ぶ) */
-export type DataTutorialKey =
-  | 'create-plan-btn'
-  | 'create-plan-input'
-  | 'create-plan-check'
-  | 'create-plan-submit'
-  | 'plan-show-btn'
-  | 'show-todo-list'
-  | 'app-bar-btn'
-  | 'create-todo-list-input'
-  | 'create-todo-list-submit'
-  | 'select-todo-list'
-  | 'create-todo-btn'
-  | 'create-todo-input'
-  | 'create-todo-submit'
+import { DataTutorialKey, tutorialScenarioTable  } from '~/utils/tutorial/tutorial-table'
 
 /** チュートリアルで最前面に表示されるDiv要素。全画面を覆いつつclipPathスタイルを指定して切り抜くことで、特定箇所のみユーザー操作を許可する。 */
 const tutorialDiv = ref<HTMLDivElement>()
@@ -39,272 +23,10 @@ export const nowMessages = computed(() => {
   return tutorialScenarioTable.get(nowScenarioKey.value)?.messages || []
 })
 
-/** 次のシナリオキー */
-const nextKey = computed(() => {
-  let isNowScenarioKey = false
-  for (const key of tutorialScenarioTable.keys()) {
-    if (isNowScenarioKey) return key
-
-    if (key === nowScenarioKey.value) isNowScenarioKey = true
-  }
-})
-
-/** EventタイプのtargetをHTMLInputElementに上書き */
-interface HTMLInputEvent extends Event {
-  target: HTMLInputElement
-}
-
-/**
- * nextStepEventsの共通処理。デフォルトではtargetElement.valueにイベントリスナーを設定し、クリックしたら次のイベントに進むようにする
- * @param target デフォルトはtargetElement.value
- * @param event デフォルトは'click'イベント
- * @param func デフォルトはtrueを返す関数。trueを返す場合のみ次のイベントに進む
- * */
-const nextStepAddEventListener = (opt?: {
-  target?: HTMLDivElement
-  event?: keyof HTMLElementEventMap
-  func?: (e: HTMLInputEvent) => boolean
-}) => {
-  const defaultOpt = {
-    target: targetElement.value!,
-    event: 'click',
-    func: () => {
-      return true
-    },
-  }
-  const useOpt = { ...defaultOpt, ...opt }
-  const { event, target, func } = useOpt
-
-  target.addEventListener(
-    event,
-    (e) => {
-      if (!func(e as HTMLInputEvent)) return
-
-      nowScenarioKey.value = nextKey.value!
-    },
-    false
-  )
-}
-
-/** nextStepEventを集約する変数。イベントリスナを登録、あるいは値を監視し、条件を満たせばnowScenarioKeyに次のキーを代入する */
-const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
-  'create-plan-btn': () => nextStepAddEventListener(),
-
-  'create-plan-input': () =>
-    nextStepAddEventListener({
-      event: 'change',
-      func: ({ target }) => {
-        if (target.value === 'はじめての計画') { 
-          target.blur()
-          return true
-        }
-        return false
-      },
-    }),
-
-  'create-plan-check': () =>
-    nextStepAddEventListener({
-      target: targetElement.value?.getElementsByClassName('v-input__slot')[0]! as HTMLDivElement,
-    }),
-
-  'create-plan-submit': () =>
-    nextStepAddEventListener({
-      func: () => {
-        tutorialPlanCreate()
-        return true
-      },
-    }),
-
-  'plan-show-btn': () => {
-    targetElement.value!.addEventListener(
-      'click',
-      async () => {
-        await nextTick()
-        await new Promise((resolve) => setTimeout(resolve, 300))
-        const nextTarget = document.querySelectorAll('[role=tab]')[2] as HTMLDivElement
-        nextTarget.dataset.tutorial = 'show-todo-list'
-        nowScenarioKey.value = nextKey.value!
-      },
-      false
-    )
-  },
-
-  'show-todo-list': () => nextStepAddEventListener(),
-
-  'app-bar-btn': () => nextStepAddEventListener(),
-
-  'create-todo-list-input': () =>
-    nextStepAddEventListener({
-      event: 'change',
-      func: ({ target }) => {
-        if (target.value === 'はじめてのtodoリスト') { 
-          target.blur()
-          return true
-        }
-        return false
-      },
-    }),
-
-  'create-todo-list-submit': () =>
-    nextStepAddEventListener({
-      func: () => {
-        tutorialTodoListCreate()
-        return true
-      },
-    }),
-
-  'select-todo-list': () => nextStepAddEventListener(),
-
-  'create-todo-btn': () => nextStepAddEventListener(),
-
-  'create-todo-input': () => nextStepAddEventListener({ event: 'change', func: ({ target }) => {
-    if (target.value === 'はじめてのtodo') { 
-      target.blur()
-      return true
-    }
-    return false
-  }}),
-
-  "create-todo-submit": () => nextStepAddEventListener({ func: () => {
-    tutorialTodoCreate()
-    return true
-  }})
-}
-
-const messages: { [key in DataTutorialKey]: string[] } = {
-  'create-plan-btn': ['まずは計画を作成します。'],
-  'create-plan-input': [],
-  'create-plan-check': [
-    '次に公開の有無を設定します',
-    '公開設定は第三者が自由に計画を閲覧できるかどうかの設定です',
-    'これにチェックをつけると作成者の許可なしでは計画の閲覧ができなくなります',
-    'また、チェックの有無に関わらず編集作業は作成者の許可が必須になります。',
-  ],
-  'create-plan-submit': [],
-  'plan-show-btn': ['計画が作成されました。詳細ページにアクセスしてみましょう。'],
-  'show-todo-list': ['次はTodoリストを作成しましょう'],
-  'app-bar-btn': [],
-  'create-todo-list-input': [],
-  'create-todo-list-submit': [],
-  'select-todo-list': ['Todoリストが作成されました。次はTodoを作成しましょう'],
-  'create-todo-btn': [],
-  'create-todo-input': [],
-  "create-todo-submit": []
-}
-
-/**
- * チュートリアルシナリオテーブル
- * @param dataTutorial [data-tutorial]に指定された名前
- * @param nextStepEvent 達成条件の関数。これが達成されれば次のシナリオに進む
- * @param messages モーダルに表示するメッセージの配列
- * @param tooltip 操作対象の付近に出現する吹き出し
- * 配列の順番がシナリオの順番になる
- * */
-const tutorialScenarioTable: Map<DataTutorialKey, { nextStepEvent: () => void; messages?: string[]; tooltip: string }> =
-  new Map([
-    [
-      'create-plan-btn',
-      {
-        nextStepEvent: () => nextStepEvents['create-plan-btn'](),
-        messages: messages['create-plan-btn'],
-        tooltip: 'クリックしてください',
-      },
-    ],
-    [
-      'create-plan-input',
-      {
-        nextStepEvent: () => nextStepEvents['create-plan-input'](),
-        tooltip: '「はじめての計画」と入力してください',
-      },
-    ],
-    [
-      'create-plan-check',
-      {
-        nextStepEvent: () => nextStepEvents['create-plan-check'](),
-        messages: messages['create-plan-check'],
-        tooltip: 'チェックボックスをチェックしてください',
-      },
-    ],
-    [
-      'create-plan-submit',
-      {
-        nextStepEvent: () => nextStepEvents['create-plan-submit'](),
-        tooltip: 'CREATEをクリックしてください',
-      },
-    ],
-    [
-      'plan-show-btn',
-      {
-        nextStepEvent: () => nextStepEvents['plan-show-btn'](),
-        messages: messages['plan-show-btn'],
-        tooltip: '目のアイコンをクリックしてください',
-      },
-    ],
-    [
-      'show-todo-list',
-      {
-        nextStepEvent: () => nextStepEvents['show-todo-list'](),
-        messages: messages['show-todo-list'],
-        tooltip: 'TODOリストをクリックしてください',
-      },
-    ],
-    [
-      'app-bar-btn',
-      {
-        nextStepEvent: () => nextStepEvents['app-bar-btn'](),
-        messages: messages['app-bar-btn'],
-        tooltip: 'TODOリスト新規作成をクリックしてください',
-      },
-    ],
-    [
-      'create-todo-list-input',
-      {
-        nextStepEvent: () => nextStepEvents['create-todo-list-input'](),
-        tooltip: '「はじめてのtodoリスト」と入力してください',
-      },
-    ],
-    [
-      'create-todo-list-submit',
-      {
-        nextStepEvent: () => nextStepEvents['create-todo-list-submit'](),
-        tooltip: 'CREATEをクリックしてください',
-      },
-    ],
-    [
-      'select-todo-list',
-      {
-        nextStepEvent: () => nextStepEvents['select-todo-list'](),
-        messages: messages['select-todo-list'],
-        tooltip: '「はじめてのtodoリスト」をクリックしてください',
-      },
-    ],
-    [
-      'create-todo-btn',
-      {
-        nextStepEvent: () => nextStepEvents['create-todo-btn'](),
-        tooltip: '十字のボタンをクリックしてください',
-      },
-    ],
-    [
-      'create-todo-input',
-      {
-        nextStepEvent: () => nextStepEvents['create-todo-input'](),
-        tooltip: '「はじめてのtodo」と入力してください',
-      },
-    ],
-    [
-      'create-todo-submit',
-      {
-        nextStepEvent: () => nextStepEvents['create-todo-submit'](),
-        tooltip: 'CREATEをクリックしてください',
-      },
-    ],
-  ])
-
 /** チュートリアルに必要なwatchを開始する(直にwatchを書くとインポートした時点で監視が始まるため、チュートリアル開始時にメソッドとして呼び出す) */
 export const tutorialWatchStart = () => {
   /**
-   * 現在のシナリオキーが切り替わるたびtargetElementを更新し、achievementConditionsFuncも実行してイベント登録をする
+   * 現在のシナリオキーが切り替わるたびtargetElementを取得しイベント登録をする
    * チュートリアル関連のwatchの中でこれが一番最初に起動する
    * */
   watch(
@@ -315,14 +37,18 @@ export const tutorialWatchStart = () => {
         isFinishedDisplayMsg.value = false
       }
 
-      // ツールチップのみ先に出現することを防ぐため、ツールチップが存在していれば一旦隠す
-      const tutorialTooltip = document.getElementById('tutorial-tooltip')
-      if (tutorialTooltip) tutorialTooltip.style.visibility = 'hidden'
-
       await nextTick()
       await new Promise((resolve) => setTimeout(resolve, 300))
 
-      targetElement.value = document.querySelector(`[data-tutorial=${nowScenarioKey.value}]`) as HTMLElement
+      const targets = document.querySelectorAll('[data-tutorial]')
+      // @ts-ignore
+      for(const target of targets) {
+        const dataTutorial = target.dataset.tutorial as string
+        if(dataTutorial.includes(nowScenarioKey.value)) {
+          targetElement.value = target
+          break
+        }
+      }
 
       tutorialScenarioTable.get(nowScenarioKey.value)?.nextStepEvent()
     },

@@ -26,6 +26,7 @@
         <v-btn
           v-show="isGoogleMapEditMode"
           id="set-center-icon"
+          data-tutorial="set-google-map-center"
           class="mr-3 mb-2"
           color="primary"
           fab
@@ -106,7 +107,7 @@ import Marker from '~/utils/ui/google-map-marker'
 
 export default defineComponent({
   setup() {
-    const { $googleMap, $config } = useContext()
+    const { $googleMap, $config, $tutorial } = useContext()
     const map = $googleMap.map
     // activeMapをwatchで監視するためcomputedで定義
     const activeMap = computed(() => MapsStore.activeMap)
@@ -288,6 +289,11 @@ export default defineComponent({
     })
 
     const updatePosition = async () => {
+      if($tutorial.isRunningTutorial.value) {
+        $googleMap.isGoogleMapEditMode.value = false
+        return
+      }
+
       const heading = map.value?.getHeading()!
 
       // 傾きが0と180のときは変化なし。その他は90と270に近いほどズームアウトしてしまうので、差をなくすためズームインする
@@ -318,7 +324,7 @@ export default defineComponent({
         })
         .catch((e) => alert(e))
 
-      // 設定時の画面の縦横を取得し、どのデバイスごとの描写差をなくす
+      // 設定時の画面の縦横を取得し、デバイスごとの描写差をなくす
       const width = map.value.getDiv().clientWidth
       const height = map.value.getDiv().clientHeight
 

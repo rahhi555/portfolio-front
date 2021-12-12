@@ -1,46 +1,74 @@
 <template>
-  <div v-show="tooltip && isRunningTutorial" id="tutorial-tooltip">
-    <p>{{ tooltip }}</p>
+  <div
+    v-show="tooltipMsg && isRunningTutorial"
+    id="tutorial-tooltip"
+    :class="[
+      isFinishedDisplayMsg ? 'tutorial-tooltip-visible' : 'tutorial-tooltip-hidden',
+      isTooltipDownward ? 'tooltip-downward' : 'tooltip-upward',
+    ]"
+  >
+    <p>{{ tooltipMsg }}</p>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, nextTick, ref, useContext } from '@nuxtjs/composition-api'
+import { defineComponent, watch, nextTick, ref, useContext, computed } from '@nuxtjs/composition-api'
 
 export default defineComponent({
   setup() {
     const { $tutorial } = useContext()
-    const tooltip = ref<string>()
+    const tooltipMsg = ref<string>()
 
+    /** ターゲットとスクリーンの下端の差を取得し、近ければtrue、離れていればfalseを返す */
+    const isTooltipDownward = computed(() => {
+      if (!$tutorial.targetElement.value) return false
+
+      const screenWithTargetBottomDiff =
+        document.documentElement.clientHeight - $tutorial.targetElement.value?.getBoundingClientRect().bottom
+      return screenWithTargetBottomDiff < 100
+    })
+
+    /** ターゲット要素が切り替わるたびツールチップの位置を合わせる */
     watch(
-      () => [$tutorial.isFinishedDisplayMsg.value, $tutorial.targetElement.value],
+      $tutorial.targetElement,
       async () => {
         if (!$tutorial.targetElement.value) return
 
         await nextTick()
         await await new Promise((resolve) => setTimeout(resolve, 300))
 
-        const tutorialTooltip = document.getElementById('tutorial-tooltip') as HTMLDivElement
+        const tooltipEl = document.getElementById('tutorial-tooltip') as HTMLDivElement
 
-        if (!tutorialTooltip) return
+        if (!tooltipEl) return
 
-        if (!$tutorial.isFinishedDisplayMsg.value) {
-          tutorialTooltip.style.visibility = 'hidden'
-          return
+        tooltipMsg.value = $tutorial.nowTooltip.value
+
+        const targetRect = $tutorial.targetElement.value.getBoundingClientRect()
+        const { left, top, bottom } = targetRect
+
+        let tooltipTop: string
+        if(isTooltipDownward.value) {
+          // ターゲットの位置がスクリーン下端と近い場合、ターゲットの上に配置する
+          const tooltipHeight = tooltipEl.getBoundingClientRect().height
+          const { marginTop, marginBottom } = window.getComputedStyle(tooltipEl)
+          const tooltipAllHeight = tooltipHeight + Number.parseFloat(marginTop) + Number.parseFloat(marginBottom)
+          tooltipTop = `${top - tooltipAllHeight}px`
+        } else {
+          // そうでなければターゲットの下に配置する
+          tooltipTop = `${bottom}px`
         }
 
-        tooltip.value = $tutorial.nowTooltip.value
-
-        tutorialTooltip.style.top = `${$tutorial.targetElement.value.getBoundingClientRect().bottom}px`
-        tutorialTooltip.style.left = `${$tutorial.targetElement.value.getBoundingClientRect().left}px`
-        tutorialTooltip.style.visibility = 'visible'
+        tooltipEl.style.top = tooltipTop
+        tooltipEl.style.left = `${left}px`
       },
       { immediate: true }
     )
 
     return {
-      tooltip,
-      isRunningTutorial: $tutorial.isRunningTutorial
+      tooltipMsg,
+      isRunningTutorial: $tutorial.isRunningTutorial,
+      isFinishedDisplayMsg: $tutorial.isFinishedDisplayMsg,
+      isTooltipDownward,
     }
   },
 })
@@ -58,9 +86,9 @@ export default defineComponent({
   font-size: 16px
   background: #e0edff
   z-index: 205
-  visibility: hidden
 
-#tutorial-tooltip:before
+// 上向きの三角形
+.tooltip-upward:before
   content: ""
   position: absolute
   top: -30px
@@ -69,7 +97,23 @@ export default defineComponent({
   border: 15px solid transparent
   border-bottom: 15px solid #e0edff
 
+// 下向きの三角形
+.tooltip-downward:before
+  content: ""
+  position: absolute
+  top: 100%
+  left: 50%
+  margin-left: -15px
+  border: 15px solid transparent
+  border-top: 15px solid #e0edff
+
 #tutorial-tooltip p
   margin: 0
-  padding: 0s
+  padding: 0
+
+.tutorial-tooltiip-visible
+  visibility: visible
+
+.tutorial-tooltip-hidden
+  visibility: hidden
 </style>

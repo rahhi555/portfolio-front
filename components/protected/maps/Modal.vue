@@ -38,6 +38,7 @@
                   v-slot="{ errors }"
                   rules="max:50|required"
                   name="名前"
+                  data-tutorial='create-map-input'
                 >
                   <v-text-field
                     v-model="params.name"
@@ -51,6 +52,7 @@
                   v-slot="{ errors }"
                   rules="required"
                   name="GoogleMap使用"
+                  data-tutorial='create-map-check'
                 >
                   <v-checkbox
                     v-model="params.isGoogleMap"
@@ -66,6 +68,7 @@
                   Close
                 </v-btn>
                 <v-btn
+                  data-tutorial="create-map-submit"
                   color="blue darken-1"
                   :disabled="invalid"
                   text
@@ -89,6 +92,7 @@ import {
   useRoute,
   computed,
   reactive,
+  useContext
 } from '@nuxtjs/composition-api'
 import { MapsStore, UserStore, PlansStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
@@ -101,7 +105,14 @@ export default defineComponent({
       isGoogleMap: false
     })
 
+    const dialog = inject(AppBarDialogKey)!
+
+    const { $tutorial } = useContext()
     const createMap = async () => {
+      dialog.value = false
+      // チュートリアル中ならリターン
+      if($tutorial.isRunningTutorial.value) return
+
       await MapsStore.createMap({
         planId: route.value.params.id,
         name: params.name,
@@ -115,7 +126,7 @@ export default defineComponent({
     return {
       params,
       createMap,
-      dialog: inject(AppBarDialogKey),
+      dialog,
       maps: computed(() => MapsStore.maps),
       isMyPlan: computed(() => {
         return PlansStore.currentPlan?.userId === UserStore.currentUser.id

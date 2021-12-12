@@ -68,8 +68,10 @@ export default {
     if(CommonUI.isEditPage.value) {
       SvgsStore.deleteSvgMutation(targetPolyline.id)
       delete targetPolyline.id
+      // @ts-ignore
       await SvgsStore.addSvg(targetPolyline)
     } else {
+      // @ts-ignore
       window.$nuxt.context.$planChannelPeformMethods('sendActiveSvg', targetPolyline)
     }
     targetPolyline = reactive<SvgParams>({})

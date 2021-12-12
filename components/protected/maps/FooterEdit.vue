@@ -3,7 +3,7 @@
     <v-btn-toggle v-model="selected" dense>
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn :disabled="isGoogleMapEditMode" @click="addRect">
+          <v-btn :disabled="isGoogleMapEditMode" data-tutorial="add-rect" @click="addRect">
             <v-icon large v-bind="attrs" v-on="on"
               >mdi-rectangle-outline</v-icon
             >
@@ -34,6 +34,7 @@
     <v-row v-if="enabledGoogleMap" align="center" class="ml-4">
       <v-switch
         v-model="isGoogleMapEditMode"
+        data-tutorial="change-google-map-mode"
       ></v-switch>
       <span :class="['switch-text',{'active-mode': !isGoogleMapEditMode}]">ミニマップ</span>
       <span class="switch-text">/</span>
