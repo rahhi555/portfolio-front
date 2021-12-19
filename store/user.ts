@@ -68,6 +68,7 @@ export default class User extends VuexModule {
     const now = dayjs()
     // 現在の時刻とcreatedAtの差を分で取得
     const diffMinutes = now.diff(this.userState.createdAt, 'm')
+
     // テスト用にめっちゃ長くとる
     return diffMinutes <= 60 * 24 * 31
   }

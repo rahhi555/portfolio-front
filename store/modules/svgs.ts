@@ -302,7 +302,7 @@ export default class Svgs extends VuexModule {
 
   // todoリストをsvgにアタッチまたはデタッチ
   @Mutation
-  private attachTodoListMutation(svg: AllSvgType) {
+  public attachTodoListMutation(svg: AllSvgType) {
     const target = this.svgsState.find(s => s.id === svg.id )
     target!.fill = svg.fill
     target!.todoListId = svg.todoListId

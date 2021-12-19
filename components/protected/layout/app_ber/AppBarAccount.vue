@@ -8,7 +8,7 @@
     transition="scale-transition"
   >
     <template #activator="{ attrs, on }">
-      <v-btn data-cypress="logout" class="ml-2 hidden-xs-only" min-width="0" text v-bind="attrs" v-on="on">
+      <v-btn v-show="isNotMobile" data-cypress="logout" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
         <v-avatar>
           <v-img v-if="currentUser.avatar" height="100%" width="100%" :src="currentUser.avatar" />
           <v-icon v-else class="mx-auto">mdi-account</v-icon>
@@ -51,6 +51,7 @@ export default defineComponent({
     return {
       logout,
       accountDialog,
+      isNotMobile: !useContext().$device.isMobile
     }
   },
 

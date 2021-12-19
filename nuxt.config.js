@@ -132,6 +132,10 @@ export default {
     transpile: [
       "vee-validate/dist/rules",
     ],
+    filenames: {
+      app: ({ isDev }) => isDev ? '[name].[hash].js' : '[chunkhash].js',
+      chunk: ({ isDev }) => isDev ? '[name].[hash].js' : '[chunkhash].js'
+    }
   },
 
   serverMiddleware: [

@@ -1,20 +1,20 @@
 declare module 'interface' {
   interface SvgBase {
     id: number
-    todoListId: number | null
+    todoListId?: number | null
     userId: number | null
     mapId: number
     type: string
     x: number
     y: number
-    fill: string
-    stroke: string
+    fill?: string
+    stroke?: string
     planId: string | number
     name: string
     displayOrder: number
     isUpdated?: boolean
-    createdAt: Date
-    updatedAt: Date
+    createdAt?: Date
+    updatedAt?: Date
   }
 
   export interface Rect extends SvgBase {

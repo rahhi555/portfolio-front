@@ -140,14 +140,14 @@ export default defineNuxtPlugin(({ app, $config, route, $tutorial }, inject) => 
   })
   
   const planChannelPeformMethods = async (callMethod: keyof PlanChannel, payload?: PlanChannelPeformMethodsPayload) => {
-    if(!subscription.value) {
+    if(!subscription.value && !$tutorial.isRunningTutorial.value) {
       SnackbarStore.visible({ color: 'warning', message: '通信を再接続します。少々お待ち下さい...' })
       cable.value = undefined
       createSubscription(route.params.id)
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
-    if(!subscription.value) {
+    if(!subscription.value && !$tutorial.isRunningTutorial.value) {
       SnackbarStore.visible({ color: 'error', message: '通信の接続に失敗しました。リロードをお試しください。' })
       return
     }

@@ -13,7 +13,9 @@
 
     <SmartphoneSideway />
 
-    <drawer />
+    <client-only>
+      <drawer />
+    </client-only>
 
     <client-only>
       <LayoutTutorialBase />
@@ -91,7 +93,7 @@ export default defineComponent({
 
     return {
       fixed,
-      isPlanIdPageAndLargeDevice
+      isPlanIdPageAndLargeDevice,
     }
   },
 

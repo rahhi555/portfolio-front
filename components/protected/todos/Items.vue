@@ -43,6 +43,7 @@
               :value="isTodoListEditPage"
               append-icon=""
               :disabled="isTodoListEditPage"
+              data-tutorial="check-todo"
             >
               <template #activator>
                 <v-list-item-title class="todo-text-space">{{
@@ -138,7 +139,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { $axios, app, $planChannelPeformMethods } = useContext()
+    const { $axios, app, $planChannelPeformMethods, $tutorial } = useContext()
     const route = useRoute()
 
     /** Todoリストページ判定 */
@@ -200,7 +201,7 @@ export default defineComponent({
 
     /** todoStatusを変更する(マップ閲覧ページ限定) */
     const toggleStatusTodo = (todo: TodoMargeStatus) => {
-      if(!todo.todoStatusId) return
+      if(!todo.todoStatusId || $tutorial.isRunningTutorial.value) return
 
       // eslint-disable-next-line prefer-const
       let { todoStatusId, status }  = todo

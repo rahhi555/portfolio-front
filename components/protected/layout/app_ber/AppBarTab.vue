@@ -1,14 +1,16 @@
 <template>
   <v-tabs :value="activeTab" :align-with-title="$vuetify.breakpoint.smAndUp" class="v-tabs">
-    <v-tab
-      v-for="(tab, index) in appBarTab"
-      :id="'app-bar-tab-' + index"
-      :key="index"
-      v-tutorial="index"
-      @click="clickTab(tab)"
-    >
-      <span :class="{'plan-active' : isPlanActive}">{{ tab.name }}</span>
-    </v-tab>
+    <client-only>
+      <v-tab
+        v-for="(tab, index) in appBarTab"
+        :id="'app-bar-tab-' + index"
+        :key="index"
+        v-tutorial="index"
+        @click="clickTab(tab)"
+      >
+        <span :class="{'plan-active' : isPlanActive}">{{ tab.name }}</span>
+      </v-tab>
+    </client-only>
 
     <v-btn
       v-if="!!appBarTab && !!appBarFunc"
@@ -46,15 +48,27 @@ export default defineComponent({
      * */
     tutorial: {
       bind(el, bind) {
+        const homeKeys = ['show-home', 'show-home-second']
+        const showMapKeys = ['show-map']
         const todoListKeys = ['show-todo-list']
-        const mapKeys = ['show-edit-map']
+        const editMapKeys = ['show-edit-map']
+        const memberKeys = ['show-member']
 
         switch(bind.value) {
+          case 0:
+            el.dataset.tutorial = homeKeys.join(' ')
+            break
+          case 1:
+            el.dataset.tutorial = showMapKeys.join(' ')
+            break
           case 2:
             el.dataset.tutorial = todoListKeys.join(' ')
             break
           case 3:
-            el.dataset.tutorial = mapKeys.join(' ')
+            el.dataset.tutorial = editMapKeys.join(' ')
+            break
+          case 4:
+            el.dataset.tutorial = memberKeys.join(' ')
             break
           default:
             el.dataset.tutorial = 'none'

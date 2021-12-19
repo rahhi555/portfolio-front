@@ -289,10 +289,7 @@ export default defineComponent({
     })
 
     const updatePosition = async () => {
-      if($tutorial.isRunningTutorial.value) {
-        $googleMap.isGoogleMapEditMode.value = false
-        return
-      }
+      if($tutorial.isRunningTutorial.value) return
 
       const heading = map.value?.getHeading()!
 

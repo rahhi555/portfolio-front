@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, nextTick, ref, watch, useContext } from '@nuxtjs/composition-api'
+import { DataTutorialKey } from '~/utils/tutorial/tutorial-table'
 
 export default defineComponent({
   directives: {
@@ -39,10 +40,10 @@ export default defineComponent({
 
     /** シナリオの進行度を監視し、特定のシナリオでカウントをインクリメントまたはステップバーを非表示にする */
     watch($tutorial.nowScenarioKey, () => {
-      const incrementScenarioList = ['show-todo-list', 'show-edit-map']
+      const incrementScenarioList: DataTutorialKey[] = ['show-todo-list', 'show-edit-map', 'show-member', 'show-home']
       if (incrementScenarioList.includes($tutorial.nowScenarioKey.value)) currentStep.value++
 
-      const hideScenarioList = ['change-google-map-mode', 'after-set-address']
+      const hideScenarioList: DataTutorialKey[] = ['change-google-map-mode', 'add-rect']
       const stepperStyle = document.getElementById('tutorial-stepper')!.style
       if (hideScenarioList.includes($tutorial.nowScenarioKey.value)) {
         stepperStyle.visibility = 'hidden'

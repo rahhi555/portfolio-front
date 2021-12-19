@@ -9,9 +9,9 @@
     dark
     :color="isPlanActive ? 'primary' : undefined"
   >
-    <go-home class="hidden-xs-only" />
+    <go-home v-show="!isMobile" />
 
-    <drawer-toggle class="hidden-sm-and-up" />
+    <drawer-toggle v-show="isMobile" />
 
     <v-spacer />
 
@@ -19,17 +19,17 @@
 
     <v-spacer />
 
-    <!-- <notifications /> -->
+    <notifications />
 
     <account />
   </v-app-bar>
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+import { defineComponent, useContext } from '@nuxtjs/composition-api'
 import GoHome from './AppBarGoHome.vue'
 import DrawerToggle from './AppBarDrawerToggle.vue'
-// import Notifications from './AppBarNotifications.vue'
+import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { PlansStore } from '~/store'
@@ -39,14 +39,15 @@ export default defineComponent({
   components: {
     GoHome,
     DrawerToggle,
-    // Notifications,
+    Notifications,
     Account,
     Tab,
   },
 
   setup(){
     return {
-      isPlanActive: common.isPlanActive
+      isPlanActive: common.isPlanActive,
+      isMobile: useContext().$device.isMobile
     }
   },
 

@@ -3,6 +3,7 @@
     ref="svgSheet"
     elevation="6"
     class="svg-base-sheet"
+    data-tutorial="drag-and-save-rect click-rect"
     @touchmove="pinchInOut"
   >
     <svg
@@ -103,7 +104,7 @@ export default defineComponent({
     // 現在のページが編集ページかどうか
     const isEditPage = CommonUI.isEditPage
 
-    const { $googleMap } = useContext()
+    const { $googleMap, $tutorial } = useContext()
     // 編集ページかつGoogleMap編集ページかどうか
     const isGoogleMapEditMode = computed(
       () => isEditPage.value && $googleMap.isGoogleMapEditMode.value
@@ -131,8 +132,9 @@ export default defineComponent({
       3000,
       { maxWait: 30000 }
     )
-    watch(SvgsStore.allSvgs, () => {
-      if(isEditPage.value) autosave()
+    const allSvgs = computed(() => SvgsStore.allSvgs)
+    watch(allSvgs, () => {
+      if(isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
     })
 
     return {
@@ -165,7 +167,10 @@ export default defineComponent({
       isEditPage,
       isGoogleMapEditMode,
       activeMapDisabledGoogleMap,
-      save: () => SvgsStore.updateSvgs(),
+      save: () => { 
+        if($tutorial.isRunningTutorial.value) return
+        SvgsStore.updateSvgs() 
+      },
     }
   },
 })

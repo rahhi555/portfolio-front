@@ -38,7 +38,6 @@ export default defineComponent({
   middleware: ['initialize-store'],
 
   setup() {
-    return {}
   },
 
   computed: {

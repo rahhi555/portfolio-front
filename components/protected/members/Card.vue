@@ -18,6 +18,7 @@
       <template #activator="{ on, attrs }">
         <v-icon
           color="error"
+          data-tutorial="accept-member"
           large
           class="accept-icon"
           v-bind="attrs"
@@ -49,7 +50,7 @@
         text
         icon
         color="error"
-        @click="exitMembers(member.id)"
+        @click="exitMembers(member)"
       >
         <v-icon>mdi-account-arrow-right-outline</v-icon>
       </v-btn>
@@ -88,7 +89,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from '@nuxtjs/composition-api'
+import { defineComponent, ref, computed, useContext } from '@nuxtjs/composition-api'
 import { Member } from 'interface'
 import { MembersStore, PlansStore, RolesStore, UserStore } from '~/store'
 
@@ -101,24 +102,27 @@ export default defineComponent({
   },
 
   setup(props) {
-    const exitMembers = (id: number) => {
+    const exitMembers = (member: Member) => {
       if (!confirm('メンバーを脱退してよろしいですか？')) {
         alert('キャンセルしました')
         return
       }
 
-      MembersStore.exitMembers(id)
+      MembersStore.exitMembers(member)
     }
 
     const updateMember = (id: number, roleId: number) => {
       MembersStore.updateMember({ id, roleId })
     }
 
+    const { $tutorial } = useContext()
     const acceptToggle = (member: Member) => {
       if (PlansStore.currentPlan!.userId !== UserStore.currentUser.id) {
         alert('承認および承認解除は作成者しか実行できません')
         return
       }
+      if($tutorial.isRunningTutorial.value) return
+      
       const accept = !member.accept
       MembersStore.updateMember({ id: member.id, accept })
     }

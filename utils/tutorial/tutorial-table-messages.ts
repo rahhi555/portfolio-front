@@ -1,4 +1,4 @@
-import { DataTutorialKey } from "./tutorial-table"
+import { DataTutorialKey } from './tutorial-table'
 
 export const messages: { [key in DataTutorialKey]: string[] } = {
   'create-plan-btn': ['まずは計画を作成します。'],
@@ -30,5 +30,21 @@ export const messages: { [key in DataTutorialKey]: string[] } = {
   'change-google-map-mode': [],
   'input-google-map-search': ['「東京ディズニーランド」を検索してみましょう'],
   'set-google-map-center': [],
-  'add-rect': ['これで位置情報の登録が完了しました', '次はこの地図に図形を配置し、オリジナルのマップを作成してみましょう']
+  'add-rect': [
+    'これで位置情報の登録が完了しました',
+    '次はこの地図に図形を配置し、オリジナルのマップを作成してみましょう',
+  ],
+  'drag-and-save-rect': ['次はこの図形を赤枠の中に動かしてみましょう'],
+  'attach-todo-list': ['最後にtodoリストを図形にドラッグアンドドロップしてみましょう'],
+  'add-member': ['これでマップの作成が完了しました。', '...おや'],
+  'show-member': ['この計画に参加したい人が来たようです。メンバー一覧画面に移動してみましょう。'],
+  'accept-member': [],
+  'show-home': [],
+  'activate-plan': [],
+  'show-map': [],
+  'click-rect': [],
+  'check-todo': [],
+  'show-home-second': [],
+  'progress-bar': [],
+  'inactivate-plan': [],
 }

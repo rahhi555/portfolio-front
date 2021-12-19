@@ -1,7 +1,7 @@
 <template>
   <MapsUnApprovedBanner v-if="!accept" />
 
-  <v-row v-else-if="$device.isDesktop && !isPlanActive">
+  <v-row v-else-if="$device.isDesktop && !isPlanActive" data-tutorial="attach-todo-list">
     <v-col cols="3">
       <MapsEditSideBar />
     </v-col>
@@ -32,8 +32,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
-import { MapsStore, PlansStore, MembersStore } from '~/store'
+import { defineComponent, computed, onUnmounted } from '@nuxtjs/composition-api'
+import { MapsStore, PlansStore, MembersStore, TodoListsStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -49,6 +49,9 @@ export default defineComponent({
       setAppBarTabDialog('マップ作成')
     }
 
+    onUnmounted(() => {
+      TodoListsStore.setSelectedTodoListIndex(null)
+    })
     
     return {
       isPlanActive,

@@ -45,12 +45,13 @@ export default class TodoStatuses extends VuexModule {
     setPear()
   }
 
-  /** 計画終了時に詳細ページをにアクセスしていた場合のメソッド。
+  /** 計画終了時に詳細ページにアクセスしていた場合のメソッド。
    * todoステータス情報をすべて削除する
    */
   @Mutation
   public clearTodoStatuses() {
     this.todoStatusesState = []
+    SnackbarStore.visible({ color: 'success', message: '計画を終了しました。お疲れさまでした。' })
     setPear()
   }
 

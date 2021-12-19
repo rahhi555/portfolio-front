@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="$device.isDesktop">
     <div v-show="isRunningTutorial" id="tutorial-div"></div>
     <v-row justify="space-around">
       <v-col cols="auto">
@@ -12,10 +12,10 @@
         >
           <v-card>
             <v-toolbar color="primary" dark
-              >チュートリアルを実行しますか？</v-toolbar
+              >チュートリアル</v-toolbar
             >
             <v-card-text>
-              <div class="text-h2 pa-12">チュートリアルを実行しますか？</div>
+              <div class="text-h5 pt-5">チュートリアルを開始しますか？(NOを選んでも右上のアカウントアイコンからいつでも受講可能です)</div>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn text @click="startTutorial">Yes</v-btn>
@@ -55,7 +55,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      if(process.server) return
+      console.log('process',process)
       if (UserStore.needTutorial) {
         tutorialDialog.value = true
       }
