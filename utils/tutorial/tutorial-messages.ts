@@ -1,4 +1,4 @@
-import { DataTutorialKey } from './tutorial-table'
+import { DataTutorialKey } from 'interface'
 
 //* モーダルに表示するメッセージの配列 */
 export const messages: { [key in DataTutorialKey]: string[] } = {
@@ -44,7 +44,7 @@ export const messages: { [key in DataTutorialKey]: string[] } = {
   'add-member': ['これでマップの作成が完了しました。', '...おや'],
   'show-member': ['ボランティアに参加したい人が来たようです。メンバー一覧画面に移動してみましょう。'],
   'accept-member': ['メンバーを承認することで、そのメンバーはtodoやマップの編集が可能になります'],
-  'show-home': ['これで準備が整いました。さっそく計画を実行してみましょう'],
+  'show-home': ['人物のアイコンをクリックすることでメンバーを承認できます' ,'これで準備が整いました。さっそく計画を実行してみましょう'],
   'activate-plan': [],
   'show-map': [
     '計画実行モードに入りました。これにより作成したtodoリストにチェックができるようになり、さらに位置情報も共有されるようになります',

@@ -1,3 +1,7 @@
+/** 
+ * @fileoverview tutorial-eventsに提供するヘルパーを集約しているファイル。主にvuexのスタブメソッドとしての役割。
+ */
+
 import { Plan, Member, TodoList, Todo, Map, Rect, TodoStatus } from 'interface'
 import { PlansStore, MembersStore, UserStore, TodoListsStore, MapsStore, SvgsStore, TodoStatusesStore } from '~/store'
 
@@ -170,21 +174,31 @@ export const acceptMemberInTutorial = () => {
     title: '側溝の落ち葉取り',
     todoListId: MAIN_BIG_NUMBER,
   }
+  TodoListsStore.setSelectedTodoListIndex(0)
   TodoListsStore.addTodoMutation(anotherTodo)
   return true
 }
 
 export const activatePlanInTutorial = () => {
-  const todoStatuses: TodoStatus = {
+  const todoStatuses: TodoStatus[] = [
+  {
     id: MAIN_BIG_NUMBER,
     status: 'todo',
     svgId: MAIN_BIG_NUMBER,
     todoId: MAIN_BIG_NUMBER,
     todoStatusId: MAIN_BIG_NUMBER
-  }
+  },
+  {
+    id: ANOTHER_BIG_NUMBER,
+    status: 'todo',
+    svgId: MAIN_BIG_NUMBER,
+    todoId: ANOTHER_BIG_NUMBER,
+    todoStatusId: MAIN_BIG_NUMBER
+  },
+]
 
   PlansStore.activatePlan()
-  TodoStatusesStore.initTodoStatuses([todoStatuses])
+  TodoStatusesStore.initTodoStatuses(todoStatuses)
   return true
 }
 

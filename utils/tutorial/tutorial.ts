@@ -1,8 +1,12 @@
+/**
+ * @fileoverview チュートリアルファイルを集約し、プラグインのエンドポイントとなるファイル。また、チュートリアルに必要なwatchメソッドを定義している。
+ */
+
 import { DataTutorialKey } from 'interface'
 import { computed, ref, watch, nextTick } from '@nuxtjs/composition-api'
-import { tutorialScenarioTable  } from '~/utils/tutorial/tutorial-table'
-import { nextStepEvents } from '~/utils/tutorial/tutorial-table-events'
-import { messages } from '~/utils/tutorial/tutorial-table-messages'
+import { tutorialTooltip  } from '~/utils/tutorial/tutorial-tooltip'
+import { nextStepEvents } from '~/utils/tutorial/tutorial-events'
+import { messages } from '~/utils/tutorial/tutorial-messages'
 
 /** チュートリアルで最前面に表示されるDiv要素。全画面を覆いつつclipPathスタイルを指定して切り抜くことで、特定箇所のみユーザー操作を許可する。 */
 const tutorialDiv = ref<HTMLDivElement>()
@@ -18,7 +22,7 @@ export const isFinishedDisplayMsg = ref(false)
 
 /** 現在のシナリオの吹き出し */
 export const nowTooltip = computed(() => {
-  return tutorialScenarioTable.get(nowScenarioKey.value)?.tooltip
+  return tutorialTooltip[nowScenarioKey.value]
 })
 
 /** 現在のシナリオのメッセージ群 */

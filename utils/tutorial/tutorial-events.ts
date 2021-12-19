@@ -1,5 +1,9 @@
+/** 
+ * @fileoverview ターゲットとするDOM要素に次のシナリオに進めるイベントを登録する
+ */
+
+import { DataTutorialKey } from 'interface'
 import { computed, watch } from '@nuxtjs/composition-api'
-import { DataTutorialKey, tutorialScenarioTable } from './tutorial-table'
 import {
   MAIN_BIG_NUMBER,
   createPlanInTutorial,
@@ -13,20 +17,19 @@ import {
   addMemberInTutorial,
   acceptMemberInTutorial,
   activatePlanInTutorial,
+  setMarkersInTutorial,
   chackMainTodoInTutorial,
   chackAnotherTodoInTutorial,
   inactivatePlanInTutorial,
-} from '~/utils/tutorial/tutorial-table-events-store'
+} from '~/utils/tutorial/tutorial-events-helpers'
 import { nowScenarioKey, targetElement, isFinishedDisplayMsg, sleep } from '~/utils/tutorial/tutorial'
+import { tutorialTooltip } from '~/utils/tutorial/tutorial-tooltip'
 
 /** 次のシナリオキー */
 const nextKey = computed(() => {
-  let isNowScenarioKey = false
-  for (const key of tutorialScenarioTable.keys()) {
-    if (isNowScenarioKey) return key
-
-    if (key === nowScenarioKey.value) isNowScenarioKey = true
-  }
+  const scenarioKeys = Object.keys(tutorialTooltip) as DataTutorialKey[]
+  const nowScenarioKeyIndex = scenarioKeys.findIndex(key => key === nowScenarioKey.value)
+  return scenarioKeys[nowScenarioKeyIndex + 1]
 })
 
 /** EventタイプのtargetをHTMLInputElementに上書き */
@@ -231,7 +234,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
   'add-member': () => {
     const stop = watch(isFinishedDisplayMsg, async () => {
       addMemberInTutorial()
-      await sleep(1000)
+      await sleep(1500)
       stop()
       nowScenarioKey.value = nextKey.value!
     })
@@ -249,7 +252,11 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
 
   'show-map': () => nextStepAddEventListener(),
 
-  'click-rect': () => nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! }),
+  'click-rect': async () => { 
+    await sleep(1000)
+    setMarkersInTutorial()
+    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! }) 
+  },
 
   'check-todo-0': () =>
     nextStepAddEventListener({
@@ -259,7 +266,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
 
   'check-todo-1': () => {
     const stop = watch(isFinishedDisplayMsg, async () => {
-      await sleep(300)
+      await sleep(2000)
       chackAnotherTodoInTutorial()
       await sleep(1000)
       stop()
@@ -271,7 +278,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
 
   'progress-bar': () => {
     const stop = watch(isFinishedDisplayMsg, async () => {
-      await sleep(1000)
+      await sleep(2000)
       stop()
       nowScenarioKey.value = nextKey.value!
     })

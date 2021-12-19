@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, nextTick, ref, watch, useContext } from '@nuxtjs/composition-api'
-import { DataTutorialKey } from '~/utils/tutorial/tutorial-table'
+import { DataTutorialKey } from 'interface'
 
 export default defineComponent({
   directives: {

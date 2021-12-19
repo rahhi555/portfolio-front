@@ -77,8 +77,7 @@ export default class User extends VuexModule {
     const hasNeedTutorialCookie = !!cookies.get('needTutorial')
     cookies.remove('needTutorial', { path: '/' })
 
-    // テスト用にめっちゃ長くとる
-    return diffMinutes <= 60 || hasNeedTutorialCookie
+    return diffMinutes <= 1 || hasNeedTutorialCookie
   }
 
   @Mutation

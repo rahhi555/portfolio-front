@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, nextTick, ref, Ref, ComputedRef } from '@nuxtjs/composition-api'
+import { DataTutorialKey } from 'interface'
 import {
   isFinishedDisplayMsg,
   nowMessages,
@@ -7,7 +8,6 @@ import {
   targetElement,
   tutorialWatchStart
 } from '~/utils/tutorial/tutorial'
-import { DataTutorialKey } from '~/utils/tutorial/tutorial-table'
 
 export default defineNuxtPlugin((_, inject) => {
   /** チュートリアルセットアップ */
