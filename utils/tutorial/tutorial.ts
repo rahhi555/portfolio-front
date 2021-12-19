@@ -1,5 +1,8 @@
+import { DataTutorialKey } from 'interface'
 import { computed, ref, watch, nextTick } from '@nuxtjs/composition-api'
-import { DataTutorialKey, tutorialScenarioTable  } from '~/utils/tutorial/tutorial-table'
+import { tutorialScenarioTable  } from '~/utils/tutorial/tutorial-table'
+import { nextStepEvents } from '~/utils/tutorial/tutorial-table-events'
+import { messages } from '~/utils/tutorial/tutorial-table-messages'
 
 /** チュートリアルで最前面に表示されるDiv要素。全画面を覆いつつclipPathスタイルを指定して切り抜くことで、特定箇所のみユーザー操作を許可する。 */
 const tutorialDiv = ref<HTMLDivElement>()
@@ -20,8 +23,13 @@ export const nowTooltip = computed(() => {
 
 /** 現在のシナリオのメッセージ群 */
 export const nowMessages = computed(() => {
-  return tutorialScenarioTable.get(nowScenarioKey.value)?.messages || []
+  return messages[nowScenarioKey.value] || []
 })
+
+/** スリープ関数 */
+export const sleep = (timer: number) => {
+  return new Promise<void>(resolve => setTimeout(resolve, timer))
+} 
 
 /** チュートリアルに必要なwatchを開始する(直にwatchを書くとインポートした時点で監視が始まるため、チュートリアル開始時にメソッドとして呼び出す) */
 export const tutorialWatchStart = () => {
@@ -38,7 +46,7 @@ export const tutorialWatchStart = () => {
       }
 
       await nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await sleep(300)
 
       const targets = document.querySelectorAll('[data-tutorial]')
       // @ts-ignore
@@ -49,8 +57,8 @@ export const tutorialWatchStart = () => {
           break
         }
       }
-
-      tutorialScenarioTable.get(nowScenarioKey.value)?.nextStepEvent()
+      nextStepEvents[nowScenarioKey.value]()
+      // tutorialScenarioTable.get(nowScenarioKey.value)?.nextStepEvent()
     },
     { immediate: true }
   )
@@ -61,7 +69,7 @@ export const tutorialWatchStart = () => {
     async () => {
       await nextTick()
       // DOMが中途半端に更新された状態で取得され、更にその後watchが発火しないため、遅延させ最終的なDOMを取得する
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await sleep(300)
 
       tutorialDiv.value ||= document.getElementById('tutorial-div') as HTMLDivElement
 

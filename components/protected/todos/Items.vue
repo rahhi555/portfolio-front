@@ -31,7 +31,7 @@
     <template #default="{ items }">
       <v-row justify="center" justify-sm="start">
         <v-col
-          v-for="item in items"
+          v-for="(item, i) in items"
           :key="item.name"
           :cols="cols.cols"
           :sm="cols.sm"
@@ -43,7 +43,7 @@
               :value="isTodoListEditPage"
               append-icon=""
               :disabled="isTodoListEditPage"
-              data-tutorial="check-todo"
+              :data-tutorial="'check-todo-' + i"
             >
               <template #activator>
                 <v-list-item-title class="todo-text-space">{{

@@ -34,3 +34,7 @@ export const getOtherMenberPosition = ({ lat, lng, userId, name }: SendCurrentPo
     }))
   }
 }
+
+export const clearMemberMarkers = () => {
+  memberMarkers.value = []
+}

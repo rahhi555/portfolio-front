@@ -53,7 +53,7 @@ export default class Plans extends VuexModule {
   }
 
   @Mutation
-  private setPlansMutation(plans: Plan[]) {
+  public setPlansMutation(plans: Plan[]) {
     this.plansState = plans
   }
 

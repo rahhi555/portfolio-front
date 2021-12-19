@@ -61,7 +61,10 @@ export default class User extends VuexModule {
     return this.userState.provider === 'anonymous'
   }
 
-  /** チュートリアル対象かどうかを返す(ユーザー作成して１分以内ならチュートリアル対象) */
+  /** 
+   * チュートリアル対象かどうかを返す(ユーザー作成して１分以内ならチュートリアル対象)   
+   * また、チュートリアルの項目を選んだ場合でも対象とみなす(その場合はクッキーを目安にする)
+   * */
   public get needTutorial() {
     if(!this.userState.createdAt) return false
     
@@ -69,8 +72,13 @@ export default class User extends VuexModule {
     // 現在の時刻とcreatedAtの差を分で取得
     const diffMinutes = now.diff(this.userState.createdAt, 'm')
 
+    // 'needTutorial'というキーのクッキーが存在するか
+    const cookies = new Cookie()
+    const hasNeedTutorialCookie = !!cookies.get('needTutorial')
+    cookies.remove('needTutorial', { path: '/' })
+
     // テスト用にめっちゃ長くとる
-    return diffMinutes <= 60 * 24 * 31
+    return diffMinutes <= 60 || hasNeedTutorialCookie
   }
 
   @Mutation

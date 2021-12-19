@@ -1,4 +1,4 @@
-import { computed } from '@nuxtjs/composition-api'
+import { computed, watch } from '@nuxtjs/composition-api'
 import { DataTutorialKey, tutorialScenarioTable } from './tutorial-table'
 import {
   MAIN_BIG_NUMBER,
@@ -13,10 +13,11 @@ import {
   addMemberInTutorial,
   acceptMemberInTutorial,
   activatePlanInTutorial,
-  chackTodoInTutorial,
-  inactivatePlanInTutorial
+  chackMainTodoInTutorial,
+  chackAnotherTodoInTutorial,
+  inactivatePlanInTutorial,
 } from '~/utils/tutorial/tutorial-table-events-store'
-import { nowScenarioKey, targetElement, isFinishedDisplayMsg } from '~/utils/tutorial/tutorial'
+import { nowScenarioKey, targetElement, isFinishedDisplayMsg, sleep } from '~/utils/tutorial/tutorial'
 
 /** 次のシナリオキー */
 const nextKey = computed(() => {
@@ -77,7 +78,7 @@ const nextStepAddEventListener = (opt?: {
  * */
 const formWithArgumentMatches = async (e: HTMLInputEvent, value: string | number) => {
   if (e.target.value === value) {
-    await new Promise((resolve) => setTimeout(resolve, 300))
+    await sleep(300)
     e.target.blur()
     return true
   }
@@ -92,7 +93,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
     nextStepAddEventListener({
       event: 'change',
       func: async (e) => {
-        return await formWithArgumentMatches(e, 'はじめての計画')
+        return await formWithArgumentMatches(e, '日比谷公園ボランティア')
       },
       once: false,
     }),
@@ -120,7 +121,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
     nextStepAddEventListener({
       event: 'change',
       func: async (e) => {
-        return await formWithArgumentMatches(e, 'はじめてのtodoリスト')
+        return await formWithArgumentMatches(e, 'レストラン周辺')
       },
       once: false,
     }),
@@ -138,7 +139,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
     nextStepAddEventListener({
       event: 'change',
       func: async (e) => {
-        return await formWithArgumentMatches(e, 'はじめてのtodo')
+        return await formWithArgumentMatches(e, 'ゴミ拾い')
       },
       once: false,
     }),
@@ -156,7 +157,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
     nextStepAddEventListener({
       event: 'change',
       func: async (e) => {
-        return await formWithArgumentMatches(e, 'はじめてのマップ')
+        return await formWithArgumentMatches(e, '日比谷公園')
       },
       once: false,
     }),
@@ -183,7 +184,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
         // safariがchangeイベントを発火しないためやむなくkeydownイベントにする
         // @ts-ignore
         if (e.code === 'Enter') {
-          return await formWithArgumentMatches(e, '千葉県浦安市舞浜１−１ 東京ディズニーランド')
+          return await formWithArgumentMatches(e, '東京都千代田区日比谷公園１ 日比谷公園')
         } else {
           return false
         }
@@ -228,18 +229,12 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
     }),
 
   'add-member': () => {
-    addMemberInTutorial()
-    const mouseMoveEvent = () => {
-      if (!isFinishedDisplayMsg.value) return
-
-      // メンバー申請があるとベルアイコンに変化があるということを印象づけるため遅延させる
-      setTimeout(() => {
-        nowScenarioKey.value = nextKey.value!
-      }, 1500)
-      window.removeEventListener('mousemove', mouseMoveEvent)
-    }
-
-    window.addEventListener('mousemove', mouseMoveEvent)
+    const stop = watch(isFinishedDisplayMsg, async () => {
+      addMemberInTutorial()
+      await sleep(1000)
+      stop()
+      nowScenarioKey.value = nextKey.value!
+    })
   },
 
   'show-member': () => {
@@ -256,22 +251,40 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
 
   'click-rect': () => nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! }),
 
-  'check-todo': () => nextStepAddEventListener({ target: targetElement.value!.querySelector('button')! ,func: () => chackTodoInTutorial()}),
+  'check-todo-0': () =>
+    nextStepAddEventListener({
+      target: targetElement.value!.querySelector('button')!,
+      func: () => chackMainTodoInTutorial(),
+    }),
+
+  'check-todo-1': () => {
+    const stop = watch(isFinishedDisplayMsg, async () => {
+      await sleep(300)
+      chackAnotherTodoInTutorial()
+      await sleep(1000)
+      stop()
+      nowScenarioKey.value = nextKey.value!
+    })
+  },
 
   'show-home-second': () => nextStepAddEventListener(),
 
-  "progress-bar": () => {
-    const mouseMoveEvent = () => {
-      if (!isFinishedDisplayMsg.value) return
-
-      setTimeout(() => {
-        nowScenarioKey.value = nextKey.value!
-      }, 1500)
-      window.removeEventListener('mousemove', mouseMoveEvent)
-    }
-
-    window.addEventListener('mousemove', mouseMoveEvent)
+  'progress-bar': () => {
+    const stop = watch(isFinishedDisplayMsg, async () => {
+      await sleep(1000)
+      stop()
+      nowScenarioKey.value = nextKey.value!
+    })
   },
 
-  "inactivate-plan": () => nextStepAddEventListener({ func: () => inactivatePlanInTutorial() })
+  'inactivate-plan': () => nextStepAddEventListener({ func: () => inactivatePlanInTutorial() }),
+
+  'finish-tutorial': () =>
+    nextStepAddEventListener({
+      func: async () => {
+        await window.$nuxt.$router.replace('/dashboard/plans')
+        window.$nuxt.$router.go(0)
+        return true
+      },
+    }),
 }

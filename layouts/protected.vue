@@ -18,7 +18,7 @@
     </client-only>
 
     <client-only>
-      <LayoutTutorialBase />
+      <LayoutTutorialBase v-if="$device.isDesktop" />
     </client-only>
 
     <v-img

@@ -51,11 +51,11 @@ export default defineComponent({
     const startTutorial = () => {
       tutorialDialog.value = false
       $tutorial.isRunningTutorial.value = true
+      PlansStore.setPlansMutation([])
       $tutorial.initTutorial()
     }
 
     onMounted(() => {
-      console.log('process',process)
       if (UserStore.needTutorial) {
         tutorialDialog.value = true
       }

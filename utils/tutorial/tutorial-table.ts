@@ -34,10 +34,12 @@ export type DataTutorialKey =
   | 'activate-plan'
   | 'show-map'
   | 'click-rect'
-  | 'check-todo'
+  | 'check-todo-0'
+  | 'check-todo-1'
   | 'show-home-second'
   | "progress-bar"
   | "inactivate-plan"
+  | "finish-tutorial"
 
 /**
  * チュートリアルシナリオテーブル
@@ -49,185 +51,198 @@ export type DataTutorialKey =
  * */
 export const tutorialScenarioTable: Map<
   DataTutorialKey,
-  { nextStepEvent: () => void; messages?: string[]; tooltip: string }
+  { nextStepEvent: () => void; messages: string[]; tooltip: string }
 > = new Map([
   [
     'create-plan-btn',
     {
       nextStepEvent: () => nextStepEvents['create-plan-btn'](),
       messages: messages['create-plan-btn'],
-      tooltip: 'クリックしてください',
+      tooltip: '計画作成をクリック',
     },
   ],
   [
     'create-plan-input',
     {
       nextStepEvent: () => nextStepEvents['create-plan-input'](),
-      tooltip: '「はじめての計画」と入力してください',
+      messages: messages['create-plan-input'],
+      tooltip: '「日比谷公園ボランティア」と入力',
     },
   ],
   [
     'create-plan-check',
     {
       nextStepEvent: () => nextStepEvents['create-plan-check'](),
-      // messages: messages['create-plan-check'],
-      tooltip: 'チェックボックスをチェックしてください',
+      messages: messages['create-plan-check'],
+      tooltip: 'チェックボックスをクリック',
     },
   ],
   [
     'create-plan-submit',
     {
       nextStepEvent: () => nextStepEvents['create-plan-submit'](),
-      tooltip: 'CREATEをクリックしてください',
+      messages: messages['create-plan-submit'],
+      tooltip: 'CREATEをクリック',
     },
   ],
   [
     'plan-show-btn',
     {
       nextStepEvent: () => nextStepEvents['plan-show-btn'](),
-      // messages: messages['plan-show-btn'],
-      tooltip: '目のアイコンをクリックしてください',
+      messages: messages['plan-show-btn'],
+      tooltip: '目のアイコンをクリック',
     },
   ],
   [
     'show-todo-list',
     {
       nextStepEvent: () => nextStepEvents['show-todo-list'](),
-      // messages: messages['show-todo-list'],
-      tooltip: 'TODOリストをクリックしてください',
+      messages: messages['show-todo-list'],
+      tooltip: 'TODOリストをクリック',
     },
   ],
   [
     'create-todo-list-app-bar-btn',
     {
       nextStepEvent: () => nextStepEvents['create-todo-list-app-bar-btn'](),
-      // messages: messages['create-todo-list-app-bar-btn'],
-      tooltip: 'TODOリスト新規作成をクリックしてください',
+      messages: messages['create-todo-list-app-bar-btn'],
+      tooltip: 'TODOリスト新規作成をクリック',
     },
   ],
   [
     'create-todo-list-input',
     {
       nextStepEvent: () => nextStepEvents['create-todo-list-input'](),
-      tooltip: '「はじめてのtodoリスト」と入力してください',
+      messages: messages['create-todo-list-input'],
+      tooltip: '「レストラン周辺」と入力',
     },
   ],
   [
     'create-todo-list-submit',
     {
       nextStepEvent: () => nextStepEvents['create-todo-list-submit'](),
-      tooltip: 'CREATEをクリックしてください',
+      messages: messages['create-todo-list-submit'],
+      tooltip: 'CREATEをクリック',
     },
   ],
   [
     'select-todo-list',
     {
       nextStepEvent: () => nextStepEvents['select-todo-list'](),
-      // messages: messages['select-todo-list'],
-      tooltip: '「はじめてのtodoリスト」をクリックしてください',
+      messages: messages['select-todo-list'],
+      tooltip: '「レストラン周辺」をクリック',
     },
   ],
   [
     'create-todo-btn',
     {
       nextStepEvent: () => nextStepEvents['create-todo-btn'](),
-      tooltip: '十字のボタンをクリックしてください',
+      messages: messages['create-todo-btn'],
+      tooltip: '十字のボタンをクリック',
     },
   ],
   [
     'create-todo-input',
     {
       nextStepEvent: () => nextStepEvents['create-todo-input'](),
-      tooltip: '「はじめてのtodo」と入力してください',
+      messages: messages['create-todo-input'],
+      tooltip: '「ゴミ拾い」と入力',
     },
   ],
   [
     'create-todo-submit',
     {
       nextStepEvent: () => nextStepEvents['create-todo-submit'](),
-      tooltip: 'CREATEをクリックしてください',
+      messages: messages['create-todo-submit'],
+      tooltip: 'CREATEをクリック',
     },
   ],
   [
     'show-edit-map',
     {
       nextStepEvent: () => nextStepEvents['show-edit-map'](),
-      // messages: messages['show-edit-map'],
-      tooltip: 'マップ編集をクリックしてください',
+      messages: messages['show-edit-map'],
+      tooltip: 'マップ編集をクリック',
     },
   ],
   [
     'create-map-app-bar-btn',
     {
       nextStepEvent: () => nextStepEvents['create-map-app-bar-btn'](),
-      tooltip: 'マップ作成をクリックしてください',
+      messages: messages['create-map-app-bar-btn'],
+      tooltip: 'マップ作成をクリック',
     },
   ],
   [
     'create-map-input',
     {
       nextStepEvent: () => nextStepEvents['create-map-input'](),
-      tooltip: '「はじめてのマップ」と入力してください',
+      messages: messages['create-map-input'],
+      tooltip: '「日比谷公園」と入力',
     },
   ],
   [
     'create-map-check',
     {
       nextStepEvent: () => nextStepEvents['create-map-check'](),
-      tooltip: 'チェックしてください',
+      messages: messages['create-map-check'],
+      tooltip: 'チェックボックスをクリック',
     },
   ],
   [
     'create-map-submit',
     {
       nextStepEvent: () => nextStepEvents['create-map-submit'](),
-      tooltip: 'マップ作成をクリックしてください',
+      messages: messages['create-map-submit'],
+      tooltip: 'マップ作成をクリック',
     },
   ],
   [
     'change-google-map-mode',
     {
       nextStepEvent: () => nextStepEvents['change-google-map-mode'](),
-      tooltip: 'トグルスイッチをクリックしてください',
+      messages: messages['change-google-map-mode'],
+      tooltip: 'トグルスイッチをクリック',
     },
   ],
   [
     'input-google-map-search',
     {
       nextStepEvent: () => nextStepEvents['input-google-map-search'](),
-      // messages: messages['input-google-map-search'],
-      tooltip: '「東京ディズニーランド」と入力し、Enterキーを押してください',
+      messages: messages['input-google-map-search'],
+      tooltip: '「日比谷公園」と入力し、Enterキーを押下',
     },
   ],
   [
     'set-google-map-center',
     {
       nextStepEvent: () => nextStepEvents['set-google-map-center'](),
-      tooltip: 'クリックしてください',
+      messages: messages['set-google-map-center'],
+      tooltip: 'ピンアイコンをクリック',
     },
   ],
   [
     'add-rect',
     {
       nextStepEvent: () => nextStepEvents['add-rect'](),
-      // messages: messages['add-rect'],
-      tooltip: '図形アイコンをクリックしてください',
+      messages: messages['add-rect'],
+      tooltip: '図形アイコンをクリック',
     },
   ],
   [
     'drag-and-save-rect',
     {
       nextStepEvent: () => nextStepEvents['drag-and-save-rect'](),
-      // messages: messages['drag-and-save-rect'],
-      tooltip: '図形を赤枠内にドラッグしてください',
+      messages: messages['drag-and-save-rect'],
+      tooltip: '図形を赤枠内にドラッグ',
     },
   ],
   [
     'attach-todo-list',
     {
       nextStepEvent: () => nextStepEvents['attach-todo-list'](),
-      // messages: messages['attach-todo-list'],
-      tooltip: 'todoリストを図形にドラッグしてください',
+      messages: messages['attach-todo-list'],
+      tooltip: 'todoリストを図形にドラッグ',
     },
   ],
   [
@@ -242,63 +257,71 @@ export const tutorialScenarioTable: Map<
     'show-member',
     {
       nextStepEvent: () => nextStepEvents['show-member'](),
-      // messages: messages['show-member'],
-      tooltip: 'メンバー一覧をクリックしてください',
+      messages: messages['show-member'],
+      tooltip: 'メンバー一覧をクリック',
     },
   ],
   [
     'accept-member',
     {
       nextStepEvent: () => nextStepEvents['accept-member'](),
-      tooltip: '人影のアイコンをクリックしてください',
+      messages: messages['accept-member'],
+      tooltip: '人物アイコンをクリック',
     },
   ],
   [
     'show-home',
     {
       nextStepEvent: () => nextStepEvents['show-home'](),
-      tooltip: 'ホームをクリックしてください',
+      messages: messages['show-home'],
+      tooltip: 'ホームをクリック',
     },
   ],
   [
     'activate-plan',
     {
       nextStepEvent: () => nextStepEvents['activate-plan'](),
-      tooltip: '計画開始をクリックしてください',
+      messages: messages['activate-plan'],
+      tooltip: '計画開始をクリック',
     },
   ],
   [
     'show-map',
     {
       nextStepEvent: () => nextStepEvents['show-map'](),
-      tooltip: 'マップ閲覧をクリックしてください',
+      messages: messages['show-map'],
+      tooltip: 'マップ閲覧をクリック',
     },
   ],
   [
     'click-rect',
     {
       nextStepEvent: () => nextStepEvents['click-rect'](),
-      tooltip: '図形をクリックしてください',
+      messages: messages['click-rect'],
+      tooltip: '図形をクリック',
     },
   ],
   [
-    'check-todo',
+    'check-todo-0',
     {
       nextStepEvent: () => nextStepEvents['check-todo'](),
-      tooltip: 'チェックをクリックしてください',
+      messages: messages['check-todo'],
+      tooltip: 'チェックをクリック',
     },
   ],
   [
     'show-home-second',
     {
       nextStepEvent: () => nextStepEvents['show-home-second'](),
-      tooltip: 'ホームをクリックしてください',
+      messages: messages['show-home-second'],
+      tooltip: 'ホームをクリック',
     },
   ],
   [
     'progress-bar',
     {
       nextStepEvent: () => nextStepEvents['progress-bar'](),
+      messages: messages['progress-bar'],
       tooltip: '進行状況が表示されます',
     },
   ],
@@ -306,7 +329,16 @@ export const tutorialScenarioTable: Map<
     'inactivate-plan',
     {
       nextStepEvent: () => nextStepEvents['inactivate-plan'](),
-      tooltip: '計画終了をクリックしてください',
+      messages: messages['inactivate-plan'],
+      tooltip: '計画終了をクリック',
+    },
+  ],
+  [
+    'finish-tutorial',
+    {
+      nextStepEvent: () => nextStepEvents['finish-tutorial'](),
+      messages: messages['finish-tutorial'],
+      tooltip: 'お疲れさまでした',
     },
   ],
 ])

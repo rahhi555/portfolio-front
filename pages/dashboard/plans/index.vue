@@ -15,21 +15,21 @@
 
       <v-divider class="mt-3" />
 
-      <!-- 大量の The client-side rendered virtual DOM tree is not matching server-rendered content... エラーが出現するためclient onlyにする -->
-      <client-only>
-        <v-data-table
-          :headers="headers"
-          :items="items"
-          :search.sync="search"
-          :sort-by="['createdAt']"
-          :sort-desc="[true, false]"
-          multi-sort
-        >
-          <template #[`item.actions`]="{ item }">
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :search.sync="search"
+        :sort-by="['createdAt']"
+        :sort-desc="[true, false]"
+        multi-sort
+      >
+        <template #[`item.actions`]="{ item }">
+          <!-- 大量の The client-side rendered virtual DOM tree is not matching server-rendered content... エラーが出現するためclient onlyにする -->
+          <client-only>
             <PlansTableButtons :item="item" @delete-handle="deletePlan(item)" />
-          </template>
-        </v-data-table>
-      </client-only>
+          </client-only>
+        </template>
+      </v-data-table>
     </v-card-text>
   </material-card>
 </template>

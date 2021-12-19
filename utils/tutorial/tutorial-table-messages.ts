@@ -1,15 +1,20 @@
 import { DataTutorialKey } from './tutorial-table'
 
+//* モーダルに表示するメッセージの配列 */
 export const messages: { [key in DataTutorialKey]: string[] } = {
-  'create-plan-btn': ['まずは計画を作成します。'],
-  'create-plan-input': [],
-  'create-plan-check': [
-    '次に公開の有無を設定します',
-    '公開設定は第三者が自由に計画を閲覧できるかどうかの設定です',
-    'これにチェックをつけると作成者の許可なしでは計画の閲覧ができなくなります',
+  'create-plan-btn': [
+    'このアプリ「ミニマップ」の機能をレクチャーしていこうと思います。',
+    'このアプリはtodoリストと地図を紐付けることで、場所ごとのtodoの進行状況を可視化できるようにしたものです',
+    'また進行状況はリアルタイムに発信されるので、複数のメンバーで共有が可能です',
+    'todoリスト、地図およびメンバーの組み合わせを「計画」と呼びます',
+    '百聞は一見にしかずということで、実際に計画を作成してみましょう。',
+  ],
+  'create-plan-input': ['今回は日比谷公園の清掃ボランティアを実施するという設定で計画を立てます'],
+  'create-plan-check': ['次に公開の有無を設定します', '公開設定は第三者が自由に計画を閲覧できるかどうかの設定です'],
+  'create-plan-submit': [
+    'チェックをつけると作成者の許可なしでは計画の閲覧ができなくなります',
     'また、チェックの有無に関わらず編集作業は作成者の許可が必須になります。',
   ],
-  'create-plan-submit': [],
   'plan-show-btn': ['計画が作成されました。詳細ページにアクセスしてみましょう。'],
   'show-todo-list': ['次はTodoリストを作成しましょう'],
   'create-todo-list-app-bar-btn': [],
@@ -28,7 +33,7 @@ export const messages: { [key in DataTutorialKey]: string[] } = {
   ],
   'create-map-submit': ['マップが作成されました。次はグーグルマップを設定しましょう'],
   'change-google-map-mode': [],
-  'input-google-map-search': ['「東京ディズニーランド」を検索してみましょう'],
+  'input-google-map-search': ['「日比谷公園」を検索してみましょう'],
   'set-google-map-center': [],
   'add-rect': [
     'これで位置情報の登録が完了しました',
@@ -37,14 +42,19 @@ export const messages: { [key in DataTutorialKey]: string[] } = {
   'drag-and-save-rect': ['次はこの図形を赤枠の中に動かしてみましょう'],
   'attach-todo-list': ['最後にtodoリストを図形にドラッグアンドドロップしてみましょう'],
   'add-member': ['これでマップの作成が完了しました。', '...おや'],
-  'show-member': ['この計画に参加したい人が来たようです。メンバー一覧画面に移動してみましょう。'],
-  'accept-member': [],
-  'show-home': [],
+  'show-member': ['ボランティアに参加したい人が来たようです。メンバー一覧画面に移動してみましょう。'],
+  'accept-member': ['メンバーを承認することで、そのメンバーはtodoやマップの編集が可能になります'],
+  'show-home': ['これで準備が整いました。さっそく計画を実行してみましょう'],
   'activate-plan': [],
-  'show-map': [],
-  'click-rect': [],
-  'check-todo': [],
-  'show-home-second': [],
-  'progress-bar': [],
-  'inactivate-plan': [],
+  'show-map': [
+    '計画実行モードに入りました。これにより作成したtodoリストにチェックができるようになり、さらに位置情報も共有されるようになります',
+    'マップ閲覧画面に移動しましょう'
+  ],
+  'click-rect': ['長方形をクリックしてみましょう'],
+  'check-todo-0': ['todoをチェックして完了させましょう'],
+  'check-todo-1': ['新規メンバーがtodoをもう一つ追加していたようです', 'そっちのtodoは彼が実行する打ち合わせなので、しばらく見てみましょう'],
+  'show-home-second': ['無事全てのtodoが終わりました! ホームに戻りましょう'],
+  'progress-bar': ['全体の進行状況はバーで確認できます'],
+  'inactivate-plan': ['計画を終了しましょう'],
+  'finish-tutorial': ['チュートリアルお疲れさまでした! 長い説明にお付き合いいただきありがとうございました。'],
 }

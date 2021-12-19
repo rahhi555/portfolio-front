@@ -18,7 +18,7 @@ export const createPlanInTutorial = () => {
 
   const plan: Plan = {
     id: MAIN_BIG_NUMBER,
-    name: 'はじめての計画',
+    name: '日比谷公園ボランティア',
     members: [memberSelf],
     active: false,
     author: UserStore.currentUser.name,
@@ -37,7 +37,7 @@ export const createTodoListInTutorial = () => {
   const todoList: TodoList = {
     id: MAIN_BIG_NUMBER,
     planId: MAIN_BIG_NUMBER,
-    title: 'はじめてのtodoリスト',
+    title: 'レストラン周辺',
     todos: []
   }
   TodoListsStore.addTodoListsMutation(todoList)
@@ -47,7 +47,7 @@ export const createTodoListInTutorial = () => {
 export const createTodoInTutorial = () => {
   const todo: Todo = {
     id: MAIN_BIG_NUMBER,
-    title: 'はじめてのtodo',
+    title: 'ゴミ拾い',
     todoListId: MAIN_BIG_NUMBER,
   }
   TodoListsStore.addTodoMutation(todo)
@@ -57,7 +57,7 @@ export const createTodoInTutorial = () => {
 export const createMapInTutorial = () => {
   const map: Map = {
     id: MAIN_BIG_NUMBER,
-    name: 'はじめてのマップ',
+    name: '日比谷公園',
     planId: MAIN_BIG_NUMBER,
     isGoogleMap: true,
     address: undefined,
@@ -71,13 +71,13 @@ export const createMapInTutorial = () => {
 }
 
 export const updatePositionInTutorial = () => {
-  const bounds: google.maps.LatLngBoundsLiteral = {south: 35.632466399015655, west: 139.8795128269325, north: 35.63332639867112, east: 139.8812757730675}
-  const address = '千葉県浦安市舞浜１−１'
+  const bounds: google.maps.LatLngBoundsLiteral = { east: 139.75675837306753, north: 35.67404127953475, south: 35.67318171815096, west: 139.75499542693257 }
+  const address = '"東京都千代田区日比谷公園１−２"'
   const googleMap = document.getElementById('google-map') as HTMLDivElement
   const { width, height } = googleMap.getBoundingClientRect()
   const map: Map = {
     id: MAIN_BIG_NUMBER,
-    name: 'はじめてのマップ',
+    name: '日比谷公園',
     planId: MAIN_BIG_NUMBER,
     isGoogleMap: true,
     address,
@@ -114,7 +114,7 @@ export const addRectInTutorial = () => {
   SvgsStore.addSvgMutation(rect)
 
   const map = window.$nuxt.context.$googleMap.map.value
-  const bounds: google.maps.LatLngBoundsLiteral = { east: 139.88051367631232, north: 35.63299956116157, south: 35.63283306298099, west: 139.88026523671178 }
+  const bounds: google.maps.LatLngBoundsLiteral = { east: 139.75611772460283, north: 35.67386762835796, south: 35.6735980543655, west: 139.755564831977 }
 
   targetArea = new google.maps.Rectangle({
     strokeColor: "#FF0000",
@@ -165,6 +165,12 @@ export const acceptMemberInTutorial = () => {
   const member = {...MembersStore.members?.find(member => member.id === ANOTHER_BIG_NUMBER)} as Member
   member.accept = true
   MembersStore.updateMemberMutation(member)
+  const anotherTodo: Todo = {
+    id: ANOTHER_BIG_NUMBER,
+    title: '側溝の落ち葉取り',
+    todoListId: MAIN_BIG_NUMBER,
+  }
+  TodoListsStore.addTodoMutation(anotherTodo)
   return true
 }
 
@@ -182,8 +188,44 @@ export const activatePlanInTutorial = () => {
   return true
 }
 
-export const chackTodoInTutorial = () => {
+export const setMarkersInTutorial = () => {
+  const svgMarker: google.maps.Symbol = {
+    path: 'm12 7.27 4.28 10.43-3.47-1.53-.81-.36-.81.36-3.47 1.53L12 7.27M12 2 4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z',
+    fillColor: 'blue',
+    fillOpacity: 0.6,
+    strokeWeight: 0,
+    rotation: 90,
+    scale: 1,
+  }
+  const map = window.$nuxt.context.$googleMap.map.value
+  // eslint-disable-next-line no-new
+  new google.maps.Marker({
+    position: { lat: 35.67372495072149, lng: 139.7559813988067 },
+    map,
+    icon: svgMarker,
+    optimized: true
+  })
+  // eslint-disable-next-line no-new
+  new google.maps.Marker({
+    position: { lat: 35.67358356649706, lng: 139.7558864662022 },
+    label: 'ダミー 太郎',
+    icon: {
+      path: 'M12,2C6.47,2,2,6.47,2,12c0,5.53,4.47,10,10,10s10-4.47,10-10C22,6.47,17.53,2,12,2z M12,20c-4.42,0-8-3.58-8-8 c0-4.42,3.58-8,8-8s8,3.58,8,8C20,16.42,16.42,20,12,20z',
+      strokeColor: '#fc4242'
+    },
+    optimized: true,
+    map
+  })
+  return true
+}
+
+export const chackMainTodoInTutorial = () => {
   TodoStatusesStore.changeTodoStatus({ id: MAIN_BIG_NUMBER, status: 'done'})
+  return true
+}
+
+export const chackAnotherTodoInTutorial = () => {
+  TodoStatusesStore.changeTodoStatus({ id: ANOTHER_BIG_NUMBER, status: 'done'})
   return true
 }
 
