@@ -79,7 +79,7 @@ export default defineComponent({
       },
       {
         sortable: false,
-        text: 'Actions',
+        text: '操作',
         value: 'actions',
       },
     ]

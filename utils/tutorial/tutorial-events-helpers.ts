@@ -118,7 +118,7 @@ export const addRectInTutorial = () => {
   SvgsStore.addSvgMutation(rect)
 
   const map = window.$nuxt.context.$googleMap.map.value
-  const bounds: google.maps.LatLngBoundsLiteral = { east: 139.75611772460283, north: 35.67386762835796, south: 35.6735980543655, west: 139.755564831977 }
+  const bounds: google.maps.LatLngBoundsLiteral = { east: 139.7560014028148, north: 35.673830104228834, south: 35.673663691139645, west: 139.75566009175128 }
 
   targetArea = new google.maps.Rectangle({
     strokeColor: "#FF0000",

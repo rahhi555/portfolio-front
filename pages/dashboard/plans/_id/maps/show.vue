@@ -70,6 +70,7 @@ export default defineComponent({
   color: white
   border-radius: 100%
   box-shadow: 0px 10px 10px -5px rgba(0,0,0,0.8)
+  z-index: 1
 
 .scroll-icon-top
   top: 0

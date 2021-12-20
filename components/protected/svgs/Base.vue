@@ -77,6 +77,7 @@ import {
   computed,
   watch,
   useContext,
+  onUnmounted
 } from '@nuxtjs/composition-api'
 import { debounce } from 'mabiki'
 import { MapsStore, SvgsStore } from '~/store'
@@ -132,10 +133,12 @@ export default defineComponent({
       3000,
       { maxWait: 30000 }
     )
-    const allSvgs = computed(() => SvgsStore.allSvgs)
-    watch(allSvgs, () => {
+    const allSvgs = computed(() => { 
+      return SvgsStore.allSvgs })
+    const autoSaveStop = watch(allSvgs.value, () => {
       if(isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
     })
+    onUnmounted(autoSaveStop)
 
     return {
       rects,

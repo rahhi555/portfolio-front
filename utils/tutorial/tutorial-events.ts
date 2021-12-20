@@ -211,7 +211,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
         const transformXYArray = transformStr.match(/\d+/g)!
         const x = Number.parseInt(transformXYArray[0])
         const y = Number.parseInt(transformXYArray[1])
-        if (x < 260 || 1000 < x || y < 100 || 500 < y) {
+        if (x < 260 || 720 < x || y < 40 || 380 < y) {
           alert(`図形が赤枠内にありません ${x} ${y}`)
           return false
         }
