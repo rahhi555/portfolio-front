@@ -18,7 +18,7 @@
     </client-only>
 
     <client-only>
-      <LayoutTutorialBase v-if="$device.isDesktop" />
+      <LayoutTutorialBase v-if="$device.isDesktop && needTutorial" />
     </client-only>
 
     <v-img
@@ -52,7 +52,7 @@ import Footer from '~/components/default/Footer.vue'
 import AccountDialog from '~/components/protected/layout/AccountDialog.vue'
 import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
-import { SnackbarStore } from '~/store'
+import { SnackbarStore, UserStore } from '~/store'
 import {
   AppBarFuncKey,
   AccountDialogKey,
@@ -94,6 +94,7 @@ export default defineComponent({
     return {
       fixed,
       isPlanIdPageAndLargeDevice,
+      needTutorial: UserStore.needTutorial
     }
   },
 

@@ -8,14 +8,14 @@
       style="position: absolute; z-index: 204; width: 100%"
     >
       <v-sheet
-        class="mb-3"
+        class="mb-3 px-5"
         elevation="1"
-        height="100"
+        height="100px"
         width="100%"
-        style="border: solid 3px white; background-color: transparent"
+        style="border: solid 3px white; background-color: transparent; line-height: 90px;"
       >
         <client-only>
-          <VueTyperClient :text="message" :type-delay="10" :repeat="0"></VueTyperClient>
+          <VueTyperClient :text="message" :type-delay="20" :repeat="0"></VueTyperClient>
         </client-only>
       </v-sheet>
     </v-alert>
@@ -90,8 +90,19 @@ export default defineComponent({
 </script>
 <style lang="sass">
 .vue-typer
+  font-size: 1.1em
+
   .custom.char
     color: white
+
+  .custom.typed
+    margin-right: 1px
+
+  .custom.caret
+    background-color: white
+    width: 1px
+    height: 1.1em
+    vertical-align: middle
 
 .slide-enter-active
   transition: .4s

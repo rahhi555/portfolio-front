@@ -203,6 +203,10 @@ export default defineComponent({
           map.value.controls[position].push(button)
         })
 
+        if (common.isShowPage.value && !$tutorial.isRunningTutorial.value) {
+          Marker.onMounted(map.value)
+        }        
+
         // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
         setTimeout(() => {
           map.value.fitBounds(bounds, 0)
@@ -215,11 +219,8 @@ export default defineComponent({
 
     // 初期化処理
     onMounted(() => {
-      nextTick(() => {
+      nextTick().then(() => {
         initMap()
-        if (common.isShowPage.value && !$tutorial.isRunningTutorial.value) {
-          Marker.onMounted(map.value)
-        }
       })
     })
 

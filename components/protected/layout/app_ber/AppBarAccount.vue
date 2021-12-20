@@ -16,7 +16,7 @@
       </v-btn>
     </template>
 
-    <v-list :tile="false" flat nav>
+    <v-list :tile="false" flat nav class="list-font">
       <div @click="accountDialog = true">
         <app-bar-item>
           <v-list-item-title v-text="'プロフィール'" />

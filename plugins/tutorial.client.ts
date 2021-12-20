@@ -26,6 +26,13 @@ export default defineNuxtPlugin((_, inject) => {
     document.addEventListener('mousewheel', (e) => {
       e.preventDefault()
     }, { passive: false })
+
+    // リロードしようとしたときに警告を出す
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault()
+
+      e.returnValue = ''
+    })
   }
 
   /** チュートリアル実行中ならtrue */

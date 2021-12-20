@@ -61,8 +61,9 @@ export const tutorialWatchStart = () => {
           break
         }
       }
+
+      if(!nowScenarioKey.value) return
       nextStepEvents[nowScenarioKey.value]()
-      // tutorialScenarioTable.get(nowScenarioKey.value)?.nextStepEvent()
     },
     { immediate: true }
   )

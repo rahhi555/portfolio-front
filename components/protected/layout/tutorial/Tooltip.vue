@@ -4,7 +4,7 @@
     id="tutorial-tooltip"
     :class="[
       isFinishedDisplayMsg ? 'tutorial-tooltip-visible' : 'tutorial-tooltip-hidden',
-      isTooltipDownward ? 'tooltip-downward' : 'tooltip-upward',
+      isTooltipCloseBottom ? 'tooltip-downward' : 'tooltip-upward',
     ]"
   >
     <p>{{ tooltipMsg }}</p>
@@ -20,12 +20,21 @@ export default defineComponent({
     const tooltipMsg = ref<string>()
 
     /** ターゲットとスクリーンの下端の差を取得し、近ければtrue、離れていればfalseを返す */
-    const isTooltipDownward = computed(() => {
+    const isTooltipCloseBottom = computed(() => {
       if (!$tutorial.targetElement.value) return false
 
       const screenWithTargetBottomDiff =
         document.documentElement.clientHeight - $tutorial.targetElement.value?.getBoundingClientRect().bottom
       return screenWithTargetBottomDiff < 100
+    })
+
+    /** ターゲットとスクリーンの右端の差を取得し、近ければtrue、離れていればfalseを返す */
+    const isTooltipCloseRight = computed(() => {
+      if (!$tutorial.targetElement.value) return false
+      
+      const screenWithTargetRightDiff =
+        document.documentElement.clientWidth - $tutorial.targetElement.value?.getBoundingClientRect().right
+      return screenWithTargetRightDiff < 100
     })
 
     /** ターゲット要素が切り替わるたびツールチップの位置を合わせる */
@@ -47,7 +56,7 @@ export default defineComponent({
         const { left, top, bottom } = targetRect
 
         let tooltipTop: string
-        if(isTooltipDownward.value) {
+        if(isTooltipCloseBottom.value) {
           // ターゲットの位置がスクリーン下端と近い場合、ターゲットの上に配置する
           const tooltipHeight = tooltipEl.getBoundingClientRect().height
           const { marginTop, marginBottom } = window.getComputedStyle(tooltipEl)
@@ -58,8 +67,11 @@ export default defineComponent({
           tooltipTop = `${bottom}px`
         }
 
+        // ターゲットの位置がスクリーン右端と近い場合、ターゲットを左寄りに配置する
+        const tooltipLeft = isTooltipCloseRight.value ? left - 100 : left
+
         tooltipEl.style.top = tooltipTop
-        tooltipEl.style.left = `${left}px`
+        tooltipEl.style.left = `${tooltipLeft}px`
       },
       { immediate: true }
     )
@@ -68,7 +80,8 @@ export default defineComponent({
       tooltipMsg,
       isRunningTutorial: $tutorial.isRunningTutorial,
       isFinishedDisplayMsg: $tutorial.isFinishedDisplayMsg,
-      isTooltipDownward,
+      isTooltipCloseBottom,
+      isTooltipCloseRight
     }
   },
 })
@@ -82,10 +95,14 @@ export default defineComponent({
   padding: 7px 10px
   min-width: 120px
   max-width: 100%
-  color: #555
-  font-size: 16px
-  background: #e0edff
+  color: #333
+  font-size: 0.85em
+  background: #fff
   z-index: 205
+  border-radius: .3ch
+  box-shadow: 0 1em 2em -.5em rgba(0, 0, 0, 0.35)
+  font-family: Helvetica, sans-serif
+  text-align: center
 
 // 上向きの三角形
 .tooltip-upward:before
@@ -95,7 +112,7 @@ export default defineComponent({
   left: 50%
   margin-left: -15px
   border: 15px solid transparent
-  border-bottom: 15px solid #e0edff
+  border-bottom: 15px solid #fff
 
 // 下向きの三角形
 .tooltip-downward:before
@@ -105,7 +122,7 @@ export default defineComponent({
   left: 50%
   margin-left: -15px
   border: 15px solid transparent
-  border-top: 15px solid #e0edff
+  border-top: 15px solid #fff
 
 #tutorial-tooltip p
   margin: 0

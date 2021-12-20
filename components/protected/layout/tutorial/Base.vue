@@ -11,11 +11,11 @@
           style="z-index: 204"
         >
           <v-card>
-            <v-toolbar color="primary" dark
+            <v-toolbar color="primary" dark class="text-h4"
               >チュートリアル</v-toolbar
             >
             <v-card-text>
-              <div class="text-h5 pt-5">チュートリアルを開始しますか？(NOを選んでも右上のアカウントアイコンからいつでも受講可能です)</div>
+              <div class="text-h5 pt-5">チュートリアルを開始しますか？(NOを選んでも右上のアカウントアイコンからいつでも開始可能です)</div>
             </v-card-text>
             <v-card-actions class="justify-end">
               <v-btn text @click="startTutorial">Yes</v-btn>

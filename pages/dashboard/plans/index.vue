@@ -1,5 +1,5 @@
 <template>
-  <material-card icon="mdi-map-legend" icon-small color="accent" title="計画一覧">
+  <material-card icon="mdi-map-legend" icon-small color="accent" title="計画一覧" class="px-7">
     <v-card-text>
       <PlansCreateModal />
 

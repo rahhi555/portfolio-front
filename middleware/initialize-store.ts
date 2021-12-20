@@ -23,6 +23,8 @@ export default defineNuxtMiddleware(async ({route, app, redirect, res, $tutorial
   if(Number.parseInt(planId) === PlansStore.currentPlan?.id) return
   app.loading = true
   await initializeStore(planId)
+  // 計画が見つからなければplansページに戻す
+  if(!PlansStore.currentPlan) app.router?.replace('/dashboard/plans')
   // 計画が非公開かつユーザーが非承認なら計画一覧ページに飛ばす
   if(!PlansStore.currentPlan?.published && !MembersStore.currentUserAccept) {
     const snackbarPayload = JSON.stringify({ color: 'warning', message: '非公開の計画は承認なしで閲覧できません' })
