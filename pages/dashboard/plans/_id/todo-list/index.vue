@@ -18,8 +18,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from '@nuxtjs/composition-api'
-import { MembersStore, PlansStore } from '~/store'
+import { defineComponent, computed, onUnmounted } from '@nuxtjs/composition-api'
+import { MembersStore, PlansStore, TodoListsStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
 export default defineComponent({
@@ -33,6 +33,10 @@ export default defineComponent({
     if(!isPlanActive.value && accept.value) {
       setAppBarTabDialog('Todoリスト新規作成')
     }
+
+    onUnmounted(() => {
+      TodoListsStore.setSelectedTodoListIndex(null)
+    })
 
     return {
       isPlanActive,

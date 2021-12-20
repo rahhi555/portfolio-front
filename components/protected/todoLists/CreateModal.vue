@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600px">
+  <v-dialog v-model="dialog" max-width="600px" persistent>
     <v-card>
       <v-card-title>
         <span class="text-h5">計画作成</span>
@@ -14,6 +14,7 @@
                   v-slot="{ errors }"
                   rules="max:50|required"
                   name="タイトル"
+                  data-tutorial="create-todo-list-input"
                 >
                   <v-text-field
                     v-model="title"
@@ -35,6 +36,7 @@
             color="blue darken-1"
             :disabled="invalid"
             text
+            data-tutorial="create-todo-list-submit"
             @click="createTodoList"
           >
             Create
@@ -46,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject } from '@nuxtjs/composition-api'
+import { defineComponent, ref, inject, useContext } from '@nuxtjs/composition-api'
 import { AppBarDialogKey } from '~/types/injection-key'
 import { TodoListsStore } from '~/store'
 
@@ -54,8 +56,12 @@ export default defineComponent({
   setup() {
     const title = ref('')
     const dialog = inject(AppBarDialogKey)
+
+    const { $tutorial } = useContext()
     const createTodoList = async () => {
       dialog!.value = false
+      // チュートリアル中ならリターン
+      if($tutorial.isRunningTutorial.value) return
       await TodoListsStore.createTodoList(title.value)
       title.value = ''
     }

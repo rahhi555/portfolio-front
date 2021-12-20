@@ -14,7 +14,7 @@ export default defineNuxtPlugin(({ $config }, inject) => {
       apiKey: $config.googleMapsApiKey,
       language: 'ja',
       region: 'JP',
-      libraries: ['places'],
+      libraries: ['places', 'geometry'],
       version: 'beta'
     })
     loader.load().then(() => {

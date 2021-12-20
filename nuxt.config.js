@@ -23,6 +23,7 @@ export default {
     '~/plugins/axios.ts',
     '~/plugins/vee-validate.js',
     '~/plugins/auth.client.ts',
+    '~/plugins/tutorial.client.ts',
     '~/plugins/actioncable.client.ts',
     '~/plugins/googlemap.ts',
   ],
@@ -51,7 +52,8 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    '@nuxtjs/dayjs'
+    '@nuxtjs/dayjs',
+    'nuxt-webfontloader'
   ],
 
   dayjs: {
@@ -64,6 +66,12 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     baseURL: 'http://api:3000',
+  },
+
+  webfontloader: {
+    google: {
+      families: ['Domine', 'Noto+Sans+JP:wght@300'] 
+    }
   },
 
   publicRuntimeConfig: {
@@ -131,6 +139,10 @@ export default {
     transpile: [
       "vee-validate/dist/rules",
     ],
+    filenames: {
+      app: ({ isDev }) => isDev ? '[name].[hash].js' : '[chunkhash].js',
+      chunk: ({ isDev }) => isDev ? '[name].[hash].js' : '[chunkhash].js'
+    }
   },
 
   serverMiddleware: [
@@ -138,4 +150,15 @@ export default {
   ],
 
   loading: '~/components/Loading.vue',
+
+
+  // 存在しないページの場合ダッシュボードにリダイレクトする
+  // router: {
+  //   extendRoutes(routes, _) {
+  //     routes.push({
+  //       path: '*',
+  //       redirect: "/dashboard/plans"
+  //     })
+  //   }
+  // }
 }

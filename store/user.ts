@@ -1,5 +1,6 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import Cookie from 'universal-cookie'
+import dayjs from 'dayjs'
 import firebase from '~/plugins/firebase'
 import { $axios } from '~/utils/axios-accessor'
 import { SnackbarStore } from '~/utils/store-accessor'
@@ -12,6 +13,7 @@ interface UserParams {
   provider: 'anonymous' | 'password' | 'google' | ''
   avatar?: string
   email?: string
+  createdAt?: string
 }
 
 @Module({
@@ -26,7 +28,8 @@ export default class User extends VuexModule {
     uid: '',
     provider: '',
     avatar: '',
-    email: ''
+    email: '',
+    createdAt: ''
   }
 
   private tokenState: string = ''
@@ -56,6 +59,25 @@ export default class User extends VuexModule {
 
   public get isAnonymous() {
     return this.userState.provider === 'anonymous'
+  }
+
+  /** 
+   * チュートリアル対象かどうかを返す(ユーザー作成して１分以内ならチュートリアル対象)   
+   * また、チュートリアルの項目を選んだ場合でも対象とみなす(その場合はクッキーを目安にする)
+   * */
+  public get needTutorial() {
+    if(!this.userState.createdAt) return false
+    
+    const now = dayjs()
+    // 現在の時刻とcreatedAtの差を分で取得
+    const diffMinutes = now.diff(this.userState.createdAt, 'm')
+
+    // 'needTutorial'というキーのクッキーが存在するか
+    const cookies = new Cookie()
+    const hasNeedTutorialCookie = !!cookies.get('needTutorial')
+    cookies.remove('needTutorial', { path: '/' })
+
+    return diffMinutes <= 1 || hasNeedTutorialCookie
   }
 
   @Mutation

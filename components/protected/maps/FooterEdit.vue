@@ -3,7 +3,7 @@
     <v-btn-toggle v-model="selected" dense>
       <v-tooltip top>
         <template #activator="{ on, attrs }">
-          <v-btn :disabled="isGoogleMapEditMode" @click="addRect">
+          <v-btn :disabled="isGoogleMapEditMode" data-tutorial="add-rect" @click="addRect">
             <v-icon large v-bind="attrs" v-on="on"
               >mdi-rectangle-outline</v-icon
             >
@@ -31,7 +31,7 @@
       </v-tooltip>
     </v-btn-toggle>
 
-    <v-row v-if="enabledGoogleMap" align="center" class="ml-4">
+    <v-row v-if="enabledGoogleMap" align="center" class="ml-4" data-tutorial="change-google-map-mode">
       <v-switch
         v-model="isGoogleMapEditMode"
       ></v-switch>
@@ -74,7 +74,11 @@ export default defineComponent({
       }
     })
 
+    const { $googleMap, $tutorial } = useContext()
+
     const addRect = () => {
+      if($tutorial.isRunningTutorial.value) return
+      
       const rect: SvgParams = {
         type: 'Rect',
         x: 0,
@@ -86,8 +90,6 @@ export default defineComponent({
       SvgsStore.addSvg(rect)
     }
 
-    const { $googleMap } = useContext()
-
     const enabledGoogleMap = computed(() => {
       return !!MapsStore.activeMap && MapsStore.activeMap.isGoogleMap
     })
@@ -96,7 +98,7 @@ export default defineComponent({
       addRect,
       selected,
       isGoogleMapEditMode: $googleMap.isGoogleMapEditMode,
-      enabledGoogleMap
+      enabledGoogleMap,
     }
   },
 })

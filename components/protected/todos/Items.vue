@@ -16,6 +16,7 @@
           v-show="todoListTitle !== 'Not Selected' && isTodoListEditPage"
           icon
           outlined
+          data-tutorial='create-todo-btn'
           @click="createDialog = true"
         >
           <v-icon>mdi-plus</v-icon>
@@ -30,7 +31,7 @@
     <template #default="{ items }">
       <v-row justify="center" justify-sm="start">
         <v-col
-          v-for="item in items"
+          v-for="(item, i) in items"
           :key="item.name"
           :cols="cols.cols"
           :sm="cols.sm"
@@ -42,6 +43,7 @@
               :value="isTodoListEditPage"
               append-icon=""
               :disabled="isTodoListEditPage"
+              :data-tutorial="'check-todo-' + i"
             >
               <template #activator>
                 <v-list-item-title class="todo-text-space">{{
@@ -137,7 +139,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { $axios, app, $planChannelPeformMethods } = useContext()
+    const { $axios, app, $planChannelPeformMethods, $tutorial } = useContext()
     const route = useRoute()
 
     /** Todoリストページ判定 */
@@ -199,7 +201,7 @@ export default defineComponent({
 
     /** todoStatusを変更する(マップ閲覧ページ限定) */
     const toggleStatusTodo = (todo: TodoMargeStatus) => {
-      if(!todo.todoStatusId) return
+      if(!todo.todoStatusId || $tutorial.isRunningTutorial.value) return
 
       // eslint-disable-next-line prefer-const
       let { todoStatusId, status }  = todo

@@ -8,19 +8,7 @@ import { $axios } from '~/utils/axios-accessor'
 
 type AllSvgTypeKeys = keyof AllSvgType
 
-export interface SvgParams {
-  id?: number
-  type?: 'Rect' | 'Path' | 'Polyline'
-  userId?: number
-  mapId?: number
-  x?: number
-  y?: number
-  name?: string
-  width?: number
-  height?: number
-  drawPoints?: string
-  displayTime?: number
-}
+export type SvgParams = {[K in keyof AllSvgType]?: AllSvgType[K]}
 
 @Module({
   name: 'modules/svgs',
@@ -314,7 +302,7 @@ export default class Svgs extends VuexModule {
 
   // todoリストをsvgにアタッチまたはデタッチ
   @Mutation
-  private attachTodoListMutation(svg: AllSvgType) {
+  public attachTodoListMutation(svg: AllSvgType) {
     const target = this.svgsState.find(s => s.id === svg.id )
     target!.fill = svg.fill
     target!.todoListId = svg.todoListId

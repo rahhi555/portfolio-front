@@ -1,11 +1,5 @@
 <template>
-  <v-navigation-drawer
-    v-model="drawer"
-    fixed
-    app
-    dark
-    disable-resize-watcher
-  >
+  <v-navigation-drawer v-model="drawer" fixed app dark disable-resize-watcher>
     <div>
       <drawer-header />
 
@@ -16,14 +10,29 @@
       <v-divider class="mx-3 mb-2" />
 
       <v-list>
-        <v-list-item
-          v-for="(item, i) in visibleItems"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-          @click="item.click"
+        <v-list-group
+          v-if="notifications.length"
+          prepend-icon="mdi-bell"
         >
+          <template v-if="notifications.length" #activator>
+            <v-list-item-title class="white--text">通知</v-list-item-title>
+          </template>
+
+          <v-list-item
+            v-for="(n, i) in notifications"
+            :key="`child-${i}`"
+            class="py-1"
+            active-class="primary white--text"
+            nuxt
+            :to="n.link"
+          >
+            <v-list-item-content>
+              <v-list-item-title class="ml-3">メンバー申請: <strong>{{ n.title }}</strong> </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-item v-for="(item, i) in visibleItems" :key="i" :to="item.to" router exact @click="item.click">
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -40,7 +49,8 @@
 import { defineComponent, inject, computed, ref, useContext } from '@nuxtjs/composition-api'
 import DrawerHeader from './DrawerHeader.vue'
 import AccountSettings from './DrawerAccountSettings.vue'
-import { AccountDialogKey ,DrawerKey } from '~/types/injection-key'
+import { AccountDialogKey, DrawerKey } from '~/types/injection-key'
+import { PlansStore } from '~/store'
 
 export default defineComponent({
   components: {
@@ -59,15 +69,15 @@ export default defineComponent({
         title: '計画一覧',
         to: '/dashboard/plans',
         visible: true,
-        click: () => {}
+        click: () => {},
       },
       {
         icon: 'mdi-account',
         title: 'プロフィール',
         to: '',
-        click: () => { 
-          if(!accountDialog) return
-          accountDialog.value = true 
+        click: () => {
+          if (!accountDialog) return
+          accountDialog.value = true
         },
         visible: true,
       },
@@ -76,9 +86,13 @@ export default defineComponent({
         title: 'ログアウト',
         to: '',
         visible: true,
-        click: () => { $auth.logout() }
+        click: () => {
+          $auth.logout()
+        },
       },
     ])
+
+    const notifications = computed(() => PlansStore.notifications)
 
     const visibleItems = computed(() => {
       return items.value.filter((item) => {
@@ -90,8 +104,9 @@ export default defineComponent({
 
     return {
       visibleItems,
+      notifications,
       drawer,
-      items
+      items,
     }
   },
 })

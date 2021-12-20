@@ -3,6 +3,7 @@
     ref="svgSheet"
     elevation="6"
     class="svg-base-sheet"
+    data-tutorial="drag-and-save-rect click-rect"
     @touchmove="pinchInOut"
   >
     <svg
@@ -76,6 +77,7 @@ import {
   computed,
   watch,
   useContext,
+  onUnmounted
 } from '@nuxtjs/composition-api'
 import { debounce } from 'mabiki'
 import { MapsStore, SvgsStore } from '~/store'
@@ -103,7 +105,7 @@ export default defineComponent({
     // 現在のページが編集ページかどうか
     const isEditPage = CommonUI.isEditPage
 
-    const { $googleMap } = useContext()
+    const { $googleMap, $tutorial } = useContext()
     // 編集ページかつGoogleMap編集ページかどうか
     const isGoogleMapEditMode = computed(
       () => isEditPage.value && $googleMap.isGoogleMapEditMode.value
@@ -131,9 +133,12 @@ export default defineComponent({
       3000,
       { maxWait: 30000 }
     )
-    watch(SvgsStore.allSvgs, () => {
-      if(isEditPage.value) autosave()
+    const allSvgs = computed(() => { 
+      return SvgsStore.allSvgs })
+    const autoSaveStop = watch(allSvgs.value, () => {
+      if(isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
     })
+    onUnmounted(autoSaveStop)
 
     return {
       rects,
@@ -165,7 +170,10 @@ export default defineComponent({
       isEditPage,
       isGoogleMapEditMode,
       activeMapDisabledGoogleMap,
-      save: () => SvgsStore.updateSvgs(),
+      save: () => { 
+        if($tutorial.isRunningTutorial.value) return
+        SvgsStore.updateSvgs() 
+      },
     }
   },
 })

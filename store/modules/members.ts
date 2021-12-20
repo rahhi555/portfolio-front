@@ -18,31 +18,42 @@ export default class Members extends VuexModule {
   }
 
   public get currentUserAccept() {
-    if(!this.membersState) return
-    const currentUserMember = this.membersState.find(member => member.userId === UserStore.currentUser.id)
+    if (!this.membersState) return
+    const currentUserMember = this.membersState.find((member) => member.userId === UserStore.currentUser.id)
     return currentUserMember?.accept
   }
 
   @Mutation
-  private setMembersMutation(members: Member[]) {
+  public setMembersMutation(members: Member[]) {
     this.membersState = members
   }
 
   @Mutation
-  private addMembersMutation(member: Member) {
+  public addMembersMutation(member: Member) {
     this.membersState?.push(member)
   }
 
   @Mutation
-  private exitMembersMutation(id: number){
-    const index = this.membersState!.findIndex(member => member.id === id)
+  private exitMembersMutation(member: Member) {
+    const index = this.membersState!.findIndex(m => m.id === member.id)
+
     this.membersState?.splice(index, 1)
+
+    const parentPlan = PlansStore.plans.find((plan) => plan.id === member!.planId)
+    if (!parentPlan) return
+
+    PlansStore.updateOrDeleteMember({member, deleteFlg: true})
   }
 
   @Mutation
-  private updateMemberMutation(member: Member){
-    const index = this.membersState!.findIndex(m => m.id === member.id)
+  public updateMemberMutation(member: Member) {
+    const index = this.membersState!.findIndex((m) => m.id === member.id)
     this.membersState?.splice(index, 1, member)
+
+    const parentPlan = PlansStore.plans.find((plan) => plan.id === member.planId)
+    if (!parentPlan) return
+
+    PlansStore.updateOrDeleteMember({member})
   }
 
   @Action({ rawError: true })
@@ -52,27 +63,27 @@ export default class Members extends VuexModule {
   }
 
   @Action({ rawError: true })
-  public async exitMembers(id: number) {
+  public async exitMembers(member: Member) {
     await $axios
-    .$delete(`/api/v1/members/${id}`)
-    .then(() => this.exitMembersMutation(id))
-    .catch(() => SnackbarStore.catchError())
-    .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'delete' }))
+      .$delete(`/api/v1/members/${member.id}`)
+      .then(() => this.exitMembersMutation(member))
+      .catch(() => SnackbarStore.catchError())
+      .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'delete' }))
   }
 
   @Action({ rawError: true })
-  public async updateMember({id, roleId , accept}: { id: number, roleId?: number , accept?: boolean }) {
+  public async updateMember({ id, roleId, accept }: { id: number; roleId?: number; accept?: boolean }) {
     const member = { roleId, accept }
 
     await $axios
-    .$patch(`/api/v1/members/${id}`, { member })
-    .then(member => this.updateMemberMutation(member))
-    .catch(() => SnackbarStore.catchError())
-    .finally(() => SnackbarStore.CRUDvisible({model: MODEL, crud: 'update'}))
+      .$patch(`/api/v1/members/${id}`, { member })
+      .then((member) => this.updateMemberMutation(member))
+      .catch(() => SnackbarStore.catchError())
+      .finally(() => SnackbarStore.CRUDvisible({ model: MODEL, crud: 'update' }))
   }
 
   @Action({ rawError: true })
-  public async joinRequest(plan: Plan)  {
+  public async joinRequest(plan: Plan) {
     if (!confirm('承認リクエストを送信してよろしいですか？')) {
       alert('承認リクエストをキャンセルしました')
       return
@@ -80,17 +91,10 @@ export default class Members extends VuexModule {
 
     const member = { user_id: UserStore.currentUser.id, accept: false }
 
-    const isIdPage = !!window.$nuxt.$route.params.id
-
     await $axios
       .$post(`/api/v1/plans/${plan.id}/members`, { member })
-      .then((member: Member) => 
-        // 計画一覧ページならPlansStoreに追加、計画ページならMembersStoreに追加
-        isIdPage ? this.addMembersMutation(member) : PlansStore.addMember({ id: plan.id, member })       
-      )
+      .then((member: Member) => PlansStore.addMember({ id: plan.id, member }))
       .catch(() => SnackbarStore.catchError())
-      .finally(() =>
-        SnackbarStore.CRUDvisible({ model: '承認リクエスト', crud: 'create' })
-      )
+      .finally(() => SnackbarStore.CRUDvisible({ model: '承認リクエスト', crud: 'create' }))
   }
 }

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 import { ActionTree, Store } from 'vuex'
 import { ActionContext } from 'vuex/types'
 import { Context } from '@nuxt/types'

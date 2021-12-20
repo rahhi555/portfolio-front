@@ -1,0 +1,60 @@
+import { DataTutorialKey } from 'interface'
+
+//* モーダルに表示するメッセージの配列 */
+export const messages: { [key in DataTutorialKey]: string[] } = {
+  'create-plan-btn': [
+    '「ミニマップ」のチュートリアルを開始します。',
+    'このアプリはtodoリストと地図を紐付けることで、todoの進行状況を場所ごとに可視化できるようにしたものです。',
+    '進行状況はリアルタイムに発信されるので、複数のメンバーで共有が可能です。',
+    'todoリスト、地図およびメンバーの組み合わせを「計画」と呼びます。',
+    '実際に計画を作成してみましょう。',
+  ],
+  'create-plan-input': ['今回は日比谷公園の清掃ボランティアを実施するという設定で計画を立てます'],
+  'create-plan-check': ['次に公開の有無を設定します', '公開設定は第三者が自由に計画を閲覧できるかどうかの設定です'],
+  'create-plan-submit': [
+    'チェックをつけると作成者の許可なしでは計画の閲覧ができなくなります',
+    'また、チェックの有無に関わらず編集作業は作成者の許可が必須になります。',
+  ],
+  'plan-show-btn': ['計画が作成されました。詳細ページにアクセスしてみましょう。'],
+  'show-todo-list': ['次はTodoリストを作成しましょう'],
+  'create-todo-list-app-bar-btn': [],
+  'create-todo-list-input': [],
+  'create-todo-list-submit': [],
+  'select-todo-list': ['Todoリストが作成されました。次はTodoを作成しましょう'],
+  'create-todo-btn': [],
+  'create-todo-input': [],
+  'create-todo-submit': [],
+  'show-edit-map': ['Todoが作成されました。次はマップを作成しましょう'],
+  'create-map-app-bar-btn': [],
+  'create-map-input': [],
+  'create-map-check': [
+    'チェックボックスをチェックするとグーグルマップが有効になります',
+    '地図上に図形を作成できるほか、自分の現在位置がマップに反映されるようになります',
+  ],
+  'create-map-submit': [],
+  'change-google-map-mode': ['マップが作成されました。次は日比谷公園の位置をセットしましょう'],
+  'input-google-map-search': ['「日比谷公園」を検索してみましょう'],
+  'set-google-map-center': [],
+  'add-rect': [
+    'これで位置情報の登録が完了しました',
+    '次はこの地図に図形を配置し、オリジナルのマップを作成してみましょう',
+  ],
+  'drag-and-save-rect': ['次はこの図形を赤枠の中に動かしてみましょう'],
+  'attach-todo-list': ['最後にtodoリストを図形にドラッグアンドドロップしてみましょう'],
+  'add-member': ['これでマップの作成が完了しました。', '...おや'],
+  'show-member': ['ボランティアに参加したい人が来たようです。メンバー一覧画面に移動してみましょう。'],
+  'accept-member': ['人物のアイコンをクリックすることでメンバー申請を承認できます'],
+  'show-home': ['メンバーになるとtodoやマップの編集が可能になります','これで準備が整いました。さっそく計画を実行してみましょう'],
+  'activate-plan': [],
+  'show-map': [
+    '計画実行モードに入りました。メンバーと一緒にtodoを進めましょう。',
+    'マップ閲覧画面に移動しましょう'
+  ],
+  'click-rect': ['図形をクリックしてみましょう'],
+  'check-todo-0': ['todoをチェックして完了させましょう'],
+  'check-todo-1': ['新規メンバーがtodoをもう一つ追加していたようです', 'そっちのtodoは彼が実行する打ち合わせなので、しばらく見てみましょう'],
+  'show-home-second': ['無事全てのtodoが終わりました! ホームに戻りましょう'],
+  'progress-bar': ['全体の進行状況はバーで確認できます'],
+  'inactivate-plan': ['計画を終了しましょう'],
+  'finish-tutorial': ['チュートリアルお疲れさまでした! 長い説明にお付き合いいただきありがとうございました。'],
+}

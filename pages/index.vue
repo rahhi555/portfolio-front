@@ -10,7 +10,7 @@
         class="mb-16"
         cols="12"
       >
-        <h1 class="mb-12 text-h2 font-weight-regular">
+        <h1 class="mb-12 heading">
           MiniMap
         </h1>
 
@@ -26,4 +26,9 @@
 <style lang="sass">
 #pricing-view
   max-width: 1140px
+
+.heading
+  font-family: 'Domine', 'Roboto', sans-serif
+  font-size: 3.5em
+  font-weight: 400
 </style>

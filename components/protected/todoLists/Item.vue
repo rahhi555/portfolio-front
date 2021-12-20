@@ -11,7 +11,7 @@
       @keydown.enter="updateTodoList($event.target.value, todoList.id)"
       @blur="isEdit = false"
     />
-    <v-list-item-title v-else>
+    <v-list-item-title v-else data-tutorial="select-todo-list">
       {{ todoList.title }}
     </v-list-item-title>
     <v-list-item-icon v-if="!isEdit">

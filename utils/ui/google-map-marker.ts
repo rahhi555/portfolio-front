@@ -1,6 +1,7 @@
-import { reactive, watch } from '@nuxtjs/composition-api'
+import { reactive, watch, WatchStopHandle } from '@nuxtjs/composition-api'
 import { throttle } from 'mabiki'
 import { MapsStore, UserStore } from '~/store'
+import { clearMemberMarkers } from '~/utils/ui/google-map-other-marker'
 
 export interface SendCurrentPositionParams {
   lat: number
@@ -25,54 +26,81 @@ let watchId: number
 const currentPosition = reactive({
   lat: 0,
   lng: 0,
-  heading: 0
+  heading: 0,
 })
 
 let marker: google.maps.Marker
 
+let stopMarkerSet: WatchStopHandle | undefined
+
+let stopSendPosition: WatchStopHandle | undefined
+
 /** serup内のonMounted内に記述する。現在位置のwatchとグーグルマップにマーカーを設置する。 */
 const onMounted = (map: google.maps.Map) => {
-  watchId = navigator.geolocation.watchPosition((pos) => {
-    currentPosition.lat = pos.coords.latitude
-    currentPosition.lng = pos.coords.longitude
-    currentPosition.heading = pos.coords.heading!
-  })
+  watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      currentPosition.lat = pos.coords.latitude
+      currentPosition.lng = pos.coords.longitude
+      currentPosition.heading = pos.coords.heading!
+    },
+    () => {},
+    { enableHighAccuracy: true }
+  )
 
   marker = new google.maps.Marker({
     position: { lat: currentPosition.lat, lng: currentPosition.lng },
     map,
     icon: svgMarker,
+    optimized: true
   })
+
+  /** 現在位置が変更されるたびに作動し、マーカーを設置し直す */
+  stopMarkerSet = watch(currentPosition, () => {
+    if (!marker) return
+    const { lat, lng } = currentPosition
+    marker.setPosition({ lat, lng })
+    const activeMapHeading = MapsStore.activeMap?.heading || 0
+    svgMarker.rotation! = Math.abs(activeMapHeading - currentPosition.heading)
+    marker.setIcon(svgMarker)
+  })
+
+  /** 現在位置が変更されるたびに作動し、位置情報を送信する。負荷軽減のため3000msに一度処理する。 */
+  stopSendPosition = watch(
+    currentPosition,
+    throttle(() => {
+      if (!marker) return
+      const { lat, lng } = currentPosition
+      const userId = UserStore.currentUser.id
+      const name = UserStore.currentUser.name
+
+      window.$nuxt.context.$planChannelPeformMethods('sendCurrentPosition', { lat, lng, userId, name })
+    }, 3000)
+  )
 }
 
 /** 現在位置のwatchを解除し、グーグルマップ上のマーカーを削除する */
 const unMounted = () => {
   navigator.geolocation.clearWatch(watchId)
-  if(!marker) return
+  watchId = 0
+  currentPosition.heading = 0
+  currentPosition.lat = 0
+  currentPosition.lng = 0
+
+  if(typeof stopMarkerSet === 'function') {
+    stopMarkerSet() 
+    stopMarkerSet = undefined
+  }
+  if(typeof stopSendPosition === 'function') {
+    stopSendPosition()
+    stopSendPosition = undefined
+  }
+
+  clearMemberMarkers()
+  if (!marker) return
   marker.setMap(null)
 }
 
-/** 現在位置が変更されるたびに作動し、マーカーを設置し直す。負荷軽減のため500msに一度処理する。 */
-watch(currentPosition, throttle(() => {
-  if(!marker) return
-  const { lat, lng } = currentPosition
-  marker.setPosition({ lat, lng })
-  const activeMapHeading = MapsStore.activeMap?.heading || 0
-  svgMarker.rotation! =  Math.abs(activeMapHeading - currentPosition.heading)
-  marker.setIcon(svgMarker)
-}, 500))
-
-/** 現在位置が変更されるたびに作動し、位置情報を送信する。負荷軽減のため3000msに一度処理する。 */
-watch(currentPosition, throttle(() => {
-  if(!marker) return
-  const { lat, lng } = currentPosition
-  const userId = UserStore.currentUser.id
-  const name = UserStore.currentUser.name
-
-  window.$nuxt.context.$planChannelPeformMethods('sendCurrentPosition', { lat, lng, userId, name })
-}, 3000))
-
 export default {
   onMounted,
-  unMounted
+  unMounted,
 }

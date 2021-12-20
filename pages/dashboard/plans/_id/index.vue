@@ -5,7 +5,7 @@
         <MapsCalendar :todos="progressHash.todos" />
       </v-col>
 
-      <v-col cols="12" sm="8">
+      <v-col cols="12" sm="8" data-tutorial="progress-bar">
         <v-card>
           <v-toolbar class="mb-2" color="primary" dark height="30">
             <v-toolbar-title>進行状況</v-toolbar-title>
@@ -25,7 +25,7 @@
       </v-col>
 
       <v-col v-if="accept" cols="6" sm="2">
-        <v-btn width="100%" color="secondary" @click="inactivatePlan">計画終了</v-btn>
+        <v-btn data-tutorial="inactivate-plan" width="100%" color="secondary" @click="inactivatePlan">計画終了</v-btn>
       </v-col>
     </template>
 
@@ -36,7 +36,7 @@
 
     <v-col v-show="$vuetify.breakpoint.smAndUp" cols="12"  />
 
-      <v-col v-if="accept" cols="6" sm="2">
+      <v-col v-if="accept" data-tutorial="activate-plan" cols="6" sm="2">
         <v-btn width="100%" color="secondary" @click="activatePlan"
           >計画開始</v-btn
         >
@@ -55,7 +55,7 @@ export default defineComponent({
   middleware: ['initialize-store'],
 
   setup() {
-    const { $planChannelPeformMethods } = useContext()
+    const { $planChannelPeformMethods, $tutorial } = useContext()
 
     const progressHash = computed(() => {
       const todos = TodoListsStore.todoLists.flatMap(todoList => todoList.todos)
@@ -88,11 +88,23 @@ export default defineComponent({
       return PlansStore.currentPlan?.active
     })
 
+    const activatePlan = () => {
+      if($tutorial.isRunningTutorial.value) return
+
+      $planChannelPeformMethods('activatePlan')
+    }
+
+    const inactivatePlan = () => {
+      if($tutorial.isRunningTutorial.value) return
+
+      $planChannelPeformMethods('inactivatePlan')
+    }
+
     return {
       progressHash,
       active,
-      activatePlan: () => $planChannelPeformMethods('activatePlan'),
-      inactivatePlan: () => $planChannelPeformMethods('inactivatePlan'),
+      activatePlan,
+      inactivatePlan,
       accept: computed(() => MembersStore.currentUserAccept)
     }
   },

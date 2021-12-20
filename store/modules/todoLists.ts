@@ -6,14 +6,7 @@ import { SnackbarStore } from '~/utils/store-accessor'
 
 const MODEL = 'Todoリスト'
 
-interface TodoParams {
-  id?: number
-  title?: string
-  body?: string
-  beginTime?: string
-  endTime?: string
-  images?: File[]
-}
+type TodoParams = {[K in keyof Todo]?: Todo[K]}
 
 @Module({
   name: 'modules/todoLists',
@@ -46,7 +39,7 @@ export default class TodoLists extends VuexModule {
   }
 
   @Mutation
-  private addTodoListsMutation(todoList: TodoList) {
+  public addTodoListsMutation(todoList: TodoList) {
     this.todoListsState.push(todoList)
   }
 
@@ -126,7 +119,7 @@ export default class TodoLists extends VuexModule {
   }
 
   @Mutation
-  private addTodoMutation(todo: Todo) {
+  public addTodoMutation(todo: Todo) {
     const target = this.todoListsState[this.selectedTodoListIndexState!]
     target?.todos?.push(todo)
   }

@@ -28,25 +28,57 @@ export default class Plans extends VuexModule {
     return members?.filter(member => member.userId === UserStore.currentUser.id)
   }
 
+  /** 
+   * 自分の作成した計画のうち計画名、リンクおよび申請中のメンバーを返す   
+   * Notificationsで使用する
+   **/
+  public get notifications() {
+    const myPlans = this.plans.filter(plan => plan.userId === UserStore.currentUser.id)
+    if(!myPlans) return []
+
+    return myPlans.map(myPlan => {
+      const isSomeUnapproved = myPlan.members.some(member => !member.accept)
+      if(!isSomeUnapproved) return false
+
+      return {
+        title: myPlan.name,
+        link: `/dashboard/plans/${myPlan.id}/members`
+      }
+    }).filter(Boolean)
+  }
+
   @Mutation
   public setCurrentPlanMutation(plan: Plan) {
     this.currentPlanState = plan
   }
 
   @Mutation
-  private setPlansMutation(plans: Plan[]) {
+  public setPlansMutation(plans: Plan[]) {
     this.plansState = plans
   }
 
   @Mutation
-  private addPlansMutation(plan: Plan) {
+  public addPlansMutation(plan: Plan) {
     this.plansState?.push(plan)
   }
 
   @Mutation
-  public addMember({id, member}: {id:number, member:Member}) {
-    const index = this.plansState!.findIndex(plan => plan.id === id)
+  public addMember({ id, member }: { id:number, member:Member }) {
+    const index = this.plansState.findIndex(plan => plan.id === id)
     this.plansState![index].members.push(member)
+  }
+
+  @Mutation
+  public updateOrDeleteMember({ member, deleteFlg = false }: { member: Member, deleteFlg?: boolean }) {
+    const plan = this.plansState.find(plan => plan.id === member.planId)
+    const index = plan?.members.findIndex(m => m.id === member.id)
+    if(!index) return
+
+    if(deleteFlg) {
+      plan!.members!.splice(index, 1)
+    } else {
+      plan!.members!.splice(index, 1, member)
+    }
   }
 
   @Mutation
@@ -95,14 +127,12 @@ export default class Plans extends VuexModule {
   public activatePlan() {
     if(!this.currentPlanState) return
     this.currentPlanState.active = true
-    SnackbarStore.visible({ color: 'success', message: '計画を開始しました。頑張りましょう！' })
   }
 
   @Mutation
   public inactivatePlan() {
     if(!this.currentPlanState) return
     this.currentPlanState.active = false
-    SnackbarStore.visible({ color: 'success', message: '計画を終了しました。お疲れさまでした。' })
   }
 
 }

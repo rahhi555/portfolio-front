@@ -26,6 +26,7 @@
         <v-btn
           v-show="isGoogleMapEditMode"
           id="set-center-icon"
+          data-tutorial="set-google-map-center"
           class="mr-3 mb-2"
           color="primary"
           fab
@@ -106,7 +107,7 @@ import Marker from '~/utils/ui/google-map-marker'
 
 export default defineComponent({
   setup() {
-    const { $googleMap, $config } = useContext()
+    const { $googleMap, $config, $tutorial } = useContext()
     const map = $googleMap.map
     // activeMapをwatchで監視するためcomputedで定義
     const activeMap = computed(() => MapsStore.activeMap)
@@ -202,9 +203,9 @@ export default defineComponent({
           map.value.controls[position].push(button)
         })
 
-        if (common.isShowPage.value) {
+        if (common.isShowPage.value && !$tutorial.isRunningTutorial.value) {
           Marker.onMounted(map.value)
-        }
+        }        
 
         // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
         setTimeout(() => {
@@ -218,7 +219,7 @@ export default defineComponent({
 
     // 初期化処理
     onMounted(() => {
-      nextTick(() => {
+      nextTick().then(() => {
         initMap()
       })
     })
@@ -228,7 +229,7 @@ export default defineComponent({
       if (!activeMap.value) return false
       return activeMap.value.id
     })
-    watch(activeMapId, () => {
+    const stopAutoNormalMode = watch(activeMapId, () => {
       $googleMap.isGoogleMapEditMode.value = false
       const { bounds, heading } = activeMapBoundsHeading.value
 
@@ -241,7 +242,7 @@ export default defineComponent({
 
     // モード切替時にオーバーレイのオンオフをする
     const overlay = ref<google.maps.OverlayView>()
-    watch($googleMap.isGoogleMapEditMode, () => {
+    const stopOverlay = watch($googleMap.isGoogleMapEditMode, () => {
       if ($googleMap.isGoogleMapEditMode.value) {
         map.value.setOptions({
           disableDefaultUI: false,
@@ -284,10 +285,16 @@ export default defineComponent({
 
     onUnmounted(() => {
       $googleMap.isGoogleMapEditMode.value = false
-      Marker.unMounted()
+      stopAutoNormalMode()
+      stopOverlay()
+      if(common.isShowPage.value && !$tutorial.isRunningTutorial.value) {
+        Marker.unMounted()
+      }
     })
 
     const updatePosition = async () => {
+      if($tutorial.isRunningTutorial.value) return
+
       const heading = map.value?.getHeading()!
 
       // 傾きが0と180のときは変化なし。その他は90と270に近いほどズームアウトしてしまうので、差をなくすためズームインする
@@ -318,7 +325,7 @@ export default defineComponent({
         })
         .catch((e) => alert(e))
 
-      // 設定時の画面の縦横を取得し、どのデバイスごとの描写差をなくす
+      // 設定時の画面の縦横を取得し、デバイスごとの描写差をなくす
       const width = map.value.getDiv().clientWidth
       const height = map.value.getDiv().clientHeight
 

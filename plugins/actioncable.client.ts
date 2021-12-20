@@ -7,7 +7,6 @@ import { SvgParams } from '~/store/modules/svgs'
 import { SendCurrentPositionParams } from '~/utils/ui/google-map-marker'
 import { getOtherMenberPosition } from '~/utils/ui/google-map-other-marker'
 
-
 export interface PlanChannel {
   changeTodoStatus: ({ id, status }: ChangeStatusParams) => void
   activatePlan: () => void
@@ -37,7 +36,7 @@ declare module 'actioncable' {
   }
 }
 
-export default defineNuxtPlugin(({ app, $config, route }, inject) => {
+export default defineNuxtPlugin(({ app, $config, route, $tutorial }, inject) => {
   const cable = ref<actioncable.Cable>()
   
   // チャンネル作成
@@ -120,6 +119,9 @@ export default defineNuxtPlugin(({ app, $config, route }, inject) => {
 
   // ページ遷移のチャンネル作成及び破棄
   app.router?.afterEach((to, from) => {
+    // チュートリアル中ならリターン
+    if(process.client && $tutorial.isRunningTutorial.value) return
+
     // ページ遷移先が同じ計画の場合、チャンネルを作成しない
     if (from.params.id === to.params.id) return
 
@@ -138,14 +140,14 @@ export default defineNuxtPlugin(({ app, $config, route }, inject) => {
   })
   
   const planChannelPeformMethods = async (callMethod: keyof PlanChannel, payload?: PlanChannelPeformMethodsPayload) => {
-    if(!subscription.value) {
+    if(!subscription.value && !$tutorial.isRunningTutorial.value) {
       SnackbarStore.visible({ color: 'warning', message: '通信を再接続します。少々お待ち下さい...' })
       cable.value = undefined
       createSubscription(route.params.id)
       await new Promise((resolve) => setTimeout(resolve, 3000))
     }
 
-    if(!subscription.value) {
+    if(!subscription.value && !$tutorial.isRunningTutorial.value) {
       SnackbarStore.visible({ color: 'error', message: '通信の接続に失敗しました。リロードをお試しください。' })
       return
     }
