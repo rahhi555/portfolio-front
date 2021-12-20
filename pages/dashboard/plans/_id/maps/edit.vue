@@ -7,7 +7,7 @@
     </v-col>
 
     <v-col max-width="100%" rounded cols="9" style="position: relative">
-      <MapsGoogleMap v-show="hasActiveMap"/>
+      <MapsGoogleMap v-show="hasActiveMap" />
       <SvgsBase v-show="hasActiveMap" />
       
       <MapsFooterBase

@@ -86,6 +86,7 @@ export default defineComponent({
 
     const search = ref('')
 
+    /** タブをマイ計画に切り替えると変数searchに自分の名前が代入される */
     watch(appBarTab, () => {
       if (!appBarTab.value) return
       const selectTab = appBarTab.value.find((tab) => tab.selected)
@@ -95,7 +96,7 @@ export default defineComponent({
       } else if (selectTab?.name === 'マイ計画') {
         search.value = UserStore.currentUser.name
       }
-    })
+    }, { deep: true })
 
     /**
      * useFetchを使用してreturnの値にcomputedを含ませるとバグにより 'Write operation failed: computed value is readonly.'
