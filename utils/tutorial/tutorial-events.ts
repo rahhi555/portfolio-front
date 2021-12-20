@@ -1,4 +1,4 @@
-/** 
+/**
  * @fileoverview ターゲットとするDOM要素に次のシナリオに進めるイベントを登録する
  */
 
@@ -28,7 +28,7 @@ import { tutorialTooltip } from '~/utils/tutorial/tutorial-tooltip'
 /** 次のシナリオキー */
 const nextKey = computed(() => {
   const scenarioKeys = Object.keys(tutorialTooltip) as DataTutorialKey[]
-  const nowScenarioKeyIndex = scenarioKeys.findIndex(key => key === nowScenarioKey.value)
+  const nowScenarioKeyIndex = scenarioKeys.findIndex((key) => key === nowScenarioKey.value)
   return scenarioKeys[nowScenarioKeyIndex + 1]
 })
 
@@ -250,12 +250,18 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
 
   'activate-plan': () => nextStepAddEventListener({ func: () => activatePlanInTutorial() }),
 
-  'show-map': () => nextStepAddEventListener(),
+  'show-map': () =>
+    nextStepAddEventListener({
+      func: async () => {
+        await sleep(2000)
+        return true
+      },
+    }),
 
-  'click-rect': async () => { 
+  'click-rect': async () => {
     await sleep(1000)
     setMarkersInTutorial()
-    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! }) 
+    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! })
   },
 
   'check-todo-0': () =>

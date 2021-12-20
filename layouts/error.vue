@@ -1,32 +1,46 @@
 <template>
-  <v-app dark>
+  <div style="margin: auto; text-align: center;">
     <h1 v-if="error.statusCode === 404">
       {{ pageNotFound }}
     </h1>
     <h1 v-else>
       {{ otherError }}
     </h1>
-    <NuxtLink to="/">
-      戻る
+    <NuxtLink to="/dashboard/plans">
+      Home page
     </NuxtLink>
-  </v-app>
+  </div>
 </template>
 
 <script>
-export default {
-  layout: 'empty',
+import { defineComponent, inject, onUnmounted, onMounted } from '@nuxtjs/composition-api'
+import { HasErrorKey } from '~/types/injection-key'
+
+export default defineComponent({
   props: {
     error: {
       type: Object,
       default: null
     }
   },
-  data () {
+
+  setup() {
+    const hasError = inject(HasErrorKey)
+
+    onMounted(() => {
+      hasError.value = true
+    })
+
+    onUnmounted(() => {
+      hasError.value = false
+    })
+
     return {
       pageNotFound: 'ページが存在しません',
       otherError: 'エラーが発生しました'
     }
   },
+
   head () {
     const title =
       this.error.statusCode === 404 ? this.pageNotFound : this.otherError
@@ -34,7 +48,7 @@ export default {
       title
     }
   }
-}
+})
 </script>
 
 <style scoped>
