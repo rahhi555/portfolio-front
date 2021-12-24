@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { TodoListsStore } from '~/store'
-import TodoListAttach from '~/utils/helpers/todo-list-attach'
+import { attachTodoListStart, attachTodoListEnd } from '~/utils/helpers/todo-list-attach'
 
 const todoLists = computed(() => TodoListsStore.todoLists)
 
@@ -40,10 +40,6 @@ const selectedTodoListIndex = computed({
   get: () => TodoListsStore.selectedTodoListIndex,
   set: (value) => TodoListsStore.setSelectedTodoListIndex(value)
 })
-
-const attachTodoListStart = () => TodoListAttach.attachTodoListStart()
-
-const attachTodoListEnd = (e: DragEvent) => TodoListAttach.attachTodoListEnd(e) 
 </script>
 
 <style scoped lang="sass">

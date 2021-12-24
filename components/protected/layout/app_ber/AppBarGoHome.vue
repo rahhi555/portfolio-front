@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import common from '~/utils/ui/common'
+import { isPlanActive } from '~/utils/ui/common'
 
 const router = useRouter()
 const { $tutorial } = useContext()
@@ -22,6 +22,4 @@ const pushPlans = () => {
 
   router.push('/dashboard/plans')
 }
-
-const isPlanActive = common.isPlanActive
 </script>

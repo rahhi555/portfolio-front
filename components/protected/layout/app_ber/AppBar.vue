@@ -31,9 +31,7 @@ import DrawerToggle from './AppBarDrawerToggle.vue'
 import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
-import common from '~/utils/ui/common'
-
-const isPlanActive = common.isPlanActive
+import { isPlanActive } from '~/utils/ui/common'
 
 const isMobile = useContext().$device.isMobile
 </script>

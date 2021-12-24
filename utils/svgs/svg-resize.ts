@@ -1,5 +1,8 @@
 import { SvgsStore } from '~/store'
-import SvgViewbox from '~/utils/svgs/svg-viewbox'
+import { zoomParcentHeight, zoomParcentWidth, minY, minX } from '~/utils/svgs/svg-viewbox'
+import { isSomeTrueModes } from '~/utils/ui/svg-cursor'
+import { isEditPage } from '~/utils/ui/common'
+import { isShowMenu } from '~/utils/ui/svg-context-menu'
 
 // リサイズ中ならtrueになる
 let isResizing = false
@@ -17,7 +20,7 @@ const MULTIPLE_NUMBER = 20
 // 上への引っ張りはheightを増加させると同時にyを減少させる
 const resizeMiddleTop = (e: PointerEvent) => {
   // zoom倍率で割った非zoomの値+スクロール分の値
-  const mouseEventY = (e.offsetY / SvgViewbox.zoomParcentHeight()) + SvgViewbox.minY.value
+  const mouseEventY = e.offsetY / zoomParcentHeight() + minY.value
   const resizeHeight = startHeight + startY - mouseEventY
   if (resizeHeight > 0) {
     SvgsStore.changeSvg({
@@ -33,9 +36,9 @@ const resizeMiddleTop = (e: PointerEvent) => {
 
 const resizeMiddleRight = (e: PointerEvent) => {
   // zoom倍率で割った非zoomの値
-  const mouseEventX = e.offsetX / SvgViewbox.zoomParcentWidth() 
+  const mouseEventX = e.offsetX / zoomParcentWidth()
   // マウス位置 - 図形の左端 + スクロール分
-  const resizeWidth = mouseEventX - SvgsStore.targetSvg!.x + SvgViewbox.minX.value
+  const resizeWidth = mouseEventX - SvgsStore.targetSvg!.x + minX.value
   if (resizeWidth > 0) {
     SvgsStore.changeSvg({
       status: 'width',
@@ -45,8 +48,8 @@ const resizeMiddleRight = (e: PointerEvent) => {
 }
 
 const resizeMiddleBottom = (e: PointerEvent) => {
-  const mouseEventY = e.offsetY / SvgViewbox.zoomParcentHeight()
-  const resizeHeight = mouseEventY - SvgsStore.targetSvg!.y + SvgViewbox.minY.value
+  const mouseEventY = e.offsetY / zoomParcentHeight()
+  const resizeHeight = mouseEventY - SvgsStore.targetSvg!.y + minY.value
   if (resizeHeight > 0) {
     SvgsStore.changeSvg({
       status: 'height',
@@ -58,7 +61,7 @@ const resizeMiddleBottom = (e: PointerEvent) => {
 // // 左への引っ張りはwidthを増加させると同時にxを減少させる
 const resizeMiddleLeft = (e: PointerEvent) => {
   // mouseEventXはマウスカーソル位置とviewboxの位置を足したもの
-  const mouseEventX = (e.offsetX / SvgViewbox.zoomParcentWidth()) + SvgViewbox.minX.value
+  const mouseEventX = e.offsetX / zoomParcentWidth() + minX.value
   // 現在のxよりクリックしているx座標が低くなればwidthが増える
   const resizeWidth = startWidth + startX - mouseEventX
   if (resizeWidth > 0) {
@@ -75,48 +78,47 @@ const resizeMiddleLeft = (e: PointerEvent) => {
 }
 
 // --- リサイズ処理 ---
-export default {
-  resizeStart(e: PointerEvent): void {
-    SvgsStore.setTargetId(e)
-    if (typeof SvgsStore.targetSvg === 'undefined') {
-      return
-    }
-    isResizing = true
-    const target = e.target as SVGGElement
-    direction = target.classList[0]
+export const resizeStart = (e: PointerEvent): void => {
+  SvgsStore.setTargetId(e)
+  if (typeof SvgsStore.targetSvg === 'undefined') return
+  if (!isEditPage.value || isSomeTrueModes.value) return
+
+  isShowMenu.value = false
+  isResizing = true
+  const target = e.target as SVGGElement
+  direction = target.classList[0]
+  switch (direction) {
+    case 'top-line':
+      startY = SvgsStore.targetSvg.y
+      startHeight = SvgsStore.targetSvg.height
+      break
+    case 'left-line':
+      startX = SvgsStore.targetSvg.x
+      startWidth = SvgsStore.targetSvg.width
+      break
+  }
+}
+
+export const resizeMiddle = (e: PointerEvent) => {
+  if (isResizing) {
     switch (direction) {
       case 'top-line':
-        startY = SvgsStore.targetSvg.y
-        startHeight = SvgsStore.targetSvg.height
+        resizeMiddleTop(e)
+        break
+      case 'right-line':
+        resizeMiddleRight(e)
+        break
+      case 'bottom-line':
+        resizeMiddleBottom(e)
         break
       case 'left-line':
-        startX = SvgsStore.targetSvg.x
-        startWidth = SvgsStore.targetSvg.width
+        resizeMiddleLeft(e)
         break
     }
-  },
+  }
+}
 
-  resizeMiddle(e: PointerEvent) {
-    if (isResizing) {
-      switch (direction) {
-        case 'top-line':
-          resizeMiddleTop(e)
-          break
-        case 'right-line':
-          resizeMiddleRight(e)
-          break
-        case 'bottom-line':
-          resizeMiddleBottom(e)
-          break
-        case 'left-line':
-          resizeMiddleLeft(e)
-          break
-      }
-    }
-  },
-
-  resizeStop() {
-    isResizing = false
-    SvgsStore.setTargetId(0)
-  },
+export const resizeStop = () => {
+  isResizing = false
+  SvgsStore.setTargetId(0)
 }

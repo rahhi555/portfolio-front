@@ -1,11 +1,11 @@
 import { ref, reactive } from '@nuxtjs/composition-api'
 import { throttle } from 'mabiki'
 import simplify from 'simplify-js'
-import svgViewbox from './svg-viewbox'
+import { zoomParcentHeight, zoomParcentWidth, minX, minY } from './svg-viewbox'
 import { MapsStore, SvgsStore, UserStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
 import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
-import CommonUI from '~/utils/ui/common'
+import { isEditPage } from '~/utils/ui/common'
 
 // Polyline作成中のターゲット
 let targetPolyline = reactive<SvgParams>({})
@@ -16,10 +16,10 @@ const targetPolylineArray: { x: number; y: number }[] = []
 // ズーム計算後のxかyを返す
 const calculateZoom = {
   x: (e: PointerEvent) => {
-    return e.offsetX / svgViewbox.zoomParcentWidth()
+    return e.offsetX / zoomParcentWidth()
   },
   y: (e: PointerEvent) => {
-    return e.offsetY / svgViewbox.zoomParcentHeight()
+    return e.offsetY / zoomParcentHeight()
   },
 }
 
@@ -32,14 +32,14 @@ export const addPolylineStart = (e: PointerEvent) => {
   const MIN_ACTIVE_SVG_ID = 1_000_000_000_000_000
 
   // editページならdisplayTimeをなしにする
-  const displayTime = CommonUI.isEditPage.value ? undefined : 4000
+  const displayTime = isEditPage.value ? undefined : 4000
 
   targetPolylineArray.push({ x: calculateZoom.x(e), y: calculateZoom.y(e) })
 
   targetPolyline.id = Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER - MIN_ACTIVE_SVG_ID + 1) + MIN_ACTIVE_SVG_ID)
   targetPolyline.type = 'Polyline'
-  targetPolyline.x = svgViewbox.minX.value
-  targetPolyline.y = svgViewbox.minY.value
+  targetPolyline.x = minX.value
+  targetPolyline.y = minY.value
   targetPolyline.displayTime = displayTime
   targetPolyline.drawPoints = `${calculateZoom.x(e)},${calculateZoom.y(e)} `
   targetPolyline.mapId = MapsStore.activeMap.id
@@ -66,7 +66,7 @@ export const addPolylineStop = async () => {
   targetPolyline.drawPoints = simplified.map((v) => `${v.x},${v.y} `).join('')
   SvgsStore.changeSvg({ status: 'drawPoints', value: targetPolyline.drawPoints!, otherTargetId: targetPolyline.id })
 
-  if (CommonUI.isEditPage.value) {
+  if (isEditPage.value) {
     SvgsStore.deleteSvgMutation(targetPolyline.id)
     delete targetPolyline.id
     // @ts-ignore

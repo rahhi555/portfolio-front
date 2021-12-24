@@ -1,7 +1,8 @@
 import { computed, ref, onMounted, watch } from '@nuxtjs/composition-api'
 import { MapsStore, SnackbarStore } from '~/store'
 import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
-
+import { isEditPage } from '~/utils/ui/common'
+import { isAddModes } from '~/utils/ui/svg-cursor'
 
 // 初期状態のwidth及びheight
 const defaultWidth = ref(0)
@@ -82,7 +83,7 @@ export const scrollBegin = (e: PointerEvent) => {
   // editページはスペースキーを押下する必要あり
   if (!isSpaceKeyPress.value && isEditPage.value) return
   // 挿入モード中はスペースキーを押下する必要あり
-  if (!isSpaceKeyPress.value && Cursor.isAddModes.value) return
+  if (!isSpaceKeyPress.value && isAddModes.value) return
 
   isScrolling = true
   startPoint.x = e.clientX - minX.value

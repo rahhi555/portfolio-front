@@ -12,25 +12,25 @@
       :class="{ 'mysvg-edit': isEditPage }"
       width="100%"
       height="100%"
-      :viewBox="viewBoxStr"
+      :viewBox="viewBoxStr().value"
       xmlns="http://www.w3.org/2000/svg"
       style="border: solid 2px black"
       @pointerdown.left="
         scrollBegin($event);
-        addPath($event);
-        addPolylineStart($event);
+        addPath($event)
+        addPolylineStart($event)
       "
       @pointermove="
         scrollMiddle($event);
-        dragMiddle($event);
-        resizeMiddle($event);
-        addPolylineMiddle($event);
+        dragMiddle($event)
+        resizeMiddle($event)
+        addPolylineMiddle($event)
       "
       @pointerup="
         scrollEnd();
-        dragStop();
-        resizeStop();
-        addPolylineStop();
+        dragStop()
+        resizeStop()
+        addPolylineStop()
       "
       @wheel.prevent="zoomInOut"
     >
@@ -66,18 +66,23 @@
 <script setup lang="ts">
 import { debounce } from 'mabiki'
 import { MapsStore, SvgsStore } from '~/store'
-import { svgSheet, mounted as viewBoxMounted, scrollBegin, scrollEnd, scrollMiddle } from '~/utils/svgs/svg-viewbox'
 import {
-  mounted as spaceKeyMounted,
-  unMounted as spaceKeyUnMounted,
-  isSpaceKeyPress,
-} from '~/utils/helpers/add-event-space-press'
-import Drag from '~/utils/svgs/svg-drag'
-import Resize from '~/utils/svgs/svg-resize'
-import Path from '~/utils/svgs/svg-add-path'
+  svgSheet,
+  mounted as viewBoxMounted,
+  scrollBegin,
+  scrollEnd,
+  scrollMiddle,
+  viewBoxStr,
+  zoomInOut,
+  reset,
+} from '~/utils/svgs/svg-viewbox'
+import { mounted as spaceKeyMounted, unMounted as spaceKeyUnMounted } from '~/utils/helpers/add-event-space-press'
+import { dragMiddle, dragStop } from '~/utils/svgs/svg-drag'
+import { resizeMiddle, resizeStop } from '~/utils/svgs/svg-resize'
+import { addPath } from '~/utils/svgs/svg-add-path'
 import { addPolylineStart, addPolylineMiddle, addPolylineStop } from '~/utils/svgs/svg-add-polyline'
-import Cursor from '~/utils/ui/svg-cursor'
-import CommonUI from '~/utils/ui/common'
+import { mounted as cursorMounted } from '~/utils/ui/svg-cursor'
+import { isEditPage } from '~/utils/ui/common'
 import { pinchInOut } from '~/utils/svgs/svg-pinch'
 
 const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
@@ -87,10 +92,7 @@ const polylines = computed(() => SvgsStore.activeMapSvgs('Polyline'))
 viewBoxMounted()
 spaceKeyMounted()
 spaceKeyUnMounted()
-Cursor.mounted()
-
-// 現在のページが編集ページかどうか
-const isEditPage = CommonUI.isEditPage
+cursorMounted()
 
 const { $googleMap, $tutorial } = useContext()
 // 編集ページかつGoogleMap編集ページかどうか
@@ -100,15 +102,6 @@ const activeMapDisabledGoogleMap = computed(() => {
   if (!MapsStore.activeMap) return false
   return !MapsStore.activeMap.isGoogleMap
 })
-
-/** スクロール処理 */
-const scrollBegin = (e: PointerEvent) => {
-  // editページはスペースキーを押下する必要あり
-  if (!isSpaceKeyPress.value && isEditPage.value) return
-  // 挿入モード中はスペースキーを押下する必要あり
-  if (!isSpaceKeyPress.value && Cursor.isAddModes.value) return
-  ViewBox.scrollBegin(e)
-}
 
 // オートセーブ
 const autosave = debounce(
@@ -125,26 +118,6 @@ const autoSaveStop = watch(allSvgs.value, () => {
   if (isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
 })
 onUnmounted(autoSaveStop)
-
-/** viewBoxの値 */
-const viewBoxStr = ViewBox.viewBoxStr()
-
-/** ピン追加 */
-const addPath = (e: PointerEvent) => Path.addPath(e)
-
-/** ドラッグ処理 */
-const dragMiddle = (e: PointerEvent) => Drag.dragMiddle(e)
-const dragStop = () => Drag.dragStop()
-
-/** リサイズ処理 */
-const resizeMiddle = (e: PointerEvent) => Resize.resizeMiddle(e)
-const resizeStop = () => Resize.resizeStop()
-
-/** ズーム・ピンチ処理 */
-const zoomInOut = (e: WheelEvent) => ViewBox.zoomInOut(e)
-
-/** ズームおよびスクロールリセット */
-const reset = () => ViewBox.reset()
 
 /** 手動セーブ */
 const save = () => {

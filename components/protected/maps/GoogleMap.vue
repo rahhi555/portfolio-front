@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { MapsStore } from '~/store'
-import common from '~/utils/ui/common'
+import { isShowPage } from '~/utils/ui/common'
 import Marker from '~/utils/ui/google-map-marker'
 
 const { $googleMap, $config, $tutorial } = useContext()
@@ -176,7 +176,7 @@ const initMap = () => {
       map.value.controls[position].push(button)
     })
 
-    if (common.isShowPage.value && !$tutorial.isRunningTutorial.value) {
+    if (isShowPage.value && !$tutorial.isRunningTutorial.value) {
       Marker.onMounted(map.value)
     }
 
@@ -253,7 +253,7 @@ onUnmounted(() => {
   $googleMap.isGoogleMapEditMode.value = false
   stopAutoNormalMode()
   stopOverlay()
-  if (common.isShowPage.value && !$tutorial.isRunningTutorial.value) {
+  if (isShowPage.value && !$tutorial.isRunningTutorial.value) {
     Marker.unMounted()
   }
 })

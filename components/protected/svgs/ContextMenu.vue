@@ -32,8 +32,8 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
-import SvgContextMenu from '~/utils/ui/svg-context-menu'
-import CommonUI from '~/utils/ui/common'
+import { isShowMenu, position } from '~/utils/ui/svg-context-menu'
+import { isEditPage } from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -58,15 +58,12 @@ export default defineComponent({
       SvgsStore.attachTodoList(null)
     }
 
-    const isShowMenu = ref(SvgContextMenu.isShowMenu)
-    const position = SvgContextMenu.position
-
     return {
       hasTodoList,
       detachTodoList,
       isShowMenu,
       position,
-      isEditPage: CommonUI.isEditPage
+      isEditPage: isEditPage
     }
   },
 })

@@ -1,4 +1,4 @@
-import viewBox from '~/utils/svgs/svg-viewbox'
+import { zoomInOut } from '~/utils/svgs/svg-viewbox'
 
 // 基本の距離
 let baseDistance = 0
@@ -46,10 +46,10 @@ export const pinchInOut = (e: TouchEvent) => {
   // scaleが1.0より大きければピンチアウト。低ければピンチイン。
   if (1.0 < scale) {
     // ピンチイン
-    viewBox.zoomInOut(1)
+    zoomInOut(1)
   } else {
     // ピンチアウト
-    viewBox.zoomInOut(-1)
+    zoomInOut(-1)
   }
 
   // 100ms操作がなければピンチ操作していないとみなし、変数を初期化する

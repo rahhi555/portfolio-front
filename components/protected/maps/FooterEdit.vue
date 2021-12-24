@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { MapsStore, SvgsStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
-import Path from '~/utils/svgs/svg-add-path'
+import { isAddPathMode } from '~/utils/svgs/svg-add-path'
 import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
 
 const selected = ref<number | undefined>(undefined)
@@ -49,19 +49,19 @@ watch(selected, () => {
   switch (selected.value) {
     case 0:
       selected.value = undefined
-      Path.isAddPathMode.value = false
+      isAddPathMode.value = false
       isAddPolylineMode.value = false
       break
     case 1:
-      Path.isAddPathMode.value = true
+      isAddPathMode.value = true
       isAddPolylineMode.value = false
       break
     case 2:
-      Path.isAddPathMode.value = false
+      isAddPathMode.value = false
       isAddPolylineMode.value = true
       break
     default:
-      Path.isAddPathMode.value = false
+      isAddPathMode.value = false
       isAddPolylineMode.value = false
       break
   }

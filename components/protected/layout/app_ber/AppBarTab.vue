@@ -33,7 +33,7 @@ import { defineComponent, inject, useRouter, computed } from '@nuxtjs/compositio
 import { AppBarTab } from 'interface'
 import { AppBarFuncKey } from '~/types/injection-key'
 import { setPear, appBarTab } from '~/utils/ui/app-bar-tab-routes'
-import common from '~/utils/ui/common'
+import { isPlanActive } from '~/utils/ui/common'
 
 export default defineComponent({
   directives: {
@@ -103,7 +103,7 @@ export default defineComponent({
       clickTab,
       appBarFunc,
       activeTab,
-      isPlanActive: common.isPlanActive,
+      isPlanActive: isPlanActive,
     }
   },
 })
