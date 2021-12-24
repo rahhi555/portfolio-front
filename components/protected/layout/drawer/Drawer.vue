@@ -10,10 +10,7 @@
       <v-divider class="mx-3 mb-2" />
 
       <v-list>
-        <v-list-group
-          v-if="notifications.length"
-          prepend-icon="mdi-bell"
-        >
+        <v-list-group v-if="notifications.length" prepend-icon="mdi-bell">
           <template v-if="notifications.length" #activator>
             <v-list-item-title class="white--text">通知</v-list-item-title>
           </template>
@@ -27,7 +24,9 @@
             :to="n.link"
           >
             <v-list-item-content>
-              <v-list-item-title class="ml-3">メンバー申請: <strong>{{ n.title }}</strong> </v-list-item-title>
+              <v-list-item-title class="ml-3"
+                >メンバー申請: <strong>{{ n.title }}</strong>
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
@@ -45,71 +44,54 @@
   </v-navigation-drawer>
 </template>
 
-<script lang="ts">
-import { defineComponent, inject, computed, ref, useContext } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import DrawerHeader from './DrawerHeader.vue'
 import AccountSettings from './DrawerAccountSettings.vue'
 import { AccountDialogKey, DrawerKey } from '~/types/injection-key'
 import { PlansStore } from '~/store'
 
-export default defineComponent({
-  components: {
-    DrawerHeader,
-    AccountSettings,
+const { $auth } = useContext()
+
+const accountDialog = inject(AccountDialogKey)
+
+const items = ref([
+  {
+    icon: 'mdi-home',
+    title: '計画一覧',
+    to: '/dashboard/plans',
+    visible: true,
+    click: () => {},
   },
-
-  setup() {
-    const { $auth } = useContext()
-
-    const accountDialog = inject(AccountDialogKey)
-
-    const items = ref([
-      {
-        icon: 'mdi-home',
-        title: '計画一覧',
-        to: '/dashboard/plans',
-        visible: true,
-        click: () => {},
-      },
-      {
-        icon: 'mdi-account',
-        title: 'プロフィール',
-        to: '',
-        click: () => {
-          if (!accountDialog) return
-          accountDialog.value = true
-        },
-        visible: true,
-      },
-      {
-        icon: 'mdi-logout',
-        title: 'ログアウト',
-        to: '',
-        visible: true,
-        click: () => {
-          $auth.logout()
-        },
-      },
-    ])
-
-    const notifications = computed(() => PlansStore.notifications)
-
-    const visibleItems = computed(() => {
-      return items.value.filter((item) => {
-        return item.visible
-      })
-    })
-
-    const drawer = inject(DrawerKey)
-
-    return {
-      visibleItems,
-      notifications,
-      drawer,
-      items,
-    }
+  {
+    icon: 'mdi-account',
+    title: 'プロフィール',
+    to: '',
+    click: () => {
+      if (!accountDialog) return
+      accountDialog.value = true
+    },
+    visible: true,
   },
+  {
+    icon: 'mdi-logout',
+    title: 'ログアウト',
+    to: '',
+    visible: true,
+    click: () => {
+      $auth.logout()
+    },
+  },
+])
+
+const notifications = computed(() => PlansStore.notifications)
+
+const visibleItems = computed(() => {
+  return items.value.filter((item) => {
+    return item.visible
+  })
 })
+
+const drawer = inject(DrawerKey)
 </script>
 
 <style scoped lang="sass">

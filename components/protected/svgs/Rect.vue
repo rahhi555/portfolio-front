@@ -11,7 +11,7 @@
       tabindex="0"
       :class="{ grabbable: isEditPage && !isSomeTrueModes }"
       @pointerdown.left="
-        dragStart($event)
+        dragStart($event);
         selectRect($event)
       "
       @keydown="moveRectArrowKey"
@@ -63,18 +63,17 @@
 <script lang="ts">
 import {
   defineComponent,
-  reactive,
   useContext,
   computed,
 } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
 import { SvgsStore, TodoListsStore, TodoStatusesStore, PlansStore } from '~/store'
-import Drag from '~/utils/svgs/svg-drag'
-import Resize from '~/utils/svgs/svg-resize'
-import TodoListAttach from '~/utils/helpers/todo-list-attach'
-import ContextMenu from '~/utils/ui/svg-context-menu'
-import Cursor from '~/utils/ui/svg-cursor'
-import CommonUI from '~/utils/ui/common'
+import { dragStart, moveRectArrowKey } from '~/utils/svgs/svg-drag'
+import { resizeStart } from '~/utils/svgs/svg-resize'
+import { attachTodoListEnter, attachTodoListLeave } from '~/utils/helpers/todo-list-attach'
+import { showMenu } from '~/utils/ui/svg-context-menu'
+import { isSomeTrueModes } from '~/utils/ui/svg-cursor'
+import { isEditPage } from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -87,42 +86,9 @@ export default defineComponent({
   setup(props) {
     const rect = props.rect as Rect
 
-    // 編集ページ判定、ピン挿入モード判定、スクロールモード判定
-    const modes = reactive({
-      isEditPage: CommonUI.isEditPage.value,
-      isSomeTrueModes: Cursor.isSomeTrueModes,
-    })
-
-    // --- コンテキストメニュー表示 ---
-    const showMenu = (e: PointerEvent) => {
-      if (!modes.isEditPage) return
-      ContextMenu.showMenu(e)
-    }
-    const isShowMenu = ContextMenu.isShowMenu
-
-    // Rectの位置操作操作
-    const dragStart = (e: PointerEvent) => {
-      if (!modes.isEditPage || modes.isSomeTrueModes) return
-      isShowMenu.value = false
-      Drag.dragStart(e)    }
-
-    // 方向キーのドラッグ操作
-    const moveRectArrowKey = (e: KeyboardEvent) => {
-      if (!modes.isEditPage) return
-      isShowMenu.value = false
-      Drag.moveRectArrowKey(e)
-    }
-
-    // リサイズ操作
-    const resizeStart = (e: PointerEvent) => {
-      if (!modes.isEditPage || modes.isSomeTrueModes) return
-      isShowMenu.value = false
-      Resize.resizeStart(e)
-    }
-
     // --- svg削除 ---
     const deleteSvg = (e: KeyboardEvent) => {
-      if (!modes.isEditPage) return
+      if (!isEditPage.value) return
       SvgsStore.deleteSvg(e)
     }
     
@@ -149,10 +115,12 @@ export default defineComponent({
 
     // 閲覧ページの場合にrectをクリックしたときの処理
     const selectRect = (e: PointerEvent) => {
-      if (modes.isEditPage || modes.isSomeTrueModes) return
+      if (isEditPage.value || isSomeTrueModes.value) return
+
       SvgsStore.setTargetId(e)
       const targetRect = SvgsStore.targetSvg
       if (!targetRect) return
+
       const todoListIndex = TodoListsStore.todoLists.findIndex(
         (todoList) => todoList.id === targetRect.todoListId
       )
@@ -169,13 +137,12 @@ export default defineComponent({
       resizeStart,
       deleteSvg,
       showMenu,
-      attachTodoListEnter: (e: DragEvent) =>
-        TodoListAttach.attachTodoListEnter(e),
-      attachTodoListLeave: () => TodoListAttach.attachTodoListLeave(),
+      attachTodoListEnter,
+      attachTodoListLeave,
       fill,
       selectRect,
-      isSomeTrueModes: Cursor.isSomeTrueModes,
-      isEditPage: modes.isEditPage,
+      isSomeTrueModes,
+      isEditPage,
     }
   },
 })

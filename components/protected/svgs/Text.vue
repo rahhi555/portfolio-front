@@ -49,7 +49,7 @@ import {
 import { Rect } from 'interface'
 import { TodoListsStore } from '~/store'
 import EditName from '~/utils/svgs/svg-edit-name'
-import CommonUI from '~/utils/ui/common'
+import { isEditPage } from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -73,7 +73,7 @@ export default defineComponent({
     return {
       isEditSvgName: EditName.isEditSvgName,
       isAnyMode: EditName.isAnyMode,
-      isEditPage: CommonUI.isEditPage,
+      isEditPage: isEditPage,
       editSvgName: () => EditName.editSvgName(svg),
       updateSvgName: (e: KeyboardEvent) => EditName.updateSvgName(e, svg),
     }

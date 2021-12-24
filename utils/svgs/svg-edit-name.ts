@@ -5,22 +5,22 @@ import {
 } from '@nuxtjs/composition-api'
 import { Polyline, Rect } from 'interface'
 import { SnackbarStore, SvgsStore } from '~/store'
-import AddPath from '~/utils/svgs/svg-add-path'
-import AddPolyline from '~/utils/svgs/svg-add-polyline'
-import AddEventSpaceKey from '~/utils/helpers/add-event-space-press'
-import CommonUI from '~/utils/ui/common'
+import { isAddPathMode } from '~/utils/svgs/svg-add-path'
+import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
+import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
+import { isEditPage } from '~/utils/ui/common'
 
 /** 名前編集モードのフラグ */
 const isEditSvgName = ref(false)
 
 /** ピン挿入モード、マーカー挿入モードまたはスクロールモードのときtrueを返す。 */
 const isAnyMode = computed(() => {
-  return AddPath.isAddPathMode.value || AddPolyline.isAddPolylineMode.value ||  AddEventSpaceKey.isSpaceKeyPress.value
+  return isAddPathMode.value || isAddPolylineMode.value ||  isSpaceKeyPress.value
 })
 
 /** isEditSvgNameフラグをtrueに変更し、名前入力フォームにフォーカスする。編集ページ以外はリターンする。 */
 const editSvgName = (svg: Rect | Polyline) => {
-  if (!CommonUI.isEditPage.value) return
+  if (!isEditPage.value) return
   isEditSvgName.value = true
   nextTick(() => {
     document.getElementById(`edit-svg-form-${svg.id}`)?.focus()

@@ -24,7 +24,7 @@
       min-width="0"
       small
       text
-      @click="toggleIsGoogleMap(map)"
+      @click="toggleIsGoogleMap()"
     >
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">

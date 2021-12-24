@@ -93,7 +93,10 @@ export default class Members extends VuexModule {
 
     await $axios
       .$post(`/api/v1/plans/${plan.id}/members`, { member })
-      .then((member: Member) => PlansStore.addMember({ id: plan.id, member }))
+      .then((member: Member) => { 
+        PlansStore.addMember({ id: plan.id, member })
+        this.addMembersMutation(member)
+      })
       .catch(() => SnackbarStore.catchError())
       .finally(() => SnackbarStore.CRUDvisible({ model: '承認リクエスト', crud: 'create' }))
   }

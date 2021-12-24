@@ -12,26 +12,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, useContext, ref } from '@nuxtjs/composition-api'
+<script setup lang="ts">
+const dialog = ref(false)
 
-export default defineComponent({
-  setup() {
-    const { $device } = useContext()
-    const dialog = ref(false)
-
-    // アクセス時の１回のみダイアログを表示したいため、onMountedを使用しない
-    if (process.client && $device.isMobileOrTablet) {
-      window.addEventListener('load', () => {
-        dialog.value = true
-        setTimeout(() => {
-          dialog.value = false
-        }, 3000)
-      })
-    }
-    return {
-      dialog,
-    }
-  },
-})
+// アクセス時の１回のみダイアログを表示したいため、onMountedを使用しない
+if (process.client && useContext().$device.isMobileOrTablet) {
+  window.addEventListener('load', () => {
+    dialog.value = true
+    setTimeout(() => {
+      dialog.value = false
+    }, 3000)
+  }, { once: true })
+}
 </script>

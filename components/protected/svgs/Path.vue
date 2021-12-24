@@ -32,7 +32,7 @@ import {
 } from '@nuxtjs/composition-api'
 import { Path } from 'interface'
 import { SvgsStore, MembersStore } from '~/store'
-import CommonUI from '~/utils/ui/common'
+import { isEditPage } from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -46,7 +46,7 @@ export default defineComponent({
     const path = props.path as Path
 
     const deletePath = (id: number) => {
-      if (!CommonUI.isEditPage.value) return
+      if (!isEditPage.value) return
       SvgsStore.deleteSvg(id)
     }
 

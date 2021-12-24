@@ -30,32 +30,15 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { TodoListsStore } from '~/store'
-import TodoListAttach from '~/utils/helpers/todo-list-attach'
+import { attachTodoListStart, attachTodoListEnd } from '~/utils/helpers/todo-list-attach'
 
-export default defineComponent({
-  setup() {
-    return {
-      attachTodoListStart: () => TodoListAttach.attachTodoListStart(),
-      attachTodoListEnd: (e: DragEvent) => TodoListAttach.attachTodoListEnd(e),
-    }
-  },
+const todoLists = computed(() => TodoListsStore.todoLists)
 
-  computed: {
-    todoLists() {
-      return TodoListsStore.todoLists
-    },
-    selectedTodoListIndex: {
-      get() {
-        return TodoListsStore.selectedTodoListIndex
-      },
-      set(value) {
-        TodoListsStore.setSelectedTodoListIndex(value)
-      },
-    },
-  },
+const selectedTodoListIndex = computed({
+  get: () => TodoListsStore.selectedTodoListIndex,
+  set: (value) => TodoListsStore.setSelectedTodoListIndex(value)
 })
 </script>
 

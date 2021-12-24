@@ -33,18 +33,22 @@
           <Nuxt />
         </v-container>
       </v-main>
-    
+
       <Footer v-if="!isPlanIdPageAndLargeDevice" />
       <account-dialog />
 
       <mini-snackbar />
     </v-img>
-
   </v-app>
 </template>
 
 <script lang="ts">
-import { defineComponent, provide, ref, useRoute, computed, useContext } from '@nuxtjs/composition-api'
+export default {
+  middleware: ['authenticated'],
+}
+</script>
+
+<script setup lang="ts">
 import { AppBarFunc } from 'interface'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
 import AppBar from '~/components/protected/layout/app_ber/AppBar.vue'
@@ -53,60 +57,26 @@ import AccountDialog from '~/components/protected/layout/AccountDialog.vue'
 import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
 import { SnackbarStore, UserStore } from '~/store'
-import {
-  AppBarFuncKey,
-  AccountDialogKey,
-  DrawerKey,
-} from '~/types/injection-key'
+import { AppBarFuncKey, AccountDialogKey, DrawerKey } from '~/types/injection-key'
 
-export default defineComponent({
-  components: {
-    MaterialSnackbar,
-    AppBar,
-    // 圧迫感があるため一旦フッター削除
-    Footer,
-    AccountDialog,
-    Drawer,
-    MiniSnackbar
-  },
+const appBarFunc = ref<AppBarFunc | null>(null)
+provide(AppBarFuncKey, appBarFunc)
 
-  middleware: ['authenticated'],
+const accountDialog = ref(false)
+provide(AccountDialogKey, accountDialog)
 
-  setup() {
-    const fixed = false
+const drawer = ref(false)
+provide(DrawerKey, drawer)
 
-    const appBarFunc = ref<AppBarFunc | null>(null)
-    provide(AppBarFuncKey, appBarFunc)
-
-    const accountDialog = ref(false)
-    provide(AccountDialogKey, accountDialog)
-
-    const drawer = ref(false)
-    provide(DrawerKey, drawer)
-
-    const route = useRoute()
-    const { $vuetify } = useContext()
-    /** いずれかの計画idページかつデバイスが大きいときtrueを返す */
-    const isPlanIdPageAndLargeDevice = computed(() => {
-      return route.value.name!.startsWith('dashboard-plans-id') && $vuetify.breakpoint.lgAndUp
-    })
-
-    return {
-      fixed,
-      isPlanIdPageAndLargeDevice,
-      needTutorial: UserStore.needTutorial
-    }
-  },
-
-  computed: {
-    snackParams: {
-      get() {
-        return SnackbarStore.snackParams
-      },
-      set() {
-        SnackbarStore.hidden()
-      },
-    },
-  },
+/** いずれかの計画idページかつデバイスが大きいときtrueを返す */
+const isPlanIdPageAndLargeDevice = computed(() => {
+  return useRoute().value.name!.startsWith('dashboard-plans-id') && useContext().$vuetify.breakpoint.lgAndUp
 })
+
+const snackParams = computed({
+  get: () => SnackbarStore.snackParams,
+  set: () => SnackbarStore.hidden(),
+})
+
+const needTutorial = UserStore.needTutorial
 </script>

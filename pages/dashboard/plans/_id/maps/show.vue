@@ -30,39 +30,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
-import { PlansStore, MapsStore } from '~/store'
-
-export default defineComponent({
+export default {
   layout: 'protected',
 
   middleware: ['initialize-store'],
-
-  setup() {
-    const scrollBottom = () => {
-      scrollTo(0, 99999999999)
-    }
-
-    const scrollTop = () => {
-      scrollTo(0, 0)
-    }
-
-    return {
-      scrollBottom,
-      scrollTop,
-    }
-  },
-
-  computed: {
-    isPlanActive() {
-      return PlansStore.currentPlan?.active
-    },
-    hasActiveMap() {
-      return !!MapsStore.activeMap
-    },
-  },
-})
+}
 </script>
+
+<script setup lang="ts">
+import { PlansStore, MapsStore } from '~/store'
+const scrollBottom = () => {
+  scrollTo(0, 99999999999)
+}
+
+const scrollTop = () => {
+  scrollTo(0, 0)
+}
+
+const isPlanActive = computed(() => PlansStore.currentPlan?.active)
+
+const hasActiveMap = computed(() => !!MapsStore.activeMap)
+</script>
+
 <style scoped lang="sass">
 .scroll-icon
   position: absolute

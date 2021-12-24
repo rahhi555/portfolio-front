@@ -55,9 +55,7 @@ export default defineComponent({
     return {
       steps: ['計画作成', 'Todo作成', 'マップ作成', 'メンバー認証', '計画実行'],
       currentStep,
-      // 空文字だとエラーが発生するので空白を入れている
       isRunningTutorial: $tutorial.isRunningTutorial,
-      visible: ref(true),
     }
   },
 })

@@ -32,16 +32,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onUnmounted } from '@nuxtjs/composition-api'
+export default {
+  layout: 'protected',
+
+  middleware: ['initialize-store']
+}
+</script>
+
+<script setup lang="ts">
 import { MapsStore, PlansStore, MembersStore, TodoListsStore } from '~/store'
 import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
-export default defineComponent({
-  layout: 'protected',
-
-  middleware: ['initialize-store'],
-
-  setup() {
     const isPlanActive = computed(() => PlansStore.currentPlan?.active)
     const accept = computed(() => MembersStore.currentUserAccept)
 
@@ -52,12 +53,6 @@ export default defineComponent({
     onUnmounted(() => {
       TodoListsStore.setSelectedTodoListIndex(null)
     })
-    
-    return {
-      isPlanActive,
-      hasActiveMap: computed(() => !!MapsStore.activeMap),
-      accept,
-    }
-  },
-})
+
+    const hasActiveMap = computed(() => !!MapsStore.activeMap)
 </script>

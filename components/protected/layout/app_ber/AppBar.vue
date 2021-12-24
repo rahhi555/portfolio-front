@@ -25,42 +25,13 @@
   </v-app-bar>
 </template>
 
-<script lang="ts">
-import { defineComponent, useContext } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import GoHome from './AppBarGoHome.vue'
 import DrawerToggle from './AppBarDrawerToggle.vue'
 import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
-import { PlansStore } from '~/store'
-import common from '~/utils/ui/common'
+import { isPlanActive } from '~/utils/ui/common'
 
-export default defineComponent({
-  components: {
-    GoHome,
-    DrawerToggle,
-    Notifications,
-    Account,
-    Tab,
-  },
-
-  setup(){
-    return {
-      isPlanActive: common.isPlanActive,
-      isMobile: useContext().$device.isMobile
-    }
-  },
-
-  computed: {
-    name() {
-      const appbarName = PlansStore.currentPlan?.name
-      let routeName = this.$route.name as string
-
-      if (appbarName && routeName.includes('plans-id')) return appbarName
-
-      routeName = routeName.replace(/.*-/g, '')
-      return routeName.charAt(0).toUpperCase() + routeName.slice(1)
-    },
-  },
-})
+const isMobile = useContext().$device.isMobile
 </script>

@@ -34,12 +34,16 @@
       "@nuxtjs/dayjs",
       "@types/actioncable",
       "@types/google.maps",
-      "@types/jest"
+      "@types/jest",
+      "unplugin-vue2-script-setup/types"
     ]
   },
   "exclude": [
     "node_modules",
     ".nuxt",
     "dist"
-  ]
+  ],
+  "vueCompilerOptions": {
+    "experimentalCompatMode": 2
+  },
 }

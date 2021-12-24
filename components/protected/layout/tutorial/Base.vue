@@ -22,8 +22,8 @@
               <v-btn
                 text
                 @click="
-                  tutorialDialog = false
-                  isRunningTutorial = false
+                  tutorialDialog = false;
+                  isRunningTutorial = false;
                   indexPlans()
                 "
                 >No</v-btn
@@ -39,36 +39,27 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref, useContext } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { UserStore, PlansStore } from '~/store'
 
-export default defineComponent({
-  setup() {
-    const tutorialDialog = ref(false)
-    const { $tutorial } = useContext()
+const tutorialDialog = ref(false)
+const { $tutorial } = useContext()
 
-    const startTutorial = () => {
-      tutorialDialog.value = false
-      $tutorial.isRunningTutorial.value = true
-      PlansStore.setPlansMutation([])
-      $tutorial.initTutorial()
-    }
+const startTutorial = () => {
+  tutorialDialog.value = false
+  $tutorial.isRunningTutorial.value = true
+  PlansStore.setPlansMutation([])
+  $tutorial.initTutorial()
+}
 
-    onMounted(() => {
-      if (UserStore.needTutorial) {
-        tutorialDialog.value = true
-      }
-    })
-
-    return {
-      tutorialDialog,
-      startTutorial,
-      indexPlans: () => PlansStore.indexPlans(),
-      isRunningTutorial: $tutorial.isRunningTutorial
-    }
-  },
+onMounted(() => {
+  if (UserStore.needTutorial) {
+    tutorialDialog.value = true
+  }
 })
+
+const indexPlans = () => PlansStore.indexPlans()
+const isRunningTutorial = $tutorial.isRunningTutorial
 </script>
 
 <style scoped lang="sass">

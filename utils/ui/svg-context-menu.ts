@@ -1,22 +1,22 @@
 import { ref, nextTick } from '@nuxtjs/composition-api'
 import { SvgsStore } from '~/store'
+import { isEditPage } from '~/utils/ui/common'
 
-// --- コンテキストメニュー表示 ---
-const isShowMenu = ref(false)
-const position = { x: 0, y: 0 }
+/** コンテキストメニューが表示かどうか */
+export const isShowMenu = ref(false)
 
-export default {
-  showMenu(e: PointerEvent) {
-    isShowMenu.value = false
-    SvgsStore.setTargetId(e)
-    position.x = e.clientX
-    position.y = e.clientY
-    nextTick(() => {
-      isShowMenu.value = true
-    })
-  },
+/** コンテキストメニュー表示位置 */
+export const position = { x: 0, y: 0 }
 
-  isShowMenu,
+/** コンテキストメニュー表示 */
+export const showMenu = (e: PointerEvent) => {
+  if (!isEditPage.value) return
 
-  position
+  isShowMenu.value = false
+  SvgsStore.setTargetId(e)
+  position.x = e.clientX
+  position.y = e.clientY
+  nextTick(() => {
+    isShowMenu.value = true
+  })
 }
