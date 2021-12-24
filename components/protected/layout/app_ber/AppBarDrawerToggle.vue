@@ -4,7 +4,7 @@
     elevation="1"
     fab
     small
-    @click="drawer = !drawer"
+    @click="toggleDrawer"
   >
     <v-icon>
       mdi-format-list-bulleted
@@ -12,17 +12,11 @@
   </v-btn>
 </template>
 
-<script lang="ts">
-  import { defineComponent, inject } from '@nuxtjs/composition-api'
-  import { DrawerKey } from '~/types/injection-key'
+<script setup lang="ts">
+import { DrawerKey } from '~/types/injection-key'
 
-  export default defineComponent({
-    setup(){
-      const drawer = inject(DrawerKey)
-
-      return {
-        drawer
-      }
-    }
-  })
+const drawer = inject(DrawerKey)!
+const toggleDrawer = () => {
+  drawer.value = !drawer.value
+}
 </script>

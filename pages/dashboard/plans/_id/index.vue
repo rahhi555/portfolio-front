@@ -34,81 +34,70 @@
         <MapsHomeOverView />
       </v-col>
 
-    <v-col v-show="$vuetify.breakpoint.smAndUp" cols="12"  />
+      <v-col v-show="$vuetify.breakpoint.smAndUp" cols="12" />
 
       <v-col v-if="accept" data-tutorial="activate-plan" cols="6" sm="2">
-        <v-btn width="100%" color="secondary" @click="activatePlan"
-          >計画開始</v-btn
-        >
+        <v-btn width="100%" color="secondary" @click="activatePlan">計画開始</v-btn>
       </v-col>
     </template>
   </v-row>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, useContext } from '@nuxtjs/composition-api'
-import { PlansStore, TodoListsStore, MembersStore, TodoStatusesStore } from '~/store'
-
-export default defineComponent({
+export default {
   layout: 'protected',
 
   middleware: ['initialize-store'],
+}
+</script>
 
-  setup() {
-    const { $planChannelPeformMethods, $tutorial } = useContext()
+<script setup lang="ts">
+import { PlansStore, TodoListsStore, MembersStore, TodoStatusesStore } from '~/store'
 
-    const progressHash = computed(() => {
-      const todos = TodoListsStore.todoLists.flatMap(todoList => todoList.todos)
+const { $planChannelPeformMethods, $tutorial } = useContext()
 
-      // todoの総数
-      const allTodosLength = TodoStatusesStore.getAllTodoStatuses.length
+const progressHash = computed(() => {
+  const todos = TodoListsStore.todoLists.flatMap((todoList) => todoList.todos)
 
-      // ステータスがdoneであるtodoの総数
-      const doneTodosLength = TodoStatusesStore.getAllTodoStatuses.filter(todoStatus => {
-        return todoStatus.status === 'done'
-      }).length
+  // todoの総数
+  const allTodosLength = TodoStatusesStore.getAllTodoStatuses.length
 
-      // 進行状況を百分率で算出
-      const progressPercentage = Math.ceil(
-        (doneTodosLength / allTodosLength) * 100
-      )
+  // ステータスがdoneであるtodoの総数
+  const doneTodosLength = TodoStatusesStore.getAllTodoStatuses.filter((todoStatus) => {
+    return todoStatus.status === 'done'
+  }).length
 
-      const progressHash = {
-        todos,
-        allTodosLength,
-        doneTodosLength,
-        progressPercentage,
-      }
+  // 進行状況を百分率で算出
+  const progressPercentage = Math.ceil((doneTodosLength / allTodosLength) * 100)
 
-      return progressHash
-    })
+  const progressHash = {
+    todos,
+    allTodosLength,
+    doneTodosLength,
+    progressPercentage,
+  }
 
-    // 計画がアクティブかどうか
-    const active = computed(() => {
-      return PlansStore.currentPlan?.active
-    })
-
-    const activatePlan = () => {
-      if($tutorial.isRunningTutorial.value) return
-
-      $planChannelPeformMethods('activatePlan')
-    }
-
-    const inactivatePlan = () => {
-      if($tutorial.isRunningTutorial.value) return
-
-      $planChannelPeformMethods('inactivatePlan')
-    }
-
-    return {
-      progressHash,
-      active,
-      activatePlan,
-      inactivatePlan,
-      accept: computed(() => MembersStore.currentUserAccept)
-    }
-  },
+  return progressHash
 })
+
+// 計画がアクティブかどうか
+const active = computed(() => {
+  return PlansStore.currentPlan?.active
+})
+
+const activatePlan = () => {
+  if ($tutorial.isRunningTutorial.value) return
+
+  $planChannelPeformMethods('activatePlan')
+}
+
+const inactivatePlan = () => {
+  if ($tutorial.isRunningTutorial.value) return
+
+  $planChannelPeformMethods('inactivatePlan')
+}
+
+const accept = computed(() => MembersStore.currentUserAccept)
 </script>
 
 <style scoped lang="sass">

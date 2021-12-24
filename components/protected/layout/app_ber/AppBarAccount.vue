@@ -1,12 +1,5 @@
 <template>
-  <v-menu
-    bottom
-    left
-    min-width="200"
-    offset-y
-    origin="top right"
-    transition="scale-transition"
-  >
+  <v-menu bottom left min-width="200" offset-y origin="top right" transition="scale-transition">
     <template #activator="{ attrs, on }">
       <v-btn v-show="isNotMobile" data-cypress="logout" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
         <v-avatar>
@@ -17,7 +10,7 @@
     </template>
 
     <v-list :tile="false" flat nav class="list-font">
-      <div @click="accountDialog = true">
+      <div @click="displayProfile">
         <app-bar-item>
           <v-list-item-title v-text="'プロフィール'" />
         </app-bar-item>
@@ -38,50 +31,41 @@
   </v-menu>
 </template>
 
-<script lang="ts">
-import { defineComponent, useContext, inject, useRouter, useRoute } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { AccountDialogKey } from '~/types/injection-key'
 import { UserStore } from '~/store'
 
-export default defineComponent({
-  setup() {
-    const { $auth } = useContext()
+/** ログアウト */
+const { $auth } = useContext()
+const logout = () => {
+  $auth.logout()
+}
 
-    const accountDialog = inject(AccountDialogKey)
+/** プロフィール画面表示 */
+const accountDialog = inject(AccountDialogKey)!
+const displayProfile = () => {
+  accountDialog.value = true
+}
 
-    const logout = () => {
-      $auth.logout()
-    }
+/** チュートリアル開始処理 */
+const router = useRouter()
+const route = useRoute()
+const confirmStartTutorial = async () => {
+  if (confirm('チュートリアルを開始しますか？')) {
+    // 'needTutorial'キーを持つクッキーを保存し、store/user.tsのneedTutorialゲッターで取得および削除する
+    document.cookie = 'needTutorial=true;path=/'
 
-    const router = useRouter()
-    const route = useRoute()
-    const confirmStartTutorial = async () => {
-      if(confirm('チュートリアルを開始しますか？')) {
-        // 'needTutorial'キーを持つクッキーを保存し、store/user.tsのneedTutorialゲッターで取得および削除する
-        document.cookie = 'needTutorial=true;path=/'
-
-        // 現在のページが'/dashboard/plans'ならすぐリロード、そうでなければ'/dashboard/plans'にページ遷移させた後リロード
-        if(route.value.fullPath === '/dashboard/plans') {
-          router.go(0)
-        } else {
-          await router.replace('/dashboard/plans')
-          router.go(0)
-        }
-      }
-    }
-
-    return {
-      logout,
-      accountDialog,
-      isNotMobile: !useContext().$device.isMobile,
-      confirmStartTutorial
-    }
-  },
-
-  computed: {
-    currentUser() {
-      return UserStore.currentUser
+    // 現在のページが'/dashboard/plans'ならすぐリロード、そうでなければ'/dashboard/plans'にページ遷移させた後リロード
+    if (route.value.fullPath === '/dashboard/plans') {
+      router.go(0)
+    } else {
+      await router.replace('/dashboard/plans')
+      router.go(0)
     }
   }
-})
+}
+
+const currentUser = computed(() => UserStore.currentUser)
+
+const isNotMobile = !useContext().$device.isMobile
 </script>

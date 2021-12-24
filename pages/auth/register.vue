@@ -12,23 +12,13 @@
                   <v-col v-for="(section, i) in sections" :key="i" cols="12">
                     <v-list-item three-line>
                       <v-list-item-icon class="mr-4 mt-5 mt-md-4">
-                        <v-icon
-                          :color="section.iconColor"
-                          :large="$vuetify.breakpoint.mdAndUp"
-                          v-text="section.icon"
-                        />
+                        <v-icon :color="section.iconColor" :large="$vuetify.breakpoint.mdAndUp" v-text="section.icon" />
                       </v-list-item-icon>
 
                       <v-list-item-content>
-                        <v-list-item-title
-                          class="text-h4 mb-4 mt-3"
-                          v-text="section.title"
-                        />
+                        <v-list-item-title class="text-h4 mb-4 mt-3" v-text="section.title" />
 
-                        <v-list-item-subtitle
-                          class="text--secondary"
-                          v-text="section.text"
-                        />
+                        <v-list-item-subtitle class="text--secondary" v-text="section.text" />
                       </v-list-item-content>
                     </v-list-item>
                   </v-col>
@@ -37,20 +27,11 @@
 
               <v-col cols="12" md="6">
                 <div class="text-center">
-                  <v-btn
-                    class="my-2 mr-1"
-                    dark
-                    depressed
-                    @click="signInAnonymouly"
-                  >
-                    かんたんログイン
-                  </v-btn>
+                  <v-btn class="my-2 mr-1" dark depressed @click="signInAnonymouly"> かんたんログイン </v-btn>
 
                   <div class="my-2" />
 
-                  <div class="text-center text-h4">
-                    or be Email and Password
-                  </div>
+                  <div class="text-center text-h4">or be Email and Password</div>
 
                   <register-form
                     :name.sync="registerValues.name"
@@ -70,72 +51,46 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  useContext
-} from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import RegisterForm from '~/components/default/RegisterForm.vue'
 
-export default defineComponent({
-  components: {
-    RegisterForm,
+const { $auth } = useContext()
+
+const sections = [
+  {
+    icon: 'mdi-map',
+    iconColor: 'primary',
+    title: '簡単に平面図を作成',
+    text: '使用する図形は長方形のみ！細かい設定が無くシンプルなので、サクッと平面図を作成できます。',
   },
-  setup() {
-    const { $auth } = useContext()
-    
-    const sections = [
-      {
-        icon: 'mdi-map',
-        iconColor: 'primary',
-        title: '簡単に平面図を作成',
-        text: '使用する図形は長方形のみ！細かい設定が無くシンプルなので、サクッと平面図を作成できます。',
-      },
-      {
-        icon: 'mdi-calendar-check',
-        iconColor: 'secondary',
-        title: '平面図とタスクをリンク',
-        text: '作成した平面図にタスクを設定することができ、進行状況を視覚的に共有することができます。',
-      },
-      {
-        icon: 'mdi-comment-flash',
-        iconColor: 'cyan',
-        title: '高いリアルタイム性',
-        text: 'タスクはリアルタイムに通知され、さらにピン立てやマーカーを引くことも可能です。',
-      },
-    ]
-
-    const registerValues = reactive({
-      name: '',
-      email: '',
-      password: '',
-      passwordConfirm: '',
-    })
-
-    const emailAndPasswordRegister = () => {
-      $auth.emailAndPasswordRegister(registerValues)
-    }
-
-    const signInAnonymouly = () => {
-      $auth.signInAnonymouly()
-    }
-
-    const isShowPassword = false
-    const isShowDialog = false
-    const isCheckToS = false
-
-    return {
-      sections,
-      registerValues,
-      emailAndPasswordRegister,
-      signInAnonymouly,
-      isShowPassword,
-      isShowDialog,
-      isCheckToS,
-    }
+  {
+    icon: 'mdi-calendar-check',
+    iconColor: 'secondary',
+    title: '平面図とタスクをリンク',
+    text: '作成した平面図にタスクを設定することができ、進行状況を視覚的に共有することができます。',
   },
+  {
+    icon: 'mdi-comment-flash',
+    iconColor: 'cyan',
+    title: '高いリアルタイム性',
+    text: 'タスクはリアルタイムに通知され、さらにピン立てやマーカーを引くことも可能です。',
+  },
+]
+
+const registerValues = reactive({
+  name: '',
+  email: '',
+  password: '',
+  passwordConfirm: '',
 })
+
+const emailAndPasswordRegister = () => {
+  $auth.emailAndPasswordRegister(registerValues)
+}
+
+const signInAnonymouly = () => {
+  $auth.signInAnonymouly()
+}
 </script>
 
 <style scoped lang="sass">

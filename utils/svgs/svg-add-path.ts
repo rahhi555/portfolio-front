@@ -2,7 +2,7 @@ import { ref } from '@nuxtjs/composition-api'
 import svgViewbox from './svg-viewbox'
 import { MapsStore, SvgsStore, UserStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
-import SpaceKey from '~/utils/helpers/add-event-space-press'
+import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
 import CommonUI from '~/utils/ui/common'
 
 // Path挿入モード判定
@@ -58,7 +58,7 @@ export default {
 
   // showページ、editページによって処理を切り替える
   addPath: (e: PointerEvent) => {
-    if (SpaceKey.isSpaceKeyPress.value || !isAddPathMode.value) return
+    if (isSpaceKeyPress.value || !isAddPathMode.value) return
     if (CommonUI.isEditPage.value) {
       addStaticPath(e)
     } else {

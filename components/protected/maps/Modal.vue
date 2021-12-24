@@ -2,20 +2,20 @@
   <v-dialog v-model="dialog" max-width="1000px" class="pa-4">
     <v-container>
       <v-row>
-        <v-col :md="isMyPlan ? 7 : 12">
+        <v-col md="7">
           <v-simple-table>
             <template #default>
               <thead>
                 <tr>
                   <th width="70%" class="text-left">マップ名</th>
-                  <th v-if="isMyPlan" width="30%"  class="text-left">Action</th>
+                  <th width="30%" class="text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="map in maps" :key="map.name">
                   <td>
                     {{ map.name }}
-                    <v-chip x-small>{{map.address ? map.address : 'アドレスなし'}}</v-chip>
+                    <v-chip x-small>{{ map.address ? map.address : 'アドレスなし' }}</v-chip>
                   </td>
                   <td>
                     <MapsModalButton :map="map"></MapsModalButton>
@@ -26,7 +26,7 @@
           </v-simple-table>
         </v-col>
 
-        <v-col v-if="isMyPlan" md="5">
+        <v-col md="5">
           <v-card>
             <v-card-title>
               <span class="text-h5">マップ作成</span>
@@ -38,7 +38,7 @@
                   v-slot="{ errors }"
                   rules="max:50|required"
                   name="名前"
-                  data-tutorial='create-map-input'
+                  data-tutorial="create-map-input"
                 >
                   <v-text-field
                     v-model="params.name"
@@ -52,7 +52,7 @@
                   v-slot="{ errors }"
                   rules="required"
                   name="GoogleMap使用"
-                  data-tutorial='create-map-check'
+                  data-tutorial="create-map-check"
                 >
                   <v-checkbox
                     v-model="params.isGoogleMap"
@@ -64,9 +64,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="dialog = false">
-                  Close
-                </v-btn>
+                <v-btn color="blue darken-1" text @click="closeDialog"> Close </v-btn>
                 <v-btn
                   data-tutorial="create-map-submit"
                   color="blue darken-1"
@@ -85,53 +83,34 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  inject,
-  useRoute,
-  computed,
-  reactive,
-  useContext
-} from '@nuxtjs/composition-api'
-import { MapsStore, UserStore, PlansStore } from '~/store'
+<script setup lang="ts">
+import { MapsStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
 
-export default defineComponent({
-  setup() {
-    const route = useRoute()
-    const params = reactive({
-      name: '',
-      isGoogleMap: false
-    })
-
-    const dialog = inject(AppBarDialogKey)!
-
-    const { $tutorial } = useContext()
-    const createMap = async () => {
-      dialog.value = false
-      // チュートリアル中ならリターン
-      if($tutorial.isRunningTutorial.value) return
-
-      await MapsStore.createMap({
-        planId: route.value.params.id,
-        name: params.name,
-        isGoogleMap: params.isGoogleMap
-      })
-      params.name = ''
-      params.isGoogleMap = false
-      MapsStore.setActiveIndex(MapsStore.maps.length - 1)
-    }
-
-    return {
-      params,
-      createMap,
-      dialog,
-      maps: computed(() => MapsStore.maps),
-      isMyPlan: computed(() => {
-        return PlansStore.currentPlan?.userId === UserStore.currentUser.id
-      }),
-    }
-  },
+const route = useRoute()
+const params = reactive({
+  name: '',
+  isGoogleMap: false,
 })
+
+const dialog = inject(AppBarDialogKey)!
+const closeDialog = () => { dialog.value = false }
+
+const { $tutorial } = useContext()
+const createMap = async () => {
+  dialog.value = false
+  // チュートリアル中ならリターン
+  if ($tutorial.isRunningTutorial.value) return
+
+  await MapsStore.createMap({
+    planId: route.value.params.id,
+    name: params.name,
+    isGoogleMap: params.isGoogleMap,
+  })
+  params.name = ''
+  params.isGoogleMap = false
+  MapsStore.setActiveIndex(MapsStore.maps.length - 1)
+}
+
+const maps = computed(() => MapsStore.maps)
 </script>

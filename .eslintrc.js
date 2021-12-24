@@ -8,7 +8,8 @@ module.exports = {
     '@nuxtjs/eslint-config-typescript',
     'plugin:nuxt/recommended',
     'prettier',
-    'plugin:cypress/recommended'
+    'plugin:cypress/recommended',
+    'vue-global-api'
   ],
   plugins: [
   ],

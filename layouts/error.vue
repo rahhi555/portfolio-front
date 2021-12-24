@@ -1,58 +1,61 @@
 <template>
-  <div style="margin: auto; text-align: center;">
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/dashboard/plans">
-      Home page
-    </NuxtLink>
+  <div style="margin: auto; text-align: center">
+    <h1 v-if="error.statusCode === 404">ページが存在しません</h1>
+    <h1 v-else>エラーが発生しました</h1>
+    <p @click="replaceLocation" class="error-link"> Home page </p>
   </div>
 </template>
 
-<script>
-import { defineComponent, inject, onUnmounted, onMounted } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { HasErrorKey } from '~/types/injection-key'
+import { UserStore } from '~/store'
 
-export default defineComponent({
+const hasError = inject(HasErrorKey)!
+
+const router = useRouter()
+const replaceLocation = () => {
+  if(UserStore.isAuthenticated) {
+    router.replace('/dashboard/plans')
+  } else {
+    router.replace('/')
+  }
+}
+
+onMounted(() => {
+  hasError.value = true
+})
+
+onUnmounted(() => {
+  hasError.value = false
+})
+</script>
+
+<script lang="ts">
+export default {
   props: {
     error: {
-      type: Object,
+      type: Object as () =>{ statusCode: number },
       default: null
     }
   },
 
-  setup() {
-    const hasError = inject(HasErrorKey)
-
-    onMounted(() => {
-      hasError.value = true
-    })
-
-    onUnmounted(() => {
-      hasError.value = false
-    })
-
-    return {
-      pageNotFound: 'ページが存在しません',
-      otherError: 'エラーが発生しました'
-    }
-  },
-
   head () {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
-    return {
-      title
+    const title: string =
+    // @ts-ignore
+      this.error.statusCode === 404 ? 'ページが存在しません' : 'エラーが発生しました'
+    return { title }
     }
-  }
-})
+}
 </script>
 
 <style scoped>
 h1 {
   font-size: 20px;
+}
+
+.error-link {
+  text-decoration: underline;
+  color: #e91e63;
+  cursor: pointer;
 }
 </style>

@@ -44,7 +44,7 @@ export default class Plans extends VuexModule {
         title: myPlan.name,
         link: `/dashboard/plans/${myPlan.id}/members`
       }
-    }).filter(Boolean)
+    }).filter(Boolean) as { title: string, link: string }[]
   }
 
   @Mutation

@@ -8,8 +8,8 @@
               <thead>
                 <tr>
                   <th width="30%" class="text-left">ロール名</th>
-                  <th width="45%"  class="text-left">説明</th>
-                  <th v-if="currentUserAccept" width="25%"  class="text-left">Action</th>
+                  <th width="45%" class="text-left">説明</th>
+                  <th v-if="currentUserAccept" width="25%" class="text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -33,11 +33,7 @@
 
             <ValidationObserver v-slot="{ invalid }">
               <v-card-text>
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  rules="max:50|required"
-                  name="名前"
-                >
+                <ValidationProvider v-slot="{ errors }" rules="max:50|required" name="名前">
                   <v-text-field
                     v-model="roleParams.name"
                     label="ロール名"
@@ -46,24 +42,12 @@
                   ></v-text-field>
                 </ValidationProvider>
 
-                <v-textarea
-                  v-model="roleParams.description"
-                  label="説明"
-                ></v-textarea>
+                <v-textarea v-model="roleParams.description" label="説明"></v-textarea>
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="dialog = false">
-                  Close
-                </v-btn>
-                <v-btn
-                  color="blue darken-1"
-                  :disabled="invalid"
-                  text
-                  @click="createRole"
-                >
-                  Create
-                </v-btn>
+                <v-btn color="blue darken-1" text @click="closeDialog"> Close </v-btn>
+                <v-btn color="blue darken-1" :disabled="invalid" text @click="createRole"> Create </v-btn>
               </v-card-actions>
             </ValidationObserver>
           </v-card>
@@ -73,46 +57,32 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  inject,
-  ref,
-  computed,
-} from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { RolesStore, PlansStore, MembersStore } from '~/store'
 import { AppBarDialogKey } from '~/types/injection-key'
 
-export default defineComponent({
-  setup() {
-    const roleParams = ref({
-      name: '',
-      description: '',
-    })
-
-    const createRole = async () => {
-      const planId = PlansStore.currentPlan?.id
-      const { name, description } = roleParams.value
-      await RolesStore.createRole({
-        planId,
-        name,
-        description,
-      })
-      roleParams.value = { name: '', description: '' }
-    }
-
-    return {
-      roleParams,
-      createRole,
-      dialog: inject(AppBarDialogKey),
-      roles: computed(() => RolesStore.roles),
-    }
-  },
-
-  computed: {
-    currentUserAccept() {
-      return MembersStore.currentUserAccept
-    }
-  }
+const roleParams = ref({
+  name: '',
+  description: '',
 })
+
+const createRole = async () => {
+  const planId = PlansStore.currentPlan?.id
+  const { name, description } = roleParams.value
+  await RolesStore.createRole({
+    planId,
+    name,
+    description,
+  })
+  roleParams.value = { name: '', description: '' }
+}
+
+const dialog = inject(AppBarDialogKey)!
+const closeDialog = () => {
+  dialog.value = false
+}
+
+const roles = computed(() => RolesStore.roles)
+
+const currentUserAccept = computed(() => MembersStore.currentUserAccept)
 </script>

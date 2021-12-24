@@ -3,14 +3,7 @@
     <v-row justify="center">
       <v-col cols="12">
         <v-slide-y-transition appear>
-          <MaterialCard
-            light
-            max-width="350"
-            rounded
-            class="mx-auto"
-            color="accent"
-            full-header
-          >
+          <MaterialCard light max-width="350" rounded class="mx-auto" color="accent" full-header>
             <template #heading>
               <div class="text-center pa-5">
                 <div class="text-h4 font-weight-bold white--text">Login</div>
@@ -25,11 +18,7 @@
               <v-card-text class="text-center">
                 <div class="text-center font-weight-light">Or Be Classical</div>
 
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  rules="email|required"
-                  name="メールアドレス"
-                >
+                <ValidationProvider v-slot="{ errors }" rules="email|required" name="メールアドレス">
                   <v-text-field
                     v-model="authValues.email"
                     class="email-form"
@@ -37,18 +26,12 @@
                     placeholder="Email..."
                     :error-messages="errors[0]"
                     :prepend-icon="
-                      errors.length == 0 && authValues.email.length >= 1
-                        ? 'mdi-email-outline'
-                        : 'mdi-email-open'
+                      errors.length == 0 && authValues.email.length >= 1 ? 'mdi-email-outline' : 'mdi-email-open'
                     "
                   />
                 </ValidationProvider>
 
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  rules="min:8|required"
-                  name="パスワード"
-                >
+                <ValidationProvider v-slot="{ errors }" rules="min:8|required" name="パスワード">
                   <v-text-field
                     v-model="authValues.password"
                     class="mb-8 password-form"
@@ -56,9 +39,7 @@
                     placeholder="Password..."
                     :error-messages="errors[0]"
                     :prepend-icon="
-                      errors.length == 0 && authValues.password.length >= 1
-                        ? 'mdi-lock-outline'
-                        : 'mdi-lock-off'
+                      errors.length == 0 && authValues.password.length >= 1 ? 'mdi-lock-outline' : 'mdi-lock-off'
                     "
                     :append-icon="isShowPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     :type="isShowPassword ? 'text' : 'password'"
@@ -82,15 +63,8 @@
 
                 <v-dialog v-model="isVisiblePasswordResetModal" max-width="500">
                   <template #activator="{ on, attrs }">
-                    <v-chip
-                      class="my-2"
-                      small
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      <v-icon left>
-                        mdi-information-outline
-                      </v-icon>
+                    <v-chip class="my-2" small v-bind="attrs" v-on="on">
+                      <v-icon left> mdi-information-outline </v-icon>
                       パスワードを忘れた方
                     </v-chip>
                   </template>
@@ -113,13 +87,7 @@
                         />
                       </v-form>
 
-                      <v-btn
-                        color="accent"
-                        min-width="80"
-                        @click="sendPasswordResetEmail"
-                      >
-                        送信
-                      </v-btn>
+                      <v-btn color="accent" min-width="80" @click="sendPasswordResetEmail"> 送信 </v-btn>
                     </v-card-text>
                   </material-card>
                 </v-dialog>
@@ -132,52 +100,32 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  useContext,
-  ref,
-} from '@nuxtjs/composition-api'
+<script setup lang="ts">
+const { $auth } = useContext()
 
-export default defineComponent({
-  setup() {
-    const { $auth } = useContext()
-
-    const authValues = reactive({
-      email: '',
-      password: '',
-    })
-
-    const isShowPassword = false
-
-    const emailAndPasswordLogin = (): void => {
-      $auth.emailAndPasswordLogin(authValues)
-    }
-
-    const googleLogin = (): void => {
-      $auth.googleLogin()
-    }
-
-    const isVisiblePasswordResetModal = ref(false)
-    const passwordResetEmail = ref('')
-    const sendPasswordResetEmail = () => {
-      if (!confirm('メールを送信してもよろしいですか？')) return
-
-      isVisiblePasswordResetModal.value = false
-      $auth.sendPasswordResetEmail(passwordResetEmail.value)
-      passwordResetEmail.value = ''
-    }
-
-    return {
-      authValues,
-      isShowPassword,
-      emailAndPasswordLogin,
-      googleLogin,
-      isVisiblePasswordResetModal,
-      sendPasswordResetEmail,
-      passwordResetEmail,
-    }
-  },
+const authValues = reactive({
+  email: '',
+  password: '',
 })
+
+const isShowPassword = false
+
+const emailAndPasswordLogin = (): void => {
+  $auth.emailAndPasswordLogin(authValues)
+}
+
+const googleLogin = (): void => {
+  $auth.googleLogin()
+}
+
+const isVisiblePasswordResetModal = ref(false)
+const passwordResetEmail = ref('')
+const sendPasswordResetEmail = () => {
+  if (!confirm('メールを送信してもよろしいですか？')) return
+
+  isVisiblePasswordResetModal.value = false
+  $auth.sendPasswordResetEmail(passwordResetEmail.value)
+  passwordResetEmail.value = ''
+}
+const router = useRouter()
 </script>

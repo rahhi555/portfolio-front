@@ -1,13 +1,13 @@
 import { watchEffect, reactive, onMounted, computed } from '@nuxtjs/composition-api'
-import SpaceKey from '~/utils/helpers/add-event-space-press'
+import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
 import Path from '~/utils/svgs/svg-add-path'
-import Polyline from '~/utils/svgs/svg-add-polyline'
+import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
 import { MapsStore } from '~/store'
 
 const modes = reactive({
-  isSpaceKeyPress: SpaceKey.isSpaceKeyPress,
+  isSpaceKeyPress: isSpaceKeyPress,
   isPathMode: Path.isAddPathMode,
-  isPolylineMode: Polyline.isAddPolylineMode,
+  isPolylineMode: isAddPolylineMode,
 })
 
 const isSomeTrueModes = computed(() => {

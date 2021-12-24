@@ -4,9 +4,7 @@
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-btn :disabled="isGoogleMapEditMode" data-tutorial="add-rect" @click="addRect">
-            <v-icon large v-bind="attrs" v-on="on"
-              >mdi-rectangle-outline</v-icon
-            >
+            <v-icon large v-bind="attrs" v-on="on">mdi-rectangle-outline</v-icon>
           </v-btn>
         </template>
         <span>四角形</span>
@@ -32,76 +30,64 @@
     </v-btn-toggle>
 
     <v-row v-if="enabledGoogleMap" align="center" class="ml-4" data-tutorial="change-google-map-mode">
-      <v-switch
-        v-model="isGoogleMapEditMode"
-      ></v-switch>
-      <span :class="['switch-text',{'active-mode': !isGoogleMapEditMode}]">ミニマップ</span>
+      <v-switch v-model="isGoogleMapEditMode"></v-switch>
+      <span :class="['switch-text', { 'active-mode': !isGoogleMapEditMode }]">ミニマップ</span>
       <span class="switch-text">/</span>
-      <span :class="['switch-text',{'active-mode': isGoogleMapEditMode}]">グーグルマップ</span>
+      <span :class="['switch-text', { 'active-mode': isGoogleMapEditMode }]">グーグルマップ</span>
     </v-row>
   </v-row>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch, useContext, computed } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { MapsStore, SvgsStore } from '~/store'
 import { SvgParams } from '~/store/modules/svgs'
 import Path from '~/utils/svgs/svg-add-path'
-import Polyline from '~/utils/svgs/svg-add-polyline'
+import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
 
-export default defineComponent({
-  setup() {
-    const selected = ref<number | undefined>(undefined)
-    watch(selected, () => {
-      switch (selected.value) {
-        case 0:
-          selected.value = undefined
-          Path.isAddPathMode.value = false
-          Polyline.isAddPolylineMode.value = false
-          break
-        case 1:
-          Path.isAddPathMode.value = true
-          Polyline.isAddPolylineMode.value = false
-          break
-        case 2:
-          Path.isAddPathMode.value = false
-          Polyline.isAddPolylineMode.value = true
-          break
-        default:
-          Path.isAddPathMode.value = false
-          Polyline.isAddPolylineMode.value = false
-          break
-      }
-    })
-
-    const { $googleMap, $tutorial } = useContext()
-
-    const addRect = () => {
-      if($tutorial.isRunningTutorial.value) return
-      
-      const rect: SvgParams = {
-        type: 'Rect',
-        x: 0,
-        y: 0,
-        width: 100,
-        height: 100,
-        name: 'new Rect',
-      }
-      SvgsStore.addSvg(rect)
-    }
-
-    const enabledGoogleMap = computed(() => {
-      return !!MapsStore.activeMap && MapsStore.activeMap.isGoogleMap
-    })
-
-    return {
-      addRect,
-      selected,
-      isGoogleMapEditMode: $googleMap.isGoogleMapEditMode,
-      enabledGoogleMap,
-    }
-  },
+const selected = ref<number | undefined>(undefined)
+watch(selected, () => {
+  switch (selected.value) {
+    case 0:
+      selected.value = undefined
+      Path.isAddPathMode.value = false
+      isAddPolylineMode.value = false
+      break
+    case 1:
+      Path.isAddPathMode.value = true
+      isAddPolylineMode.value = false
+      break
+    case 2:
+      Path.isAddPathMode.value = false
+      isAddPolylineMode.value = true
+      break
+    default:
+      Path.isAddPathMode.value = false
+      isAddPolylineMode.value = false
+      break
+  }
 })
+
+const { $googleMap, $tutorial } = useContext()
+
+const addRect = () => {
+  if ($tutorial.isRunningTutorial.value) return
+
+  const rect: SvgParams = {
+    type: 'Rect',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    name: 'new Rect',
+  }
+  SvgsStore.addSvg(rect)
+}
+
+const enabledGoogleMap = computed(() => {
+  return !!MapsStore.activeMap && MapsStore.activeMap.isGoogleMap
+})
+
+const isGoogleMapEditMode = $googleMap.isGoogleMapEditMode
 </script>
 
 <style scoped lang="sass">

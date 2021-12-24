@@ -12,36 +12,28 @@
     <TodoListsCreateModal />
   </v-row>
 
-  <div v-else class="ma-2" style="color: white">
-    計画実行中は編集できません
-  </div>
+  <div v-else class="ma-2" style="color: white">計画実行中は編集できません</div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onUnmounted } from '@nuxtjs/composition-api'
-import { MembersStore, PlansStore, TodoListsStore } from '~/store'
-import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
-
-export default defineComponent({
+export default {
   layout: 'protected',
 
   middleware: ['initialize-store'],
+}
+</script>
 
-  setup(){
-    const isPlanActive = computed(() => PlansStore.currentPlan?.active)
-    const accept = computed(() => MembersStore.currentUserAccept)
-    if(!isPlanActive.value && accept.value) {
-      setAppBarTabDialog('Todoリスト新規作成')
-    }
+<script setup lang="ts">
+import { MembersStore, PlansStore, TodoListsStore } from '~/store'
+import setAppBarTabDialog from '~/utils/ui/app-bar-dialog'
 
-    onUnmounted(() => {
-      TodoListsStore.setSelectedTodoListIndex(null)
-    })
+const isPlanActive = computed(() => PlansStore.currentPlan?.active)
+const accept = computed(() => MembersStore.currentUserAccept)
+if (!isPlanActive.value && accept.value) {
+  setAppBarTabDialog('Todoリスト新規作成')
+}
 
-    return {
-      isPlanActive,
-      accept
-    }
-  },
+onUnmounted(() => {
+  TodoListsStore.setSelectedTodoListIndex(null)
 })
 </script>

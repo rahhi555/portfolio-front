@@ -7,16 +7,13 @@ export default {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { name: 'format-detection', content: 'telephone=no' },
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [
-  ],
+  css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
@@ -30,20 +27,19 @@ export default {
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: {
-    dirs: [
-      '~/components',
-      '~/components/protected'
-    ]
+    dirs: ['~/components', '~/components/protected'],
   },
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/typescript
-    '@nuxt/typescript-build',
+    ['@nuxt/typescript-build', { typeCheck: false }],
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
     '@nuxtjs/composition-api/module',
+    'unplugin-vue2-script-setup/nuxt',
     '@nuxtjs/device',
+    ['unplugin-auto-import/nuxt', { imports: ['@nuxtjs/composition-api'] }],
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -53,7 +49,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/dayjs',
-    'nuxt-webfontloader'
+    'nuxt-webfontloader',
   ],
 
   dayjs: {
@@ -70,8 +66,8 @@ export default {
 
   webfontloader: {
     google: {
-      families: ['Domine', 'Noto+Sans+JP:wght@300'] 
-    }
+      families: ['Domine', 'Noto+Sans+JP:wght@300'],
+    },
   },
 
   publicRuntimeConfig: {
@@ -86,31 +82,31 @@ export default {
       NO_ATTACH_COLOR: 'rgba(225,222,227,0.5)',
       TODO_COLOR: 'rgba(127,124,128,0.5)',
       DOING_COLOR: 'rgba(212,252,172,0.5)',
-      DONE_COLOR: 'rgba(82,245,54,0.6)'
+      DONE_COLOR: 'rgba(82,245,54,0.6)',
     },
   },
 
   privateRuntimeConfig: {
     axios: {
-      baseURL: process.env.BASE_URL
+      baseURL: process.env.BASE_URL,
     },
-  }, 
+  },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      name: "svg-portfolio",
-      title: "svg-portfolio",
+      name: 'svg-portfolio',
+      title: 'svg-portfolio',
       'og:title': 'svg-portfolio',
       description: 'svgを使用したポートフォリオです。',
       'og:description': 'svgを使用したポートフォリオです。',
       lang: 'ja',
-      theme_color: "#529b58",
-      background_color: "#bde0c0",
-      display: "standalone",
-      scope: "/",
-      start_url: "/"
-    }
+      theme_color: '#529b58',
+      background_color: '#bde0c0',
+      display: 'standalone',
+      scope: '/',
+      start_url: '/',
+    },
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
@@ -129,28 +125,23 @@ export default {
           success: '#4CAF50',
           warning: '#FB8C00',
           error: '#FF5252',
-        }
-      }
-    }
+        },
+      },
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: [
-      "vee-validate/dist/rules",
-    ],
+    transpile: ['vee-validate/dist/rules'],
     filenames: {
-      app: ({ isDev }) => isDev ? '[name].[hash].js' : '[chunkhash].js',
-      chunk: ({ isDev }) => isDev ? '[name].[hash].js' : '[chunkhash].js'
-    }
+      app: ({ isDev }) => (isDev ? '[name].[hash].js' : '[chunkhash].js'),
+      chunk: ({ isDev }) => (isDev ? '[name].[hash].js' : '[chunkhash].js'),
+    },
   },
 
-  serverMiddleware: [
-    { path: '/server', handler: '~/server' }
-  ],
+  serverMiddleware: [{ path: '/server', handler: '~/server' }],
 
   loading: '~/components/Loading.vue',
-
 
   // 存在しないページの場合ダッシュボードにリダイレクトする
   // router: {

@@ -16,21 +16,21 @@
       xmlns="http://www.w3.org/2000/svg"
       style="border: solid 2px black"
       @pointerdown.left="
-        scrollBegin($event)
-        addPath($event)
-        addPolylineStart($event)
+        scrollBegin($event);
+        addPath($event);
+        addPolylineStart($event);
       "
       @pointermove="
-        scrollMiddle($event)
-        dragMiddle($event)
-        resizeMiddle($event)
-        addPolylineMiddle($event)
+        scrollMiddle($event);
+        dragMiddle($event);
+        resizeMiddle($event);
+        addPolylineMiddle($event);
       "
       @pointerup="
-        scrollEnd()
-        dragStop()
-        resizeStop()
-        addPolylineStop()
+        scrollEnd();
+        dragStop();
+        resizeStop();
+        addPolylineStop();
       "
       @wheel.prevent="zoomInOut"
     >
@@ -38,20 +38,14 @@
 
       <SvgsPath v-for="path in paths" :key="path.id" :path="path"></SvgsPath>
 
-      <SvgsPolyline
-        v-for="polyline in polylines"
-        :key="polyline.id"
-        :polyline="polyline"
-      ></SvgsPolyline>
+      <SvgsPolyline v-for="polyline in polylines" :key="polyline.id" :polyline="polyline"></SvgsPolyline>
     </svg>
 
     <slot></slot>
 
     <v-tooltip v-if="!isGoogleMapEditMode && activeMapDisabledGoogleMap" top>
       <template #activator="{ on, attrs }">
-        <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on"
-          >mdi-magnify-remove-outline</v-icon
-        >
+        <v-icon class="zoom-chip" large v-bind="attrs" @click="reset" v-on="on">mdi-magnify-remove-outline</v-icon>
       </template>
       <span>表示リセット</span>
     </v-tooltip>
@@ -59,9 +53,7 @@
     <client-only>
       <v-tooltip v-if="!isGoogleMapEditMode && isEditPage" top>
         <template #activator="{ on, attrs }">
-          <v-icon class="save-icon" large v-bind="attrs" @click="save" v-on="on"
-            >mdi-content-save</v-icon
-          >
+          <v-icon class="save-icon" large v-bind="attrs" @click="save" v-on="on">mdi-content-save</v-icon>
         </template>
         <span>セーブ</span>
       </v-tooltip>
@@ -71,112 +63,94 @@
   </v-sheet>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-  computed,
-  watch,
-  useContext,
-  onUnmounted
-} from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { debounce } from 'mabiki'
 import { MapsStore, SvgsStore } from '~/store'
-import ViewBox from '~/utils/svgs/svg-viewbox'
-import SpaceKey from '~/utils/helpers/add-event-space-press'
+import { svgSheet, mounted as viewBoxMounted, scrollBegin, scrollEnd, scrollMiddle } from '~/utils/svgs/svg-viewbox'
+import {
+  mounted as spaceKeyMounted,
+  unMounted as spaceKeyUnMounted,
+  isSpaceKeyPress,
+} from '~/utils/helpers/add-event-space-press'
 import Drag from '~/utils/svgs/svg-drag'
 import Resize from '~/utils/svgs/svg-resize'
 import Path from '~/utils/svgs/svg-add-path'
-import Polyline from '~/utils/svgs/svg-add-polyline'
+import { addPolylineStart, addPolylineMiddle, addPolylineStop } from '~/utils/svgs/svg-add-polyline'
 import Cursor from '~/utils/ui/svg-cursor'
 import CommonUI from '~/utils/ui/common'
 import { pinchInOut } from '~/utils/svgs/svg-pinch'
 
-export default defineComponent({
-  setup() {
-    const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
-    const paths = computed(() => SvgsStore.activeMapSvgs('Path'))
-    const polylines = computed(() => SvgsStore.activeMapSvgs('Polyline'))
+const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
+const paths = computed(() => SvgsStore.activeMapSvgs('Path'))
+const polylines = computed(() => SvgsStore.activeMapSvgs('Polyline'))
 
-    ViewBox.mounted()
-    SpaceKey.mounted()
-    SpaceKey.unMounted()
-    Cursor.mounted()
+viewBoxMounted()
+spaceKeyMounted()
+spaceKeyUnMounted()
+Cursor.mounted()
 
-    // 現在のページが編集ページかどうか
-    const isEditPage = CommonUI.isEditPage
+// 現在のページが編集ページかどうか
+const isEditPage = CommonUI.isEditPage
 
-    const { $googleMap, $tutorial } = useContext()
-    // 編集ページかつGoogleMap編集ページかどうか
-    const isGoogleMapEditMode = computed(
-      () => isEditPage.value && $googleMap.isGoogleMapEditMode.value
-    )
-    // 現在マップのgoogleMapが無効かどうか(isGoogleMapがfalseか)
-    const activeMapDisabledGoogleMap = computed(() => {
-      if (!MapsStore.activeMap) return false
-      return !MapsStore.activeMap.isGoogleMap
-    })
-
-    // viewBox操作
-    const scrollBegin = (e: PointerEvent) => {
-      // editページはスペースキーを押下する必要あり
-      if (!SpaceKey.isSpaceKeyPress.value && isEditPage.value) return
-      // 挿入モード中はスペースキーを押下する必要あり
-      if (!SpaceKey.isSpaceKeyPress.value && Cursor.isAddModes.value) return
-      ViewBox.scrollBegin(e)
-    }
-
-    // オートセーブ
-    const autosave = debounce(
-      function () {
-        SvgsStore.updateSvgs()
-      },
-      3000,
-      { maxWait: 30000 }
-    )
-    const allSvgs = computed(() => { 
-      return SvgsStore.allSvgs })
-    const autoSaveStop = watch(allSvgs.value, () => {
-      if(isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
-    })
-    onUnmounted(autoSaveStop)
-
-    return {
-      rects,
-      paths,
-      polylines,
-
-      svgSheet: ViewBox.svgSheet,
-      viewBoxStr: ViewBox.viewBoxStr(),
-
-      addPath: (e: PointerEvent) => Path.addPath(e),
-
-      addPolylineStart: (e: PointerEvent) => Polyline.addPolylineStart(e),
-      addPolylineMiddle: (e: PointerEvent) => Polyline.addPolylineModeMiddle(e),
-      addPolylineStop: () => Polyline.addPolylineStop(),
-
-      scrollBegin,
-      scrollMiddle: (e: PointerEvent) => ViewBox.scrollMiddle(e),
-      scrollEnd: () => ViewBox.scrollEnd(),
-
-      dragMiddle: (e: PointerEvent) => Drag.dragMiddle(e),
-      dragStop: () => Drag.dragStop(),
-
-      resizeMiddle: (e: PointerEvent) => Resize.resizeMiddle(e),
-      resizeStop: () => Resize.resizeStop(),
-
-      zoomInOut: (e: WheelEvent) => ViewBox.zoomInOut(e),
-      pinchInOut: (e: TouchEvent) => pinchInOut(e),
-      reset: () => ViewBox.reset(),
-      isEditPage,
-      isGoogleMapEditMode,
-      activeMapDisabledGoogleMap,
-      save: () => { 
-        if($tutorial.isRunningTutorial.value) return
-        SvgsStore.updateSvgs() 
-      },
-    }
-  },
+const { $googleMap, $tutorial } = useContext()
+// 編集ページかつGoogleMap編集ページかどうか
+const isGoogleMapEditMode = computed(() => isEditPage.value && $googleMap.isGoogleMapEditMode.value)
+// 現在マップのgoogleMapが無効かどうか(isGoogleMapがfalseか)
+const activeMapDisabledGoogleMap = computed(() => {
+  if (!MapsStore.activeMap) return false
+  return !MapsStore.activeMap.isGoogleMap
 })
+
+/** スクロール処理 */
+const scrollBegin = (e: PointerEvent) => {
+  // editページはスペースキーを押下する必要あり
+  if (!isSpaceKeyPress.value && isEditPage.value) return
+  // 挿入モード中はスペースキーを押下する必要あり
+  if (!isSpaceKeyPress.value && Cursor.isAddModes.value) return
+  ViewBox.scrollBegin(e)
+}
+
+// オートセーブ
+const autosave = debounce(
+  function () {
+    SvgsStore.updateSvgs()
+  },
+  3000,
+  { maxWait: 30000 }
+)
+const allSvgs = computed(() => {
+  return SvgsStore.allSvgs
+})
+const autoSaveStop = watch(allSvgs.value, () => {
+  if (isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
+})
+onUnmounted(autoSaveStop)
+
+/** viewBoxの値 */
+const viewBoxStr = ViewBox.viewBoxStr()
+
+/** ピン追加 */
+const addPath = (e: PointerEvent) => Path.addPath(e)
+
+/** ドラッグ処理 */
+const dragMiddle = (e: PointerEvent) => Drag.dragMiddle(e)
+const dragStop = () => Drag.dragStop()
+
+/** リサイズ処理 */
+const resizeMiddle = (e: PointerEvent) => Resize.resizeMiddle(e)
+const resizeStop = () => Resize.resizeStop()
+
+/** ズーム・ピンチ処理 */
+const zoomInOut = (e: WheelEvent) => ViewBox.zoomInOut(e)
+
+/** ズームおよびスクロールリセット */
+const reset = () => ViewBox.reset()
+
+/** 手動セーブ */
+const save = () => {
+  if ($tutorial.isRunningTutorial.value) return
+  SvgsStore.updateSvgs()
+}
 </script>
 
 <style scoped lang="sass">

@@ -28,40 +28,32 @@
   </material-card>
 </template>
 
-<script lang="ts">
-import { defineComponent, reactive, useContext } from '@nuxtjs/composition-api'
-import RegisterForm from '~/components/default/RegisterForm.vue'
+<script setup lang="ts">
+const { $auth } = useContext()
 
-export default defineComponent({
+const registerValues = reactive({
+  name: '',
+  email: '',
+  password: '',
+  passwordConfirm: '',
+})
+
+const emailAndPasswordCredential = () => {
+  $auth.emailAndPasswordCredential(registerValues)
+}
+
+const googleCredential = () => {
+  $auth.googleCredential()
+}
+</script>
+
+<script lang="ts">
+import RegisterForm from '~/components/default/RegisterForm.vue'
+export default {
   components: {
     RegisterForm,
   },
 
   layout: 'protected',
-
-  setup() {
-    const { $auth } = useContext()
-    
-    const registerValues = reactive({
-      name: '',
-      email: '',
-      password: '',
-      passwordConfirm: '',
-    })
-
-    const emailAndPasswordCredential = () => {
-      $auth.emailAndPasswordCredential(registerValues)
-    }
-
-    const googleCredential = () => {
-      $auth.googleCredential()
-    }
-
-    return {
-      registerValues,
-      emailAndPasswordCredential,
-      googleCredential
-    }
-  },
-})
+}
 </script>

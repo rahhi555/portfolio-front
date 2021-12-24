@@ -1,18 +1,14 @@
 <template>
-  <v-menu
-    :disabled="!notifications.length"
-    bottom
-    left
-    offset-y
-    origin="top right"
-    transition="scale-transition"
-  >
+  <v-menu :disabled="!notifications.length" bottom left offset-y origin="top right" transition="scale-transition">
     <template #activator="{ attrs, on }">
-      <v-btn v-show="isNotMobile" data-tutorial="add-member" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
-        <v-badge bordered color="red" overlap :content="notifications.length" :value="notifications.length">
-          <v-icon>mdi-bell</v-icon>
-        </v-badge>
-      </v-btn>
+      <!-- client-onlyにしないとSSR時の値で計算されてしまいバッジが表示されない -->
+      <client-only>
+        <v-btn v-show="isNotMobile" data-tutorial="add-member" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
+          <v-badge bordered color="red" overlap :content="notifications.length" :value="notifications.length">
+            <v-icon>mdi-bell</v-icon>
+          </v-badge>
+        </v-btn>
+      </client-only>
     </template>
 
     <v-list flat nav>
@@ -27,27 +23,17 @@
   </v-menu>
 </template>
 
-<script lang="ts">
-import { defineComponent, useContext, computed, useRouter } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { PlansStore } from '~/store'
 
-export default defineComponent({
-  setup() {
-    const notifications = computed(() => {
-      return PlansStore.notifications
-    })
-
-    const router = useRouter()
-    const pushLink = (link: string) => {
-      router.push(link)
-    }
-
-    const { $device } = useContext()
-    return {
-      notifications,
-      pushLink,
-      isNotMobile: !$device.isMobile,
-    }
-  },
+const notifications = computed(() => {
+  return PlansStore.notifications
 })
+
+const router = useRouter()
+const pushLink = (link: string) => {
+  router.push(link)
+}
+
+const isNotMobile = !useContext().$device.isMobile
 </script>

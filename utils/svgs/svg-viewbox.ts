@@ -1,18 +1,13 @@
-import {
-  computed,
-  ref,
-  onMounted,
-  watch,
-} from '@nuxtjs/composition-api'
+import { computed, ref, onMounted, watch } from '@nuxtjs/composition-api'
 import { MapsStore, SnackbarStore } from '~/store'
+import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
 
-// svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
-const svgSheet = ref<Vue | null>(null)
+
 // 初期状態のwidth及びheight
 const defaultWidth = ref(0)
 const defaultHeight = ref(0)
-const minX = ref(0)
-const minY = ref(0)
+export const minX = ref(0)
+export const minY = ref(0)
 const width = ref(0)
 const height = ref(0)
 let isScrolling = false
@@ -38,118 +33,110 @@ const zoom = (scale: number) => {
   height.value = zoomedHeight
 }
 
-// ビューボックスを初期状態にする
-const reset = () => {
-  minX.value = 0
-  minY.value = 0
-  width.value = defaultWidth.value
-  height.value = defaultHeight.value
-}
-
 // activeMapをwatchするためcomputedで定義
 const activeMap = computed(() => MapsStore.activeMap)
 
 // pointerEventでマルチタップを検出するためのログ配列
 let evCache: PointerEvent[] = []
 
-export default {
-  svgSheet,
+// svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
+export const svgSheet = ref<Vue | null>(null)
 
-  minX,
+export const mounted = () => {
+  onMounted(() => {
+    const svgSheetEl = svgSheet.value?.$el as HTMLDivElement
+    if (!svgSheetEl) SnackbarStore.visible({ color: 'error', message: 'シート初期化に失敗しました' })
 
-  minY,
+    // マップが一件も無いときはv-showで隠しているが、その状態だとwidthとheightが取得できないため
+    // 一旦表示させて値を取得してから再度隠す
+    const isSvgSheetDisplayNone = svgSheetEl.style.display === 'none'
+    if (isSvgSheetDisplayNone) svgSheetEl.style.display = ''
+    defaultWidth.value = MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
+    defaultHeight.value = MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
+    width.value = defaultWidth.value
+    height.value = defaultHeight.value
+    if (isSvgSheetDisplayNone) svgSheetEl.style.display = 'none'
+    watch(activeMap, reset)
+  })
+}
 
-  defaultWidth,
+export const zoomParcentWidth = () => {
+  return svgSheet.value!.$el.clientWidth / width.value
+}
 
-  defaultHeight,
+export const zoomParcentHeight = () => {
+  return svgSheet.value!.$el.clientHeight / height.value
+}
 
-  mounted() {
-    onMounted(() => {
-      const svgSheetEl = svgSheet.value?.$el as HTMLDivElement
-      if(!svgSheetEl) SnackbarStore.visible({ color: 'error', message: 'シート初期化に失敗しました' })
+export const viewBoxStr = () => {
+  return computed(() => {
+    return `${minX.value} ${minY.value} ${width.value} ${height.value}`
+  })
+}
 
-      // マップが一件も無いときはv-showで隠しているが、その状態だとwidthとheightが取得できないため
-      // 一旦表示させて値を取得してから再度隠す
-      const isSvgSheetDisplayNone = svgSheetEl.style.display === 'none'
-      if(isSvgSheetDisplayNone) svgSheetEl.style.display = ''
-      defaultWidth.value =
-        MapsStore.activeMap?.width || svgSheet.value!.$el.clientWidth
-      defaultHeight.value =
-        MapsStore.activeMap?.height || svgSheet.value!.$el.clientHeight
-      width.value = defaultWidth.value
-      height.value = defaultHeight.value
-      if(isSvgSheetDisplayNone) svgSheetEl.style.display = 'none'
-      watch(activeMap,  reset)
-    })
-  },
+export const scrollBegin = (e: PointerEvent) => {
+  // グーグルマップが有効の場合、スクロールは無効にする
+  if (MapsStore.activeMap.isGoogleMap) return
+  if (e.pointerType === 'touch') evCache.push(e)
 
-  zoomParcentWidth() {
-    return svgSheet.value!.$el.clientWidth / width.value
-  },
+  // editページはスペースキーを押下する必要あり
+  if (!isSpaceKeyPress.value && isEditPage.value) return
+  // 挿入モード中はスペースキーを押下する必要あり
+  if (!isSpaceKeyPress.value && Cursor.isAddModes.value) return
 
-  zoomParcentHeight() {
-    return svgSheet.value!.$el.clientHeight / height.value
-  },
+  isScrolling = true
+  startPoint.x = e.clientX - minX.value
+  startPoint.y = e.clientY - minY.value
+}
 
-  viewBoxStr() {
-    return computed(() => {
-      return `${minX.value} ${minY.value} ${width.value} ${height.value}`
-    })
-  },
+export const scrollMiddle = (e: PointerEvent) => {
+  if (!isScrolling) return
 
-  scrollBegin(e: PointerEvent) {
-    // グーグルマップが有効の場合、スクロールは無効にする
-    if (MapsStore.activeMap.isGoogleMap) return
-    if (e.pointerType === 'touch') evCache.push(e)
+  // 2本指でタッチしている場合evCache.lengthが2になるので、その場合はスクロールしない
+  if (e.pointerType === 'touch' && evCache.length > 1) {
+    return
+  }
 
-    isScrolling = true
-    startPoint.x = e.clientX - minX.value
-    startPoint.y = e.clientY - minY.value
-  },
+  const newX = e.clientX - startPoint.x
+  const newY = e.clientY - startPoint.y
+  minX.value = newX
+  minY.value = newY
+}
 
-  scrollMiddle(e: PointerEvent) {
-    if (!isScrolling) return
+export const scrollEnd = () => {
+  evCache = []
+  isScrolling = false
+  startPoint.x = 0
+  startPoint.y = 0
+}
 
-    // 2本指でタッチしている場合evCache.lengthが2になるので、その場合はスクロールしない
-    if (e.pointerType === 'touch' && evCache.length > 1) {
-      return
-    }
+/**
+ * 引数eとしてWheelEventまたはnumberを渡し、ズームイン・アウトを実行する
+ * (numberを渡す場合は0未満ならズームアウト、0以上ならズームインになる)
+ */
+export const zoomInOut = (e: WheelEvent | number) => {
+  // グーグルマップが有効の場合、ズームイン・アウトは無効にする
+  if (MapsStore.activeMap.isGoogleMap) return
 
-    const newX = e.clientX - startPoint.x
-    const newY = e.clientY - startPoint.y
-    minX.value = newX
-    minY.value = newY
-  },
+  let deltaY: number
+  if (typeof e === 'number') {
+    deltaY = e
+  } else {
+    deltaY = e.deltaY
+  }
 
-  scrollEnd() {
-    evCache = []
-    isScrolling = false
-    startPoint.x = 0
-    startPoint.y = 0
-  },
+  const SCALE = 1.1
+  if (deltaY < 0) {
+    zoom(1 / SCALE)
+  } else if (deltaY > 0) {
+    zoom(SCALE)
+  }
+}
 
-  /**
-   * 引数eとしてWheelEventまたはnumberを渡し、ズームイン・アウトを実行する
-   * (numberを渡す場合は0未満ならズームアウト、0以上ならズームインになる)
-   */
-  zoomInOut(e: WheelEvent | number) {
-    // グーグルマップが有効の場合、ズームイン・アウトは無効にする
-    if (MapsStore.activeMap.isGoogleMap) return
-
-    let deltaY: number
-    if (typeof e === 'number') {
-      deltaY = e
-    } else {
-      deltaY = e.deltaY
-    }
-
-    const SCALE = 1.1
-    if (deltaY < 0) {
-      zoom(1 / SCALE)
-    } else if (deltaY > 0) {
-      zoom(SCALE)
-    }
-  },
-
-  reset,
+// ビューボックスを初期状態にする
+export const reset = () => {
+  minX.value = 0
+  minY.value = 0
+  width.value = defaultWidth.value
+  height.value = defaultHeight.value
 }

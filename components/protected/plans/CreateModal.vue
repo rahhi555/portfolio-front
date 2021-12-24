@@ -1,13 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px" persistent>
     <template #activator="{ on, attrs }">
-      <v-btn
-        data-tutorial="create-plan-btn"
-        color="secondary"
-        class="mr-2 mb-2 float-left"
-        v-bind="attrs"
-        v-on="on"
-      >
+      <v-btn data-tutorial="create-plan-btn" color="secondary" class="mr-2 mb-2 float-left" v-bind="attrs" v-on="on">
         <v-icon left>mdi-folder-plus-outline</v-icon>
         新規作成
       </v-btn>
@@ -37,12 +31,9 @@
                 </ValidationProvider>
 
                 <span data-tutorial="create-plan-check">
-                  <v-checkbox
-                    v-model="planParams.published"
-                    label="公開"
-                  ></v-checkbox>
-                  <span class="text-caption" style="line-height: 1.5rem;">
-                    公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br/>
+                  <v-checkbox v-model="planParams.published" label="公開"></v-checkbox>
+                  <span class="text-caption" style="line-height: 1.5rem">
+                    公開にすると誰でも自由に閲覧することが出来ます(編集は承認が必要になります)。<br />
                     非公開にすると承認するまで閲覧できません。
                   </span>
                 </span>
@@ -52,16 +43,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false">
-            Close
-          </v-btn>
-          <v-btn
-            data-tutorial="create-plan-submit"
-            color="blue darken-1"
-            :disabled="invalid"
-            text
-            @click="createPlan"
-          >
+          <v-btn color="blue darken-1" text @click="dialog = false"> Close </v-btn>
+          <v-btn data-tutorial="create-plan-submit" color="blue darken-1" :disabled="invalid" text @click="createPlan">
             Create
           </v-btn>
         </v-card-actions>
@@ -70,34 +53,23 @@
   </v-dialog>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, reactive, useContext } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { PlansStore } from '~/store'
 
-export default defineComponent({
-  setup() {
-    const dialog = ref(false)
+const dialog = ref(false)
 
-    const planParams = reactive({
-      name: '',
-      published: false,
-    })
-
-    const { $tutorial } = useContext()
-    /** チュートリアル中ならリターン */
-    const createPlan = () => {
-      dialog.value = false
-      if($tutorial.isRunningTutorial.value) return
-      
-      const { name, published } = planParams
-      PlansStore.createPlan({ name, published })
-    }
-
-    return {
-      dialog,
-      planParams,
-      createPlan
-    }
-  },
+const planParams = reactive({
+  name: '',
+  published: false,
 })
+
+const { $tutorial } = useContext()
+/** チュートリアル中ならリターン */
+const createPlan = () => {
+  dialog.value = false
+  if ($tutorial.isRunningTutorial.value) return
+
+  const { name, published } = planParams
+  PlansStore.createPlan({ name, published })
+}
 </script>

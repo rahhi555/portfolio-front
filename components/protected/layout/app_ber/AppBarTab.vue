@@ -8,13 +8,13 @@
         v-tutorial="index"
         @click="clickTab(tab)"
       >
-        <span :class="{'plan-active' : isPlanActive}">{{ tab.name }}</span>
+        <span :class="{ 'plan-active': isPlanActive }">{{ tab.name }}</span>
       </v-tab>
     </client-only>
 
     <v-btn
       v-if="!!appBarTab && !!appBarFunc"
-      id='app-bar-btn'
+      id="app-bar-btn"
       data-tutorial="create-todo-list-app-bar-btn create-map-app-bar-btn"
       height="35"
       color="secondary"
@@ -25,16 +25,11 @@
       @click="appBarFunc.func"
       >{{ appBarFunc.name }}</v-btn
     >
-  </v-tabs>  
+  </v-tabs>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  inject,
-  useRouter,
-  computed,
-} from '@nuxtjs/composition-api'
+import { defineComponent, inject, useRouter, computed } from '@nuxtjs/composition-api'
 import { AppBarTab } from 'interface'
 import { AppBarFuncKey } from '~/types/injection-key'
 import { setPear, appBarTab } from '~/utils/ui/app-bar-tab-routes'
@@ -42,8 +37,8 @@ import common from '~/utils/ui/common'
 
 export default defineComponent({
   directives: {
-    /** 
-     * タブにdata-tutorialを付与する。v-bindとメソッドを組み合わせるとタブ切り替えのたびに10回程度発火するが、    
+    /**
+     * タブにdata-tutorialを付与する。v-bindとメソッドを組み合わせるとタブ切り替えのたびに10回程度発火するが、
      * カスタムディレクティブならマウント以外で発火しないのでこちらを採用する
      * */
     tutorial: {
@@ -54,7 +49,7 @@ export default defineComponent({
         const editMapKeys = ['show-edit-map']
         const memberKeys = ['show-member']
 
-        switch(bind.value) {
+        switch (bind.value) {
           case 0:
             el.dataset.tutorial = homeKeys.join(' ')
             break
@@ -74,8 +69,8 @@ export default defineComponent({
             el.dataset.tutorial = 'none'
             break
         }
-      }
-    }
+      },
+    },
   },
 
   setup() {
@@ -96,7 +91,7 @@ export default defineComponent({
       if (tab.link) router.push(tab.link)
     }
 
-    const appBarFunc = inject(AppBarFuncKey)
+    const appBarFunc = inject(AppBarFuncKey)!
 
     router.afterEach(() => {
       setPear()
@@ -115,6 +110,6 @@ export default defineComponent({
 </script>
 
 <style scoped lang="sass">
-  .plan-active
-    font-weight: 600
+.plan-active
+  font-weight: 600
 </style>

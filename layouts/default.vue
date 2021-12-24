@@ -34,15 +34,33 @@
   </v-app>
 </template>
 
-<script lang="ts">
-import { defineComponent, provide, computed, useRoute, ref } from '@nuxtjs/composition-api'
-import AppBar from '~/components/default/AppBar.vue'
-import Footer from '~/components/default/Footer.vue'
-import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
+<script setup lang="ts">
 import { SnackbarStore } from '~/store'
 import { HasErrorKey } from '~/types/injection-key'
 
-export default defineComponent({
+const route = useRoute()
+const srcs = {
+  '/auth/login': 'login.jpg',
+  '/auth/register': 'register.jpg',
+}
+const src = computed(() => {
+  return srcs[route.value.path] || 'top-image.jpg'
+})
+
+const snackParams = computed({
+  get: () => SnackbarStore.snackParams,
+  set: () => SnackbarStore.hidden(),
+})
+
+const hasError = ref(false)
+provide(HasErrorKey, hasError)
+</script>
+
+<script lang="ts">
+import AppBar from '~/components/default/AppBar.vue'
+import Footer from '~/components/default/Footer.vue'
+import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
+export default {
   components: {
     AppBar,
     Footer,
@@ -50,28 +68,5 @@ export default defineComponent({
   },
 
   middleware: ['handle-login-route'],
-
-  setup() {
-    const route = useRoute()
-    const srcs = {
-      '/auth/login': 'login.jpg',
-      '/auth/register': 'register.jpg',
-    }
-    const src = computed(() => { return srcs[route.value.path] || 'top-image.jpg' })
-
-    const snackParams = computed({
-      get: () => SnackbarStore.snackParams,
-      set: () => SnackbarStore.hidden()
-    })
-
-    const hasError = ref(false)
-    provide(HasErrorKey, hasError)
-
-    return {
-      src,
-      snackParams,
-      hasError
-    }
-  },
-})
+}
 </script>
