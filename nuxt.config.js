@@ -1,13 +1,42 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - portfolio-front',
-    title: 'portfolio-front',
+    htmlAttrs: {
+      lang: 'ja',
+      prefix: 'og: http://ogp.me/ns#',
+    },
+    titleTemplate: '%s - minimap',
+    title: 'minimap',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      {
+        hid: 'description',
+        name: 'description',
+        content:
+          'Minimapは位置情報を組み合わせた新しいTodoリストです。todoはリアルタイムに仲間と共有され、マップ上に反映されます。現場で働く作業員、イベントスタッフなどの方にぴったりです。',
+      },
       { name: 'format-detection', content: 'telephone=no' },
+
+      { hid: 'og:site_name', property: 'og:site_name', content: 'minimap' },
+      { hid: 'og:type', property: 'og:type', content: 'website' },
+      { hid: 'og:url', property: 'og:url', content: 'https://www.hirabayashi.work' },
+      {
+        hid: 'og:title',
+        property: 'og:title',
+        content: 'minimap(ミニマップ)「場所」と「情報」を共有する新しいタスクツール',
+      },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content:
+          'Minimapは位置情報を組み合わせた新しいTodoリストです。todoはリアルタイムに仲間と共有され、マップ上に反映されます。現場で働く作業員、イベントスタッフなどの方にぴったりです。',
+      },
+      { hid: 'og:image', property: 'og:image', content: 'https://www.hirabayashi.work/ogp_image.jpg' },
+
+      { hid: 'fb:app_id', property: 'fb:app_id', content: '646306193077394' },
+      { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
+      { hid: 'twitter:site', name: 'twitter:site', content: '@6MvpqmS7ThQbuBc' }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
@@ -142,14 +171,4 @@ export default {
   serverMiddleware: [{ path: '/server', handler: '~/server' }],
 
   loading: '~/components/Loading.vue',
-
-  // 存在しないページの場合ダッシュボードにリダイレクトする
-  // router: {
-  //   extendRoutes(routes, _) {
-  //     routes.push({
-  //       path: '*',
-  //       redirect: "/dashboard/plans"
-  //     })
-  //   }
-  // }
 }

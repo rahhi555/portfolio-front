@@ -27,7 +27,7 @@
 
               <v-col cols="12" md="6">
                 <div class="text-center">
-                  <v-btn class="my-2 mr-1" dark depressed @click="signInAnonymouly"> かんたんログイン </v-btn>
+                  <v-btn color="primary" class="my-2 mr-1" dark depressed @click="signInAnonymouly"> かんたんログイン </v-btn>
 
                   <div class="my-2" />
 
@@ -50,6 +50,14 @@
     </v-row>
   </v-container>
 </template>
+
+<script lang="ts">
+export default {
+  head: {
+    title: 'Register',
+  },
+}
+</script>
 
 <script setup lang="ts">
 import RegisterForm from '~/components/default/RegisterForm.vue'
@@ -107,4 +115,10 @@ const signInAnonymouly = () => {
     color: #3C4858
     line-height: 1.5em
     font-weight: 300
+
+.mail-link
+  font-size: small
+  position: absolute
+  bottom: 3em
+  left: 5em
 </style>

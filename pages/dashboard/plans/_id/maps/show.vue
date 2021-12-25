@@ -34,6 +34,10 @@ export default {
   layout: 'protected',
 
   middleware: ['initialize-store'],
+
+  head: {
+    title: 'Map Show'
+  }
 }
 </script>
 

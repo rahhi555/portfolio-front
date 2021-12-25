@@ -20,6 +20,10 @@ export default {
   layout: 'protected',
 
   middleware: ['initialize-store'],
+
+  head: {
+    title: 'Todo Lists'
+  }
 }
 </script>
 

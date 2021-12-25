@@ -48,6 +48,10 @@ export default {
   layout: 'protected',
 
   middleware: ['initialize-store'],
+
+  head: {
+    title: 'Plan'
+  }
 }
 </script>
 
