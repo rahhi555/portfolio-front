@@ -36,7 +36,7 @@ export default {
 
       { hid: 'fb:app_id', property: 'fb:app_id', content: '646306193077394' },
       { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
-      { hid: 'twitter:site', name: 'twitter:site', content: '@6MvpqmS7ThQbuBc' }
+      { hid: 'twitter:site', name: 'twitter:site', content: '@6MvpqmS7ThQbuBc' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
@@ -124,11 +124,13 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      name: 'svg-portfolio',
-      title: 'svg-portfolio',
-      'og:title': 'svg-portfolio',
-      description: 'svgを使用したポートフォリオです。',
-      'og:description': 'svgを使用したポートフォリオです。',
+      name: 'minimap',
+      title: 'minimap',
+      'og:title': 'minimap',
+      description:
+        'Minimapは位置情報を組み合わせた新しいTodoリストです。todoはリアルタイムに仲間と共有され、マップ上に反映されます。現場で働く作業員、イベントスタッフなどの方にぴったりです。',
+      'og:description':
+        'Minimapは位置情報を組み合わせた新しいTodoリストです。todoはリアルタイムに仲間と共有され、マップ上に反映されます。現場で働く作業員、イベントスタッフなどの方にぴったりです。',
       lang: 'ja',
       theme_color: '#529b58',
       background_color: '#bde0c0',
