@@ -20,7 +20,7 @@ export default {
 
       { hid: 'og:site_name', property: 'og:site_name', content: 'minimap' },
       { hid: 'og:type', property: 'og:type', content: 'website' },
-      { hid: 'og:url', property: 'og:url', content: 'https://www.hirabayashi.work' },
+      { hid: 'og:url', property: 'og:url', content: 'https://www.minimap.work' },
       {
         hid: 'og:title',
         property: 'og:title',
@@ -32,7 +32,7 @@ export default {
         content:
           'Minimapは位置情報を組み合わせた新しいTodoリストです。todoはリアルタイムに仲間と共有され、マップ上に反映されます。現場で働く作業員、イベントスタッフなどの方にぴったりです。',
       },
-      { hid: 'og:image', property: 'og:image', content: 'https://www.hirabayashi.work/ogp_image.jpg' },
+      { hid: 'og:image', property: 'og:image', content: 'https://www.minimap.work/ogp_image.jpg' },
 
       { hid: 'fb:app_id', property: 'fb:app_id', content: '646306193077394' },
       { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
