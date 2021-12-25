@@ -8,6 +8,7 @@
     flat
     dark
     :color="isPlanActive ? 'primary' : undefined"
+    :value="isVisibleAppBar"
   >
     <go-home v-show="!isMobile" />
 
@@ -32,6 +33,9 @@ import Notifications from './AppBarNotifications.vue'
 import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { isPlanActive } from '~/utils/ui/common'
+import { IsVisibleAppBarKey } from '~/types/injection-key'
 
 const isMobile = useContext().$device.isMobile
+
+const isVisibleAppBar = inject(IsVisibleAppBarKey)
 </script>

@@ -2,7 +2,7 @@
   <v-sheet
     ref="svgSheet"
     elevation="6"
-    class="svg-base-sheet"
+    :class="['svg-base-sheet', { 'svg-base-sheet-expand' : isSmAndDownWithPlanShow }]"
     data-tutorial="drag-and-save-rect click-rect"
     @touchmove="pinchInOut"
   >
@@ -82,7 +82,7 @@ import { resizeMiddle, resizeStop } from '~/utils/svgs/svg-resize'
 import { addPath } from '~/utils/svgs/svg-add-path'
 import { addPolylineStart, addPolylineMiddle, addPolylineStop } from '~/utils/svgs/svg-add-polyline'
 import { mounted as cursorMounted } from '~/utils/ui/svg-cursor'
-import { isEditPage } from '~/utils/ui/common'
+import { isEditPage, isSmAndDownWithPlanShow } from '~/utils/ui/common'
 import { pinchInOut } from '~/utils/svgs/svg-pinch'
 
 const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
@@ -114,9 +114,9 @@ const autosave = debounce(
 const allSvgs = computed(() => {
   return SvgsStore.allSvgs
 })
-const autoSaveStop = watch(allSvgs.value, () => {
+const autoSaveStop = watch(allSvgs, () => {
   if (isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
-})
+}, { deep: true })
 onUnmounted(autoSaveStop)
 
 /** 手動セーブ */
@@ -128,10 +128,13 @@ const save = () => {
 
 <style scoped lang="sass">
 .svg-base-sheet
-  height: 80vh
+  height: map-get($svgbase-and-googlemap-vh, 'default')
   touch-action: none
   background-color: transparent
   user-select: none
+
+.svg-base-sheet-expand
+  height: map-get($svgbase-and-googlemap-vh, 'expand')
 
 .mysvg-edit
   background-image: linear-gradient(90deg, transparent 19px, #ddd 20px), linear-gradient(0deg, transparent 19px, #ddd 20px)

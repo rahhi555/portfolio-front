@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import DrawerHeader from './DrawerHeader.vue'
 import AccountSettings from './DrawerAccountSettings.vue'
-import { AccountDialogKey, DrawerKey } from '~/types/injection-key'
+import { AccountDialogKey, IsVisibleDrawerKey } from '~/types/injection-key'
 import { PlansStore } from '~/store'
 
 const { $auth } = useContext()
@@ -91,7 +91,7 @@ const visibleItems = computed(() => {
   })
 })
 
-const drawer = inject(DrawerKey)
+const drawer = inject(IsVisibleDrawerKey)
 </script>
 
 <style scoped lang="sass">

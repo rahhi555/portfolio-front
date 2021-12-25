@@ -107,6 +107,11 @@ $tabs-item-letter-spacing: normal;
 
 $slide-group-prev-basis: 0;
 
+$svgbase-and-googlemap-vh: (
+  'default': 80vh,
+  'expand': 93vh
+);
+
 .v-application {
   font-family: 'Roboto', 'Noto Sans JP', sans-serif !important;
 }

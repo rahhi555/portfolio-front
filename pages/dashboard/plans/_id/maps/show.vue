@@ -6,14 +6,14 @@
       </v-col>
     </client-only>
 
-    <v-icon v-if="$vuetify.breakpoint.smAndDown" class="scroll-icon scroll-icon-top" x-large @click="scrollBottom"
-      >mdi-arrow-down-drop-circle-outline</v-icon
-    >
-    <v-icon v-if="$vuetify.breakpoint.smAndDown" class="scroll-icon scroll-icon-bottom" x-large @click="scrollTop"
-      >mdi-arrow-up-drop-circle-outline</v-icon
-    >
+    <client-only>
+      <v-chip v-if="isSmAndDownWithPlanShow" dark @click="toggleVisibleAppBar" class="toggle-visible-appbar-btn" label>
+        <v-icon v-if="isVisibleAppBar">mdi-arrow-collapse-up</v-icon>
+        <v-icon v-else>mdi-arrow-expand-down</v-icon>
+      </v-chip>
+    </client-only>
 
-    <v-col max-width="100%" rounded cols="12" md="9" style="position: relative">
+    <v-col max-width="100%" rounded cols="12" md="9" style="position: relative; padding-right: 0;">
       <MapsGoogleMap v-show="hasActiveMap" />
       <SvgsBase v-show="hasActiveMap" />
       <MapsFooterBase :justify-content="isPlanActive ? 'justify-sm-space-between' : 'justify-end'">
@@ -43,31 +43,27 @@ export default {
 
 <script setup lang="ts">
 import { PlansStore, MapsStore } from '~/store'
-const scrollBottom = () => {
-  scrollTo(0, 99999999999)
-}
+import { IsVisibleAppBarKey } from '~/types/injection-key'
+import { isSmAndDownWithPlanShow } from '~/utils/ui/common'
 
-const scrollTop = () => {
-  scrollTo(0, 0)
-}
-
+/** 計画のアクティブ判定。アクティブならマーカーとピン立てのスイッチを持つフッターを表示させる */
 const isPlanActive = computed(() => PlansStore.currentPlan?.active)
 
+/** マップが一件でもあるか。なければマップの代わりにバーを表示する */
 const hasActiveMap = computed(() => !!MapsStore.activeMap)
+
+/** モバイルかつ計画中でマップ閲覧画面にアクセスした際のappBar表示判定 */
+const isVisibleAppBar = inject(IsVisibleAppBarKey)!
+
+const toggleVisibleAppBar = () => {
+  isVisibleAppBar.value = !isVisibleAppBar.value
+}
 </script>
 
 <style scoped lang="sass">
-.scroll-icon
+.toggle-visible-appbar-btn
   position: absolute
   left: 0
-  color: white
-  border-radius: 100%
-  box-shadow: 0px 10px 10px -5px rgba(0,0,0,0.8)
-  z-index: 1
-
-.scroll-icon-top
   top: 0
-
-.scroll-icon-bottom
-  bottom: 0
+  z-index: 1
 </style>
