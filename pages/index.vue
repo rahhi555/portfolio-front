@@ -23,6 +23,15 @@
   </v-container>
 </template>
 
+<script lang="ts">
+export default {
+  head: {
+    titleTemplate: null,
+    title: 'minimap'
+  }
+}
+</script>
+
 <style lang="sass">
 #pricing-view
   max-width: 1140px

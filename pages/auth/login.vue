@@ -34,7 +34,7 @@
                 <ValidationProvider v-slot="{ errors }" rules="min:8|required" name="パスワード">
                   <v-text-field
                     v-model="authValues.password"
-                    class="mb-8 password-form"
+                    class="mb-6 password-form"
                     color="secondary"
                     placeholder="Password..."
                     :error-messages="errors[0]"
@@ -63,7 +63,7 @@
 
                 <v-dialog v-model="isVisiblePasswordResetModal" max-width="500">
                   <template #activator="{ on, attrs }">
-                    <v-chip class="my-2" small v-bind="attrs" v-on="on">
+                    <v-chip class="my-4" small v-bind="attrs" v-on="on">
                       <v-icon left> mdi-information-outline </v-icon>
                       パスワードを忘れた方
                     </v-chip>
@@ -87,10 +87,20 @@
                         />
                       </v-form>
 
+                      <v-btn @click="isVisiblePasswordResetModal = false"> キャンセル </v-btn>
                       <v-btn color="accent" min-width="80" @click="sendPasswordResetEmail"> 送信 </v-btn>
                     </v-card-text>
                   </material-card>
                 </v-dialog>
+
+                <v-chip small>
+                  <v-icon left> mdi-email-edit-outline </v-icon>
+                  <a
+                    href="mailto:whowhose0904@gmail.com?subject=問い合わせ&amp;body=お問い合わせ内容をご記入ください"
+                    style="color: #333; text-decoration: none"
+                    >お問い合わせメールはこちら</a
+                  >
+                </v-chip>
               </v-card-text>
             </ValidationObserver>
           </MaterialCard>
@@ -99,6 +109,14 @@
     </v-row>
   </v-container>
 </template>
+
+<script lang="ts">
+export default {
+  head: {
+    title: 'Login',
+  },
+}
+</script>
 
 <script setup lang="ts">
 const { $auth } = useContext()
@@ -127,5 +145,4 @@ const sendPasswordResetEmail = () => {
   $auth.sendPasswordResetEmail(passwordResetEmail.value)
   passwordResetEmail.value = ''
 }
-const router = useRouter()
 </script>

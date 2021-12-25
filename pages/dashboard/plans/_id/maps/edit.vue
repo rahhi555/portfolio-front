@@ -35,7 +35,11 @@
 export default {
   layout: 'protected',
 
-  middleware: ['initialize-store']
+  middleware: ['initialize-store'],
+
+  head: {
+    title: 'Map Edit'
+  }
 }
 </script>
 

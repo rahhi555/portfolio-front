@@ -55,5 +55,9 @@ export default {
   },
 
   layout: 'protected',
+
+  head: {
+    title: 'Credential'
+  }
 }
 </script>

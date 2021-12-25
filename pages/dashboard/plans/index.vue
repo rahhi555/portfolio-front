@@ -112,5 +112,9 @@ const items = computed({
 <script lang="ts">
 export default {
   layout: 'protected',
+
+  head: {
+    title: 'Plans'
+  }
 }
 </script>
