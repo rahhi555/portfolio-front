@@ -8,6 +8,7 @@ import {
   targetElement,
   tutorialWatchStart
 } from '~/utils/tutorial/tutorial'
+import firebase from '~/plugins/firebase'
 
 export default defineNuxtPlugin((_, inject) => {
   /** チュートリアルセットアップ */
@@ -33,6 +34,10 @@ export default defineNuxtPlugin((_, inject) => {
 
       e.returnValue = ''
     })
+
+    if(process.env.NODE_ENV === "production") {
+      firebase.analytics().logEvent('tutorial_begin')
+    }
   }
 
   /** チュートリアル実行中ならtrue */
