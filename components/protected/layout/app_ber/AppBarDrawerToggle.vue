@@ -13,9 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { DrawerKey } from '~/types/injection-key'
+import { IsVisibleDrawerKey } from '~/types/injection-key'
 
-const drawer = inject(DrawerKey)!
+const drawer = inject(IsVisibleDrawerKey)!
 const toggleDrawer = () => {
   drawer.value = !drawer.value
 }

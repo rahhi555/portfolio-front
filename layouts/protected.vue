@@ -29,7 +29,11 @@
       <app-bar />
 
       <v-main>
-        <v-container my-5 fluid :px-8="$vuetify.breakpoint.smAndUp">
+        <v-container
+          id="main-container"
+          fluid
+          :class="isSmAndDownWithPlanShow ? 'continer-mobile-and-show-plan' : 'continer-default'"
+        >
           <Nuxt />
         </v-container>
       </v-main>
@@ -57,7 +61,8 @@ import AccountDialog from '~/components/protected/layout/AccountDialog.vue'
 import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
 import { SnackbarStore, UserStore } from '~/store'
-import { AppBarFuncKey, AccountDialogKey, DrawerKey } from '~/types/injection-key'
+import { AppBarFuncKey, AccountDialogKey, IsVisibleDrawerKey, IsVisibleAppBarKey } from '~/types/injection-key'
+import { isSmAndDownWithPlanShow } from '~/utils/ui/common'
 
 const appBarFunc = ref<AppBarFunc | null>(null)
 provide(AppBarFuncKey, appBarFunc)
@@ -66,7 +71,10 @@ const accountDialog = ref(false)
 provide(AccountDialogKey, accountDialog)
 
 const drawer = ref(false)
-provide(DrawerKey, drawer)
+provide(IsVisibleDrawerKey, drawer)
+
+const isVisibleAppBar = ref(true)
+provide(IsVisibleAppBarKey, isVisibleAppBar)
 
 /** いずれかの計画idページかつデバイスが大きいときtrueを返す */
 const isPlanIdPageAndLargeDevice = computed(() => {
@@ -80,3 +88,14 @@ const snackParams = computed({
 
 const needTutorial = UserStore.needTutorial
 </script>
+
+<style scoped>
+.continer-default {
+  margin: 20px 0;
+  padding: 12px 32px;
+}
+
+.continer-mobile-and-show-plan {
+  padding-left: 56px;
+}
+</style>

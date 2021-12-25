@@ -75,15 +75,21 @@
     </v-tooltip>
 
     <v-chip id="active-map-address" :active="isInitMap && enabledGoogleMap" class="ml-2">{{ address }}</v-chip>
-
-    <div v-show="enabledGoogleMap" id="google-map" :class="isGoogleMapEditMode ? 'active-map' : 'non-active-map'"></div>
-    <div v-show="!enabledGoogleMap" class="disabled-google-map"></div>
+    <div
+      v-show="enabledGoogleMap"
+      id="google-map"
+      :class="[isGoogleMapEditMode ? 'active-map' : 'non-active-map', { 'google-map-expand': isSmAndDownWithPlanShow }]"
+    ></div>
+    <div
+      v-show="!enabledGoogleMap"
+      :class="['disabled-google-map', { 'google-map-expand': isSmAndDownWithPlanShow }]"
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { MapsStore } from '~/store'
-import { isShowPage } from '~/utils/ui/common'
+import { isShowPage, isSmAndDownWithPlanShow } from '~/utils/ui/common'
 import Marker from '~/utils/ui/google-map-marker'
 
 const { $googleMap, $config, $tutorial } = useContext()
@@ -320,19 +326,22 @@ const address = computed(() => {
 
 <style scoped lang="sass">
 #google-map
-  height: 80vh
+  height: map-get($svgbase-and-googlemap-vh, 'default')
   width: 98%
   position: absolute
   top: 12px
   background-color: gray
 
 .disabled-google-map
-  height: 80vh
+  height: map-get($svgbase-and-googlemap-vh, 'default')
   width: 98%
   position: absolute
   top: 12px
   background-color: #f0f8ff
   z-index: -1
+
+.google-map-expand
+  height: map-get($svgbase-and-googlemap-vh, 'expand') !important
 
 .non-active-map
   z-index: -1
