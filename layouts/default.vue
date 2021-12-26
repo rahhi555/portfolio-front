@@ -60,6 +60,7 @@ provide(HasErrorKey, hasError)
 import AppBar from '~/components/default/AppBar.vue'
 import Footer from '~/components/default/Footer.vue'
 import MaterialSnackbar from '~/components/MaterialSnackbar.vue'
+
 export default {
   components: {
     AppBar,
