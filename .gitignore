@@ -94,3 +94,5 @@ sw.*
 cypress/videos
 
 cypress/screenshots
+
+.history

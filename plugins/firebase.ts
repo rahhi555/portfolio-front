@@ -16,7 +16,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig)
 
-  console.log(process.env.NODE_ENV)
   if (process.env.NODE_ENV === 'production') {
     firebase.analytics()
   } else {

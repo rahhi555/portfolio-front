@@ -2,6 +2,9 @@ import { defineNuxtMiddleware } from "@nuxtjs/composition-api";
 
 // ログイン済みの状態でloginやsignupページへのurlを入力したらダッシュボードに推移する
 export default defineNuxtMiddleware((ctx) => {
+  // indexページはservice workerのキャッシュの関係でバグるので除外する
+  if(ctx.route.fullPath === '/') return
+
   if (ctx.store.getters['user/isAuthenticated']) {
     const snackbarPayload = JSON.stringify({ color: 'warning', message: 'ログイン済みです' })
     const encodedPayload = encodeURI(snackbarPayload)
