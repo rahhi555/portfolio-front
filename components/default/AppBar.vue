@@ -49,10 +49,11 @@ const items = [
   },
 ]
 
+const route = useRoute()
 const name = computed(() => {
-  if (!useRoute().value.name) return
+  if (!route.value.name) return
 
-  const routeName = useRoute().value.name!.replace(/.*-/g, '')
+  const routeName = route.value.name!.replace(/.*-/g, '')
   return routeName.charAt(0).toUpperCase() + routeName.slice(1)
 })
 

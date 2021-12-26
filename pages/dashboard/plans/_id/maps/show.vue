@@ -7,10 +7,10 @@
     </client-only>
 
     <client-only>
-      <v-chip v-if="isSmAndDownWithPlanShow" dark @click="toggleVisibleAppBar" class="toggle-visible-appbar-btn" label>
+      <v-btn v-if="isSmAndDownWithPlanShow" dark @click="toggleVisibleAppBar" class="toggle-visible-appbar-btn" label>
         <v-icon v-if="isVisibleAppBar">mdi-arrow-collapse-up</v-icon>
         <v-icon v-else>mdi-arrow-expand-down</v-icon>
-      </v-chip>
+      </v-btn>
     </client-only>
 
     <v-col max-width="100%" rounded cols="12" md="9" style="position: relative; padding-right: 0;">

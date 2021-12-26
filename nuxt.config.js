@@ -132,11 +132,8 @@ export default {
       'og:description':
         'Minimapは位置情報を組み合わせた新しいTodoリストです。todoはリアルタイムに仲間と共有され、マップ上に反映されます。現場で働く作業員、イベントスタッフなどの方にぴったりです。',
       lang: 'ja',
-      theme_color: '#529b58',
-      background_color: '#bde0c0',
-      display: 'standalone',
-      scope: '/',
-      start_url: '/',
+      theme_color: '#4f68ab',
+      background_color: '#b7e5fc',
     },
   },
 

@@ -96,6 +96,6 @@ const needTutorial = UserStore.needTutorial
 }
 
 .continer-mobile-and-show-plan {
-  padding-left: 56px;
+  padding-left: 64px;
 }
 </style>

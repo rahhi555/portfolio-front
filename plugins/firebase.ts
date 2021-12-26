@@ -27,6 +27,7 @@ if (!firebase.apps.length) {
 
 firebase.auth().onAuthStateChanged((user) => {
   if (!user || !user.email) return
+
   UserStore.setEmail(user.email)
 })
 
