@@ -1,5 +1,5 @@
 import { RegisterValues } from '~/plugins/auth.client'
-import firebase from '~/plugins/firebase'
+import { auth } from '~/plugins/firebase'
 
 Cypress.Commands.add('emailRegister', (registerValue: RegisterValues) => {
   cy.get('input[placeholder="Nick Name..."]').type(registerValue.email)
@@ -18,7 +18,7 @@ Cypress.Commands.add('emailRegister', (registerValue: RegisterValues) => {
 })
 
 Cypress.Commands.add('userClear', () => {
-  const user = firebase.auth().currentUser
+  const user = auth.currentUser
   if(!user) {
     cy.log('currentUserを取得できませんでした')
     return

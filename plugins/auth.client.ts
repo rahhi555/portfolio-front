@@ -1,5 +1,17 @@
 import { defineNuxtPlugin } from '@nuxtjs/composition-api'
-import firebase from '~/plugins/firebase'
+import { auth } from '~/plugins/firebase'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInAnonymously,
+  GoogleAuthProvider,
+  signInWithPopup,
+  getAdditionalUserInfo,
+  EmailAuthProvider,
+  linkWithCredential,
+  linkWithPopup,
+  sendPasswordResetEmail as sendPasswordResetEmailFirebase,
+} from 'firebase/auth'
 import { SnackbarStore, UserStore } from '~/store'
 import { Payload } from '~/store/ui/snackbar'
 
@@ -28,10 +40,7 @@ export default defineNuxtPlugin((ctx, inject) => {
   const PUSH_PAGE = '/dashboard/plans'
 
   // apiのユーザー作成リクエスト
-  const createUserApi = async (
-    method: 'post' | 'patch',
-    payloadName: string | null | undefined
-  ) => {
+  const createUserApi = async (method: 'post' | 'patch', payloadName: string | null | undefined) => {
     const url = method === 'post' ? '/api/v1/users' : '/api/v1/me'
 
     await UserStore.setToken()
@@ -60,7 +69,7 @@ export default defineNuxtPlugin((ctx, inject) => {
           color: 'error',
           message: 'ユーザー登録に失敗しました',
         }
-        const user = firebase.auth().currentUser
+        const user = auth.currentUser
         user?.delete()
       })
       .finally(() => {
@@ -111,12 +120,7 @@ export default defineNuxtPlugin((ctx, inject) => {
   // メールアドレスとパスワードでユーザー登録
   const emailAndPasswordRegister = (registerValues: RegisterValues): void => {
     ctx.app.loading = true
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(
-        registerValues.email,
-        registerValues.password
-      )
+    createUserWithEmailAndPassword(auth, registerValues.email, registerValues.password)
       .then(() => {
         createUserApi('post', registerValues.name)
       })
@@ -131,9 +135,7 @@ export default defineNuxtPlugin((ctx, inject) => {
   // メールアドレスとパスワードでログイン
   const emailAndPasswordLogin = (authValues: AuthValues): void => {
     ctx.app.loading = true
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(authValues.email, authValues.password)
+    signInWithEmailAndPassword(auth, authValues.email, authValues.password)
       .then(async () => {
         UserStore.setToken()
         await UserStore.setUser()
@@ -151,9 +153,7 @@ export default defineNuxtPlugin((ctx, inject) => {
   // 匿名ユーザーでユーザー作成
   const signInAnonymouly = () => {
     ctx.app.loading = true
-    firebase
-      .auth()
-      .signInAnonymously()
+    signInAnonymously(auth)
       .then(() => {
         createUserApi('post', 'お試しユーザー')
       })
@@ -167,16 +167,16 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // グーグルアカウントでログインあるいはユーザー作成＋ログイン
   const googleLogin = (): void => {
-    const provider = new firebase.auth.GoogleAuthProvider()
-    firebase
-      .auth()
-      .signInWithPopup(provider)
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
       .then(async (res) => {
-        if (res.additionalUserInfo?.isNewUser) {
+        const additionalUserInfo = getAdditionalUserInfo(res)
+
+        if (additionalUserInfo?.isNewUser) {
           ctx.app.loading = true
 
           /* @ts-ignore */
-          createUserApi('post', res.additionalUserInfo?.profile?.name)
+          createUserApi('post', additionalUserInfo.profile?.name)
         } else {
           UserStore.setToken()
           await UserStore.setUser()
@@ -194,7 +194,7 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // 匿名ユーザーを永久アカウントに変換(メールアドレスとパスワード)
   const emailAndPasswordCredential = (registerValues: RegisterValues) => {
-    const anonymousUser = firebase.auth().currentUser
+    const anonymousUser = auth.currentUser
 
     if (anonymousUser === null || !UserStore.isAnonymous) {
       payload = {
@@ -205,13 +205,9 @@ export default defineNuxtPlugin((ctx, inject) => {
       return
     }
 
-    const credential = firebase.auth.EmailAuthProvider.credential(
-      registerValues.email,
-      registerValues.password
-    )
+    const credential = EmailAuthProvider.credential(registerValues.email, registerValues.password)
 
-    anonymousUser
-      .linkWithCredential(credential)
+    linkWithCredential(anonymousUser, credential)
       .then(() => {
         ctx.app.loading = true
         createUserApi('patch', registerValues.name)
@@ -224,7 +220,7 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // 匿名ユーザーを永久アカウントに変換(グーグルアカウント)
   const googleCredential = () => {
-    const anonymousUser = firebase.auth().currentUser
+    const anonymousUser = auth.currentUser
 
     if (anonymousUser === null || !UserStore.isAnonymous) {
       payload = {
@@ -235,14 +231,13 @@ export default defineNuxtPlugin((ctx, inject) => {
       return
     }
 
-    const provider = new firebase.auth.GoogleAuthProvider()
+    const provider = new GoogleAuthProvider()
 
-    anonymousUser
-      .linkWithPopup(provider)
+    linkWithPopup(anonymousUser, provider)
       .then((res) => {
         ctx.app.loading = true
-        /* @ts-ignore */
-        createUserApi('patch', res.additionalUserInfo?.profile?.name)
+        // @ts-ignore
+        createUserApi('patch', getAdditionalUserInfo(res).profile?.name)
       })
       .catch((e) => {
         errorPayload(e.code)
@@ -252,8 +247,7 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // ログアウト
   const logout = () => {
-    firebase
-      .auth()
+    auth
       .signOut()
       .then(() => {
         UserStore.removeUser()
@@ -270,7 +264,7 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // ユーザー退会
   const unRegister = () => {
-    const user = firebase.auth().currentUser
+    const user = auth.currentUser
 
     if (!user) {
       SnackbarStore.visible({
@@ -299,9 +293,7 @@ export default defineNuxtPlugin((ctx, inject) => {
   /** パスワード再設定メール送信 */
   const sendPasswordResetEmail = (email: string) => {
     ctx.app.loading = true
-    firebase
-      .auth()
-      .sendPasswordResetEmail(email)
+    sendPasswordResetEmailFirebase(auth, email)
       .then(() => {
         payload = {
           color: 'success',
@@ -316,17 +308,15 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // $auth.メソッド()のようにアクセスできるようにする
   inject('auth', {
-    emailAndPasswordRegister: (value: RegisterValues) =>
-      emailAndPasswordRegister(value),
+    emailAndPasswordRegister: (value: RegisterValues) => emailAndPasswordRegister(value),
     logout: () => logout(),
     emailAndPasswordLogin: (value: AuthValues) => emailAndPasswordLogin(value),
     signInAnonymouly: () => signInAnonymouly(),
     googleLogin: () => googleLogin(),
-    emailAndPasswordCredential: (value: RegisterValues) =>
-      emailAndPasswordCredential(value),
+    emailAndPasswordCredential: (value: RegisterValues) => emailAndPasswordCredential(value),
     googleCredential: () => googleCredential(),
     unRegister: () => unRegister(),
-    sendPasswordResetEmail: (email: string) => sendPasswordResetEmail(email)
+    sendPasswordResetEmail: (email: string) => sendPasswordResetEmail(email),
   })
 })
 

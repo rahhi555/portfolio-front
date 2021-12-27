@@ -24,7 +24,8 @@ import {
 } from '~/utils/tutorial/tutorial-events-helpers'
 import { nowScenarioKey, targetElement, isFinishedDisplayMsg, sleep } from '~/utils/tutorial/tutorial'
 import { tutorialTooltip } from '~/utils/tutorial/tutorial-tooltip'
-import firebase from '~/plugins/firebase'
+import { analytics } from '~/plugins/firebase'
+import { logEvent } from 'firebase/analytics'
 
 /** 次のシナリオキー */
 const nextKey = computed(() => {
@@ -296,9 +297,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
   'finish-tutorial': () =>
     nextStepAddEventListener({
       func: async () => {
-        if(process.env.NODE_ENV === "production") {
-          firebase.analytics().logEvent('tutorial_complete')
-        }
+        if(analytics) logEvent(analytics , 'tutorial_complete')
         await window.$nuxt.$router.replace('/dashboard/plans')
         window.$nuxt.$router.go(0)
         return true

@@ -1,6 +1,6 @@
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/analytics'
+import { initializeApp } from 'firebase/app'
+import { getAnalytics } from 'firebase/analytics'
+import { getAuth ,connectAuthEmulator } from 'firebase/auth'
 import { UserStore } from '~/store'
 
 const firebaseConfig = {
@@ -13,22 +13,18 @@ const firebaseConfig = {
   measurementId: 'G-YC8GZGYH1W',
 }
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig)
 
-  if (process.env.NODE_ENV === 'production') {
-    firebase.analytics()
-  } else {
-    const auth = firebase.auth()
-    // @ts-ignore
-    auth.useEmulator('http://localhost:9099', { disableWarnings: true })
-  }
-}
+const app = initializeApp(firebaseConfig)
+export const auth = getAuth(app)
+// window is not definedエラーが出るためprocess.clientにする
+export const analytics = (process.env.NODE_ENV === 'production' && process.client) ? getAnalytics(app) : null
 
-firebase.auth().onAuthStateChanged((user) => {
+auth.onAuthStateChanged((user) => {
   if (!user || !user.email) return
 
   UserStore.setEmail(user.email)
 })
 
-export default firebase
+if (process.env.NODE_ENV === 'development') {
+  connectAuthEmulator(auth, 'http://localhost:9099')
+}
