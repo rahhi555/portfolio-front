@@ -24,7 +24,7 @@
 
       <div @click="logout">
         <app-bar-item>
-          <v-list-item-title v-text="'ログアウト'" />
+          <v-list-item-title v-text="'ログアウト'" data-cypress="logout-submit" />
         </app-bar-item>
       </div>
     </v-list>

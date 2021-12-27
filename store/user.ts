@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import Cookie from 'universal-cookie'
 import dayjs from 'dayjs'
-import firebase from '~/plugins/firebase'
+import { auth } from '~/plugins/firebase'
 import { $axios } from '~/utils/axios-accessor'
 import { SnackbarStore } from '~/utils/store-accessor'
 import imageValidates from '~/utils/helpers/image_validatior'
@@ -62,7 +62,7 @@ export default class User extends VuexModule {
   }
 
   /** 
-   * チュートリアル対象かどうかを返す(ユーザー作成して１分以内ならチュートリアル対象)   
+   * チュートリアル対象かどうかを返す(ユーザー作成して20秒以内ならチュートリアル対象)   
    * また、チュートリアルの項目を選んだ場合でも対象とみなす(その場合はクッキーを目安にする)
    * */
   public get needTutorial() {
@@ -70,14 +70,14 @@ export default class User extends VuexModule {
     
     const now = dayjs()
     // 現在の時刻とcreatedAtの差を分で取得
-    const diffMinutes = now.diff(this.userState.createdAt, 'm')
+    const diffSeconds = now.diff(this.userState.createdAt, 's')
 
     // 'needTutorial'というキーのクッキーが存在するか
     const cookies = new Cookie()
     const hasNeedTutorialCookie = !!cookies.get('needTutorial')
     cookies.remove('needTutorial', { path: '/' })
 
-    return diffMinutes <= 1 || hasNeedTutorialCookie
+    return diffSeconds <= 20 || hasNeedTutorialCookie
   }
 
   @Mutation
@@ -106,7 +106,7 @@ export default class User extends VuexModule {
 
   @Action
   public async setUser() {
-    const currentUser = firebase.auth().currentUser
+    const currentUser = auth.currentUser
     const token = await currentUser?.getIdToken()
 
     $axios.defaults.headers.common.Authorization = `Bearer ${token}`
@@ -126,7 +126,7 @@ export default class User extends VuexModule {
 
   @Action
   public async setToken() {
-    const token = await firebase.auth().currentUser?.getIdToken()
+    const token = await auth.currentUser?.getIdToken()
     if(!token) return
     this.setTokenMutation(token) 
   }

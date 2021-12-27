@@ -63,6 +63,22 @@ import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
 import { SnackbarStore, UserStore } from '~/store'
 import { AppBarFuncKey, AccountDialogKey, IsVisibleDrawerKey, IsVisibleAppBarKey } from '~/types/injection-key'
 import { isSmAndDownWithPlanShow } from '~/utils/ui/common'
+import { auth } from '~/plugins/firebase'
+
+const router = useRouter()
+onMounted(() => {
+  // クッキーが存在しサーバー側がログイン判定を出したとしても、クライアント側のfirebase authがログインしていないと判定したらクッキーを削除し、ログイン画面に飛ばす
+  auth.onAuthStateChanged((user) => {
+    if(!user && UserStore.isAuthenticated) {
+      UserStore.removeUser()
+      SnackbarStore.visible({ color: 'warning', message: 'ログインしてください' })
+      router.replace('/auth/login')
+    }
+
+    // ログインしていたらメールアドレスセット
+    if (user && user.email) UserStore.setEmail(user.email)
+  })
+})
 
 const appBarFunc = ref<AppBarFunc | null>(null)
 provide(AppBarFuncKey, appBarFunc)
@@ -76,9 +92,11 @@ provide(IsVisibleDrawerKey, drawer)
 const isVisibleAppBar = ref(true)
 provide(IsVisibleAppBarKey, isVisibleAppBar)
 
+const route = useRoute()
+const { $vuetify } = useContext()
 /** いずれかの計画idページかつデバイスが大きいときtrueを返す */
 const isPlanIdPageAndLargeDevice = computed(() => {
-  return useRoute().value.name!.startsWith('dashboard-plans-id') && useContext().$vuetify.breakpoint.lgAndUp
+  return route.value.name!.startsWith('dashboard-plans-id') && $vuetify.breakpoint.lgAndUp
 })
 
 const snackParams = computed({
