@@ -13,17 +13,10 @@ const firebaseConfig = {
   measurementId: 'G-YC8GZGYH1W',
 }
 
-
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 // window is not definedエラーが出るためprocess.clientにする
 export const analytics = (process.env.NODE_ENV === 'production' && process.client) ? getAnalytics(app) : null
-
-auth.onAuthStateChanged((user) => {
-  if (!user || !user.email) return
-
-  UserStore.setEmail(user.email)
-})
 
 if (process.env.NODE_ENV === 'development') {
   connectAuthEmulator(auth, 'http://localhost:9099')

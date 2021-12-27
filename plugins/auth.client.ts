@@ -247,10 +247,11 @@ export default defineNuxtPlugin((ctx, inject) => {
 
   // ログアウト
   const logout = () => {
+    // protected.vueのonMountedの関係上先にremoveUserを実行し、その後signOutする必要あり
+    UserStore.removeUser()
     auth
       .signOut()
       .then(() => {
-        UserStore.removeUser()
         payload = { color: 'success', message: 'ログアウトしました' }
         ctx.app.router?.push('/')
       })
