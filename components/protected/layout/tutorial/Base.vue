@@ -1,6 +1,7 @@
 <template>
   <div v-if="$device.isDesktop">
-    <div v-show="isRunningTutorial" id="tutorial-div"></div>
+    <div v-show="isRunningTutorial" id="overlay-layer"></div>
+    <div v-show="isRunningTutorial" id="helper-layer"></div>
     <v-row justify="space-around">
       <v-col cols="auto">
         <v-dialog
@@ -63,12 +64,18 @@ const isRunningTutorial = $tutorial.isRunningTutorial
 </script>
 
 <style scoped lang="sass">
-#tutorial-div
-  position: absolute
+#overlay-layer
+  position: fixed
+  // helper-layerを上回る値
+  z-index: 204
+  inset: 0
+
+#helper-layer
+  position: fixed
   // v-dialogのデフォルトのz-indexが202なのでそれを上回る値
   z-index: 203
-  background-color: black
-  opacity: 0.5
-  width: 100%
-  height: 100%
+  border-radius: 4px
+  box-shadow: rgba(33, 33, 33, 0.8) 0px 0px 1px 2px, rgba(33, 33, 33, 0.5) 0px 0px 0px 5000px
+  transition: all .3s ease-out
+  pointer-events: none
 </style>

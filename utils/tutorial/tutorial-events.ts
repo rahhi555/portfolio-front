@@ -52,6 +52,7 @@ const nextStepAddEventListener = (opt?: {
   func?: (e: HTMLInputEvent) => boolean | Promise<boolean>
   once?: boolean
 }) => {
+  console.log('fire!')
   const defaultOpt = {
     target: targetElement.value!,
     event: 'click',

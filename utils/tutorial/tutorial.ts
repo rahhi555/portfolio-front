@@ -9,7 +9,10 @@ import { nextStepEvents } from '~/utils/tutorial/tutorial-events'
 import { messages } from '~/utils/tutorial/tutorial-messages'
 
 /** チュートリアルで最前面に表示されるDiv要素。全画面を覆いつつclipPathスタイルを指定して切り抜くことで、特定箇所のみユーザー操作を許可する。 */
-const tutorialDiv = ref<HTMLDivElement>()
+const overlayLayer = ref<HTMLDivElement>()
+
+/** 黒枠と黒背景のレイヤー */
+const helperLayer = ref<HTMLDivElement>()
 
 /** 現在のシナリオの[data-tutorial]キーを格納する変数。初期値が一番最初に開始するシナリオ */
 export const nowScenarioKey = ref<DataTutorialKey>('create-plan-btn')
@@ -68,7 +71,7 @@ export const tutorialWatchStart = () => {
     { immediate: true }
   )
 
-  /** メッセージが表示し終えるたび、グラデーションを選択箇所に沿って中抜きする */
+  /** メッセージが表示し終えるたび選択箇所に沿って中抜きする */
   watch(
     () => [isFinishedDisplayMsg.value, targetElement.value],
     async () => {
@@ -76,17 +79,16 @@ export const tutorialWatchStart = () => {
       // DOMが中途半端に更新された状態で取得され、更にその後watchが発火しないため、遅延させ最終的なDOMを取得する
       await sleep(300)
 
-      tutorialDiv.value ||= document.getElementById('tutorial-div') as HTMLDivElement
+      overlayLayer.value ||= document.getElementById('overlay-layer') as HTMLDivElement
+      helperLayer.value ||= document.getElementById('helper-layer') as HTMLDivElement
 
-      if (!tutorialDiv.value) return
+      if (!overlayLayer.value || !helperLayer.value) return
 
       // 中抜きリセット
-      tutorialDiv.value.style.clipPath = ''
+      overlayLayer.value.style.clipPath = ''
 
       // メッセージが表示し終えていなければリターン
-      if (!isFinishedDisplayMsg.value) return
-
-      if (!tutorialDiv || !targetElement.value) return
+      if (!isFinishedDisplayMsg.value || !targetElement.value) return
 
       // 選択箇所の位置情報取得
       const targetRect = targetElement.value.getBoundingClientRect()
@@ -96,11 +98,17 @@ export const tutorialWatchStart = () => {
       const targetRectPath = `M ${left} ${top}  h ${width} v ${height} h -${width} z`
 
       // 画面全体の位置をPath文字列に変換
-      const { clientWidth, clientHeight } = tutorialDiv.value
+      const { clientWidth, clientHeight } = overlayLayer.value
       const displayScreenPath = `M 0 0 v ${clientHeight} h ${clientWidth} v -${clientHeight} z`
 
-      // グラデーション中抜き
-      tutorialDiv.value.style.clipPath = `path('${targetRectPath} ${displayScreenPath}')`
+      // 選択箇所に沿って中抜き
+      overlayLayer.value.style.clipPath = `path('${targetRectPath} ${displayScreenPath}')`
+
+      // 黒枠と黒背景設定
+      helperLayer.value.style.top = `${top - 5}px`
+      helperLayer.value.style.left = `${left - 5}px`
+      helperLayer.value.style.height = `${height + 10}px`
+      helperLayer.value.style.width = `${width + 10}px`
     },
     { immediate: true }
   )
