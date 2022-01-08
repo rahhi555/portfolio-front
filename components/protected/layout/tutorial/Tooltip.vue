@@ -25,15 +25,6 @@ const isTooltipCloseBottom = computed(() => {
   return screenWithTargetBottomDiff < 100
 })
 
-/** ターゲットとスクリーンの右端の差を取得し、近ければtrue、離れていればfalseを返す */
-const isTooltipCloseRight = computed(() => {
-  if (!$tutorial.targetElement.value) return false
-
-  const screenWithTargetRightDiff =
-    document.documentElement.clientWidth - $tutorial.targetElement.value?.getBoundingClientRect().right
-  return screenWithTargetRightDiff < 100
-})
-
 /** ターゲット要素が切り替わるたびツールチップの位置を合わせる */
 watch(
   $tutorial.targetElement,
@@ -64,8 +55,16 @@ watch(
       tooltipTop = `${bottom}px`
     }
 
+    const isTooltipCloseRight =
+      document.documentElement.clientWidth - $tutorial.targetElement.value?.getBoundingClientRect().right < 100
+
     // ターゲットの位置がスクリーン右端と近い場合、ターゲットを左寄りに配置する
-    const tooltipLeft = isTooltipCloseRight.value ? left - 100 : left
+    let tooltipLeft = isTooltipCloseRight ? left - 100 : left
+
+    const isTooltipCloseLeft = $tutorial.targetElement.value?.getBoundingClientRect().left < 30
+
+    // ターゲットの位置がスクリーン左端と近い場合、ターゲットを右寄りに配置する
+    tooltipLeft = isTooltipCloseLeft ? left + 10 : tooltipLeft
 
     tooltipEl.style.top = tooltipTop
     tooltipEl.style.left = `${tooltipLeft}px`

@@ -22,7 +22,14 @@ import {
   chackAnotherTodoInTutorial,
   inactivatePlanInTutorial,
 } from '~/utils/tutorial/tutorial-events-helpers'
-import { nowScenarioKey, targetElement, isFinishedDisplayMsg, sleep } from '~/utils/tutorial/tutorial'
+import {
+  nowScenarioKey,
+  targetElement,
+  isFinishedDisplayMsg,
+  sleep,
+  overlayLayer,
+  helperLayer,
+} from '~/utils/tutorial/tutorial'
 import { tutorialTooltip } from '~/utils/tutorial/tutorial-tooltip'
 import { analytics } from '~/plugins/firebase'
 import { logEvent } from 'firebase/analytics'
@@ -67,6 +74,10 @@ const nextStepAddEventListener = (opt?: {
     event,
     async (e) => {
       if (!(await func(e as HTMLInputEvent))) return
+
+      // 二重クリック防止
+      overlayLayer.value!.style.clipPath = ''
+      helperLayer.value?.classList.add('helper-layer-inactive')
 
       nowScenarioKey.value = nextKey.value!
     },
@@ -297,7 +308,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
   'finish-tutorial': () =>
     nextStepAddEventListener({
       func: async () => {
-        if(analytics) logEvent(analytics , 'tutorial_complete')
+        if (analytics) logEvent(analytics, 'tutorial_complete')
         await window.$nuxt.$router.replace('/dashboard/plans')
         window.$nuxt.$router.go(0)
         return true
