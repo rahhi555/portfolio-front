@@ -15,9 +15,6 @@
 
     <client-only>
       <drawer />
-    </client-only>
-
-    <client-only>
       <LayoutTutorialBase v-if="$device.isDesktop && needTutorial" />
     </client-only>
 

@@ -75,7 +75,10 @@ const isRunningTutorial = $tutorial.isRunningTutorial
   // v-dialogのデフォルトのz-indexが202なのでそれを上回る値
   z-index: 203
   border-radius: 4px
-  box-shadow: rgba(33, 33, 33, 0.8) 0px 0px 1px 2px, rgba(33, 33, 33, 0.5) 0px 0px 0px 5000px
-  transition: all .3s ease-out
+  transition: all .1s ease-out
   pointer-events: none
+  box-shadow: rgba(0, 0, 0, 0.8) 0px 0px 1px 2px, rgba(0, 0, 0, 0.6) 0px 0px 0px 5000px
+
+.helper-layer-inactive
+  background-color: rgba(0, 0, 0, 0.6)
 </style>

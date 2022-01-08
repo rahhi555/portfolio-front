@@ -6,7 +6,8 @@ import {
   nowScenarioKey,
   nowTooltip,
   targetElement,
-  tutorialWatchStart
+  tutorialWatchStart,
+  initLayers
 } from '~/utils/tutorial/tutorial'
 import { analytics } from '~/plugins/firebase'
 import { logEvent } from 'firebase/analytics'
@@ -16,6 +17,7 @@ export default defineNuxtPlugin((_, inject) => {
   const initTutorial = async () => {
     await nextTick()
     tutorialWatchStart()
+    initLayers()
 
     // タブキーを無効にする
     document.addEventListener('keydown', (e) => {
