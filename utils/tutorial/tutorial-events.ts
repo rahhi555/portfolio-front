@@ -274,7 +274,12 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
   'click-rect': async () => {
     await sleep(1000)
     setMarkersInTutorial()
-    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! })
+    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)!, event: 'mousedown', func: (e) => {
+      // todoリストによってclickが阻まれてしまうのでmousedownにする
+      // @ts-ignore
+      const mouseEvent = e as MouseEvent
+      return (mouseEvent.button === 0)
+    }})
   },
 
   'check-todo-0': () =>

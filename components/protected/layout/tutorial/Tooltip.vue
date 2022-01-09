@@ -61,7 +61,7 @@ watch(
     // ターゲットの位置がスクリーン右端と近い場合、ターゲットを左寄りに配置する
     let tooltipLeft = isTooltipCloseRight ? left - 100 : left
 
-    const isTooltipCloseLeft = $tutorial.targetElement.value?.getBoundingClientRect().left < 30
+    const isTooltipCloseLeft = $tutorial.targetElement.value?.getBoundingClientRect().left < 40
 
     // ターゲットの位置がスクリーン左端と近い場合、ターゲットを右寄りに配置する
     tooltipLeft = isTooltipCloseLeft ? left + 10 : tooltipLeft

@@ -17,7 +17,7 @@
       <SvgsBase v-show="hasActiveMap" />
     </v-col>
 
-    <MapsFooterShow class="maps-footer-show" />
+    <MapsFooterShow v-if="isPlanActive" class="maps-footer-show" />
     <v-btn @click="isVisibleMapDialog = true" class="map-visible-btn"><v-icon>mdi-map-legend</v-icon></v-btn>
 
     <transition name="slide">
