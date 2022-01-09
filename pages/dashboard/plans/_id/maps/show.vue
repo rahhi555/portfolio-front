@@ -1,31 +1,48 @@
 <template>
   <v-row>
-    <client-only>
-      <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="12" md="3">
-        <MapsSideBarShow />
-      </v-col>
-    </client-only>
+    <v-btn
+      dark
+      @click="toggleVisibleAppBar"
+      class="toggle-visible-appbar-btn"
+      :color="isPlanActive ? 'primary' : ''"
+      label
+      style="border-radius: 0"
+    >
+      <v-icon v-if="isVisibleAppBar">mdi-arrow-collapse-up</v-icon>
+      <v-icon v-else>mdi-arrow-expand-down</v-icon>
+    </v-btn>
 
-    <client-only>
-      <v-btn v-if="isSmAndDownWithPlanShow" dark @click="toggleVisibleAppBar" class="toggle-visible-appbar-btn" label>
-        <v-icon v-if="isVisibleAppBar">mdi-arrow-collapse-up</v-icon>
-        <v-icon v-else>mdi-arrow-expand-down</v-icon>
-      </v-btn>
-    </client-only>
-
-    <v-col max-width="100%" rounded cols="12" md="9" style="position: relative; padding-right: 0;">
+    <v-col max-width="100%" rounded cols="12" style="position: relative">
       <MapsGoogleMap v-show="hasActiveMap" />
       <SvgsBase v-show="hasActiveMap" />
-      <MapsFooterBase :justify-content="isPlanActive ? 'justify-sm-space-between' : 'justify-end'">
-        <MapsFooterShow v-if="isPlanActive" />
-      </MapsFooterBase>
     </v-col>
 
-    <client-only>
-      <v-col v-if="$vuetify.breakpoint.smAndDown" id="bottom-sidebar" cols="12" md="3">
-        <MapsSideBarShow />
-      </v-col>
-    </client-only>
+    <MapsFooterShow class="maps-footer-show" />
+    <v-btn @click="isVisibleMapDialog = true" class="map-visible-btn"><v-icon>mdi-map-legend</v-icon></v-btn>
+
+    <transition name="slide">
+      <v-row v-show="isTodoListExpand" class="todolist-sideber" cols="12">
+        <v-col cols="6">
+          <MapsSideBarShow />
+        </v-col>
+        <v-col @pointerdown="isTodoListExpand = false" cols="6"></v-col>
+      </v-row>
+    </transition>
+
+    <v-dialog v-model="isVisibleMapDialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">マップ選択</span>
+        </v-card-title>
+        <v-card-text style='padding: 0;'>
+          <MapsFooterBase :justify-content="'justify-center'" :is-spacer="true" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="isVisibleMapDialog = false"> Close </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -36,15 +53,17 @@ export default {
   middleware: ['initialize-store'],
 
   head: {
-    title: 'Map Show'
-  }
+    title: 'Map Show',
+  },
 }
 </script>
 
 <script setup lang="ts">
 import { PlansStore, MapsStore } from '~/store'
 import { IsVisibleAppBarKey } from '~/types/injection-key'
-import { isSmAndDownWithPlanShow } from '~/utils/ui/common'
+import { SvgsStore } from '~/store'
+import { isAddPathMode } from '~/utils/svgs/svg-add-path'
+import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
 
 /** 計画のアクティブ判定。アクティブならマーカーとピン立てのスイッチを持つフッターを表示させる */
 const isPlanActive = computed(() => PlansStore.currentPlan?.active)
@@ -55,9 +74,31 @@ const hasActiveMap = computed(() => !!MapsStore.activeMap)
 /** モバイルかつ計画中でマップ閲覧画面にアクセスした際のappBar表示判定 */
 const isVisibleAppBar = inject(IsVisibleAppBarKey)!
 
+/** アプリバーの表示切り替えフラグ */
 const toggleVisibleAppBar = () => {
   isVisibleAppBar.value = !isVisibleAppBar.value
 }
+
+/** todoリスト開閉フラグ */
+const isTodoListExpand = ref(false)
+
+/** 
+ * Rectをクリックした時に自動でtodoリストを開く処理 
+ * 図形の上にマーカーやパスを重ねることができるよう、マーカー及びパス挿入モードでは発生させない
+ * */
+const targetSvg = computed(() => SvgsStore.targetSvg)
+watch(targetSvg, () => {
+  if(isAddPathMode.value || isAddPolylineMode.value || !targetSvg.value) return
+
+  // targetSvgはpointerdown(クリックしている間)で取得するため、長押しすると保持し続けてしまう
+  // ドラッグする場合は上記の動作で問題ないが、今回はクリックしたかどうかを取得したいため、すぐにtargetIdを初期化して
+  // todoリスト編集中にRectを保持し続けないようにする
+  SvgsStore.setTargetId(0)
+  isTodoListExpand.value = true
+})
+
+/** マップ選択ダイアログ表示フラグ */
+const isVisibleMapDialog = ref(false)
 </script>
 
 <style scoped lang="sass">
@@ -65,5 +106,35 @@ const toggleVisibleAppBar = () => {
   position: absolute
   left: 0
   top: 0
-  z-index: 1
+  z-index: 2
+  border-radius: 0
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%)
+
+.todolist-sideber
+  position: fixed
+  inset: 0
+  width: 100%
+  height: 100%
+  z-index: 2
+  background-color: rgba(0,0,0, .4)
+
+.maps-footer-show
+  position: absolute
+  bottom: 200px
+
+.map-visible-btn
+  position: absolute
+  bottom: 100px
+
+.slide-enter
+  transform: translateX(-50%)
+
+.slide-enter-active, .slide-leave-active
+  transition: all .3s
+
+.slide-enter-to
+  transform: translateX(0)
+
+.slide-leave-to
+  transform: translateX(-50%)
 </style>

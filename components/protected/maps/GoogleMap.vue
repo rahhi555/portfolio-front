@@ -78,18 +78,18 @@
     <div
       v-show="enabledGoogleMap"
       id="google-map"
-      :class="[isGoogleMapEditMode ? 'active-map' : 'non-active-map', { 'google-map-expand': isSmAndDownWithPlanShow }]"
+      :class="[isGoogleMapEditMode ? 'active-map' : 'non-active-map', { 'google-map-expand': isShowPage }]"
     ></div>
     <div
       v-show="!enabledGoogleMap"
-      :class="['disabled-google-map', { 'google-map-expand': isSmAndDownWithPlanShow }]"
+      :class="['disabled-google-map', { 'google-map-expand': isShowPage }]"
     ></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { MapsStore } from '~/store'
-import { isShowPage, isSmAndDownWithPlanShow } from '~/utils/ui/common'
+import { isShowPage } from '~/utils/ui/common'
 import Marker from '~/utils/ui/google-map-marker'
 
 const { $googleMap, $config, $tutorial } = useContext()

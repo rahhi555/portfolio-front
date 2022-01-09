@@ -4,7 +4,8 @@
       <slot />
 
       <span v-if="activeMap">
-        <v-chip style="max-width: 45%">{{ activeMap.name }}</v-chip>
+        <v-chip :style="{'max-width': isSpacer ? '100%' : '45%'}">{{ activeMap.name }}</v-chip>
+        <v-spacer v-if="isSpacer" class="my-4"></v-spacer>
         <v-pagination
           v-model="activeIndex"
           :length="maps.length"
@@ -28,6 +29,11 @@ export default defineComponent({
       type: String,
       default: 'justify-start',
     },
+
+    isSpacer: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed: {

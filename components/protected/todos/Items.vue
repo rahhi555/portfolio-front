@@ -2,7 +2,7 @@
   <v-data-iterator
     :items="selectedTodoListTodosWithStatuses"
     item-key="id"
-    style="background-color: white; max-height: 85vh"
+    :style="[{'background-color': bgColor}, {'max-height': maxHeight}]"
     no-data-text="　Todoがありません"
     class="overflow-y-auto overflow-x-hidden"
   >
@@ -38,7 +38,7 @@
           :md="cols.md"
           :lg="cols.lg"
         >
-          <v-card>
+          <v-card :style="{'background-color': bgColor}">
             <v-list-group
               :value="isTodoListEditPage"
               append-icon=""
@@ -136,6 +136,16 @@ export default defineComponent({
         lg: 4,
       }),
     },
+    
+    bgColor: {
+      type: String,
+      default: 'white'
+    },
+
+    maxHeight: {
+      type: String,
+      default: '85vh'
+    }
   },
 
   setup() {

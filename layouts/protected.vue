@@ -21,7 +21,7 @@
     <v-img
       :src="require(`@/assets/login_gray.jpg`)"
       gradient="to top, #00000080, #00000080"
-      :max-height="isPlanIdPageAndLargeDevice ? '100vh' : 'none'"
+      :max-height="isPlanIdPageAndLargeDevice || isShowPage ? '100vh' : 'none'"
     >
       <app-bar />
 
@@ -29,7 +29,6 @@
         <v-container
           id="main-container"
           fluid
-          :class="isSmAndDownWithPlanShow ? 'continer-mobile-and-show-plan' : 'continer-default'"
         >
           <Nuxt />
         </v-container>
@@ -59,8 +58,8 @@ import Drawer from '~/components/protected/layout/drawer/Drawer.vue'
 import MiniSnackbar from '~/components/protected/layout/MiniSnackBar.vue'
 import { SnackbarStore, UserStore } from '~/store'
 import { AppBarFuncKey, AccountDialogKey, IsVisibleDrawerKey, IsVisibleAppBarKey } from '~/types/injection-key'
-import { isSmAndDownWithPlanShow } from '~/utils/ui/common'
 import { auth } from '~/plugins/firebase'
+import { isShowPage } from '~/utils/ui/common'
 
 const router = useRouter()
 onMounted(() => {
@@ -105,12 +104,7 @@ const needTutorial = UserStore.needTutorial
 </script>
 
 <style scoped>
-.continer-default {
-  margin: 20px 0;
+#main-container {
   padding: 12px 32px;
-}
-
-.continer-mobile-and-show-plan {
-  padding-left: 64px;
 }
 </style>

@@ -2,7 +2,7 @@
   <v-sheet
     ref="svgSheet"
     elevation="6"
-    :class="['svg-base-sheet', { 'svg-base-sheet-expand' : isSmAndDownWithPlanShow }]"
+    :class="['svg-base-sheet', { 'svg-base-sheet-expand': isShowPage }]"
     data-tutorial="drag-and-save-rect click-rect"
     @touchmove="pinchInOut"
   >
@@ -15,9 +15,9 @@
       :viewBox="viewBoxStr().value"
       xmlns="http://www.w3.org/2000/svg"
       style="border: solid 2px black"
+      @pointerdown.left.self="scrollBegin($event)"
       @pointerdown.left="
-        scrollBegin($event);
-        addPath($event)
+        addPath($event);
         addPolylineStart($event)
       "
       @pointermove="
@@ -82,7 +82,7 @@ import { resizeMiddle, resizeStop } from '~/utils/svgs/svg-resize'
 import { addPath } from '~/utils/svgs/svg-add-path'
 import { addPolylineStart, addPolylineMiddle, addPolylineStop } from '~/utils/svgs/svg-add-polyline'
 import { mounted as cursorMounted } from '~/utils/ui/svg-cursor'
-import { isEditPage, isSmAndDownWithPlanShow } from '~/utils/ui/common'
+import { isEditPage, isShowPage } from '~/utils/ui/common'
 import { pinchInOut } from '~/utils/svgs/svg-pinch'
 
 const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
@@ -114,9 +114,13 @@ const autosave = debounce(
 const allSvgs = computed(() => {
   return SvgsStore.allSvgs
 })
-const autoSaveStop = watch(allSvgs, () => {
-  if (isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
-}, { deep: true })
+const autoSaveStop = watch(
+  allSvgs,
+  () => {
+    if (isEditPage.value && !$tutorial.isRunningTutorial.value) autosave()
+  },
+  { deep: true }
+)
 onUnmounted(autoSaveStop)
 
 /** 手動セーブ */
