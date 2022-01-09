@@ -16,7 +16,7 @@
       "
       @keydown="moveRectArrowKey"
       @keydown.delete="deleteSvg"
-      @contextmenu.prevent="showMenu"
+      @contextmenu.prevent="showMenu;"
       @dragenter="attachTodoListEnter"
       @dragleave="attachTodoListLeave"
     />

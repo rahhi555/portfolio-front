@@ -17,10 +17,8 @@
     </div>
   </foreignObject>
 
-  <!-- idはMaps/GoogleMapsコンポーネントのオーバーレイ処理で使用する -->
   <text
     v-else
-    :id="'svg-text-' + svg.id"
     :class="{ 'tooltip-visible': isEditPage && !isAnyMode }"
     text-anchor="middle"
     @dblclick="editSvgName"

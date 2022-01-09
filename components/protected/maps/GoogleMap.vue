@@ -219,37 +219,16 @@ const stopAutoNormalMode = watch(activeMapId, () => {
   })
 })
 
-// モード切替時にオーバーレイのオンオフをする
-const overlay = ref<google.maps.OverlayView>()
-const stopOverlay = watch($googleMap.isGoogleMapEditMode, () => {
+// モード切替時に自動で見た目を整える
+const stopDefaultUI = watch($googleMap.isGoogleMapEditMode, () => {
   if ($googleMap.isGoogleMapEditMode.value) {
     map.value.setOptions({
       disableDefaultUI: false,
     })
-
-    // オーバーレイ削除時のミニマップ消失を防ぐため、複製したミニマップをオーバーレイ対象にする
-    const svgBase = document.getElementById('svg-base')!
-    const cloneSvgBase = svgBase.cloneNode(true) as HTMLElement
-    cloneSvgBase.id = 'svg-base-clone'
-    // ベースとなるミニマップは非表示にする
-    cloneSvgBase.style.visibility = 'visible'
-    // テキストの「ダブルクリックで名前変更」を非表示にする(v-bindが効かなかったため、直接クラスを削除する)
-    const childTexts = cloneSvgBase.querySelectorAll("[id ^= 'svg-text-']") as NodeListOf<SVGTextElement>
-    childTexts.forEach((text) => {
-      text.classList.remove('tooltip-visible')
-    })
-    // Lineのクラスを削除し、ホバーした際のカーソルを初期化する
-    const childLines = cloneSvgBase.querySelectorAll('line') as NodeListOf<SVGLineElement>
-    childLines.forEach((line) => {
-      line.setAttributeNS(null, 'class', '')
-    })
-
-    overlay.value = $googleMap.initOverlay(activeMapBoundsHeading.value.bounds, cloneSvgBase)
   } else {
     map.value.setOptions({
       disableDefaultUI: true,
     })
-    overlay.value?.onRemove()
     map.value.fitBounds(activeMapBoundsHeading.value.bounds, 0)
     map.value.setHeading(activeMapBoundsHeading.value.heading)
   }
@@ -258,7 +237,7 @@ const stopOverlay = watch($googleMap.isGoogleMapEditMode, () => {
 onUnmounted(() => {
   $googleMap.isGoogleMapEditMode.value = false
   stopAutoNormalMode()
-  stopOverlay()
+  stopDefaultUI()
   if (isShowPage.value && !$tutorial.isRunningTutorial.value) {
     Marker.unMounted()
   }

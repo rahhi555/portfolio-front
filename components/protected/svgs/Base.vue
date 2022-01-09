@@ -68,7 +68,7 @@ import { debounce } from 'mabiki'
 import { MapsStore, SvgsStore } from '~/store'
 import {
   svgSheet,
-  mounted as viewBoxMounted,
+  setup as viewBoxSetup,
   scrollBegin,
   scrollEnd,
   scrollMiddle,
@@ -89,7 +89,7 @@ const rects = computed(() => SvgsStore.activeMapSvgs('Rect'))
 const paths = computed(() => SvgsStore.activeMapSvgs('Path'))
 const polylines = computed(() => SvgsStore.activeMapSvgs('Polyline'))
 
-viewBoxMounted()
+viewBoxSetup()
 spaceKeyMounted()
 spaceKeyUnMounted()
 cursorMounted()
