@@ -1,10 +1,10 @@
 <template>
   <span>
-    <v-btn-toggle v-model="selected" dense>
+    <v-btn-toggle v-model="selected" :class="{'show-page-btns': isShowPage}">
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-btn>
-            <v-icon large v-bind="attrs" v-on="on">mdi-map-marker</v-icon>
+            <v-icon v-bind="attrs" v-on="on">mdi-map-marker</v-icon>
           </v-btn>
         </template>
         <span>ピン</span>
@@ -13,7 +13,7 @@
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-btn>
-            <v-icon large v-bind="attrs" v-on="on">mdi-marker</v-icon>
+            <v-icon v-bind="attrs" v-on="on">mdi-marker</v-icon>
           </v-btn>
         </template>
         <span>マーカー</span>
@@ -26,6 +26,7 @@
 import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
 import { isAddPathMode } from '~/utils/svgs/svg-add-path'
 import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
+import { isShowPage } from '~/utils/ui/common'
 
 export default defineComponent({
   props: {
@@ -55,7 +56,15 @@ export default defineComponent({
 
     return {
       selected,
+      isShowPage
     }
   },
 })
 </script>
+
+<style scoped>
+.show-page-btns {
+  flex-direction: column;
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+}
+</style>

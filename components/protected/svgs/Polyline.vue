@@ -2,6 +2,9 @@
   <g
     :id="'svg-' + polyline.id"
     :transform="'translate(' + polyline.x + ',' + polyline.y + ')'"
+    tabindex="1"
+    @keydown.delete="deletePolyline(polyline.id)"
+    style="cursor: pointer"
   >
     <defs>
       <style>
@@ -37,9 +40,6 @@
       :points="polyline.drawPoints"
       marker-start="url(#dot)"
       marker-end="url(#triangle)"
-      tabindex="1"
-      style="cursor: pointer"
-      @keydown.delete="deletePolyline(polyline.id)"
     />
 
     <SvgsText :svg="polyline" :text-x="namePosition.x" :text-y="namePosition.y" />
@@ -55,7 +55,8 @@ import {
 } from '@nuxtjs/composition-api'
 import { Polyline } from 'interface'
 import { SvgsStore, MembersStore } from '~/store'
-import { isEditPage } from '~/utils/ui/common'
+import { isShowPage } from '~/utils/ui/common'
+import { isEditSvgName } from '~/utils/svgs/svg-edit-name'
 
 export default defineComponent({
   props: {
@@ -69,7 +70,7 @@ export default defineComponent({
     const polyline = props.polyline as Polyline
 
     const deletePolyline = (id: number) => {
-      if (!isEditPage.value) return
+      if (isShowPage.value || isEditSvgName.value) return
       SvgsStore.deleteSvg(id)
     }
 

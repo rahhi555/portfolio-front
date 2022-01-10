@@ -19,5 +19,5 @@ export const auth = getAuth(app)
 export const analytics = (process.env.NODE_ENV === 'production' && process.client) ? getAnalytics(app) : null
 
 if (process.env.NODE_ENV === 'development') {
-  connectAuthEmulator(auth, 'http://localhost:9099')
+  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true} )
 }

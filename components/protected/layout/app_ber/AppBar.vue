@@ -9,6 +9,7 @@
     dark
     :color="isPlanActive ? 'primary' : undefined"
     :value="isVisibleAppBar"
+    style="z-index: 3;"
   >
     <go-home v-show="!isMobile" />
 

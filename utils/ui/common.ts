@@ -19,10 +19,3 @@ export const isPlanActive = computed(() => {
   const isNotPlansPage = window.$nuxt.$route.name !== 'dashboard-plans'
   return !!PlansStore.currentPlan?.active && isNotPlansPage
 })
-
-/** smAndDownかつ閲覧しているページが計画詳細ページ  */
-export const isSmAndDownWithPlanShow = computed(() => {
-  if(process.server) return false
-  
-  return window.$nuxt.$route.name?.endsWith('show') && window.$nuxt.$vuetify.breakpoint.smAndDown
-})

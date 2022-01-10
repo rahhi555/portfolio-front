@@ -17,10 +17,8 @@
     </div>
   </foreignObject>
 
-  <!-- idはMaps/GoogleMapsコンポーネントのオーバーレイ処理で使用する -->
   <text
     v-else
-    :id="'svg-text-' + svg.id"
     :class="{ 'tooltip-visible': isEditPage && !isAnyMode }"
     text-anchor="middle"
     @dblclick="editSvgName"
@@ -48,7 +46,7 @@ import {
 } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
 import { TodoListsStore } from '~/store'
-import EditName from '~/utils/svgs/svg-edit-name'
+import { isEditSvgName, isAnyMode, editSvgName, updateSvgName } from '~/utils/svgs/svg-edit-name'
 import { isEditPage } from '~/utils/ui/common'
 
 export default defineComponent({
@@ -71,11 +69,11 @@ export default defineComponent({
     const svg = props.svg as Rect
 
     return {
-      isEditSvgName: EditName.isEditSvgName,
-      isAnyMode: EditName.isAnyMode,
-      isEditPage: isEditPage,
-      editSvgName: () => EditName.editSvgName(svg),
-      updateSvgName: (e: KeyboardEvent) => EditName.updateSvgName(e, svg),
+      isEditSvgName,
+      isAnyMode,
+      isEditPage,
+      editSvgName: () => editSvgName(svg),
+      updateSvgName: (e: KeyboardEvent) => updateSvgName(e, svg),
     }
   },
 

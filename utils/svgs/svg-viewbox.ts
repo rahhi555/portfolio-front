@@ -1,4 +1,4 @@
-import { computed, ref, onMounted, watch } from '@nuxtjs/composition-api'
+import { computed, ref, onMounted, watch, WatchStopHandle, onUnmounted } from '@nuxtjs/composition-api'
 import { MapsStore, SnackbarStore } from '~/store'
 import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
 import { isEditPage } from '~/utils/ui/common'
@@ -40,10 +40,13 @@ const activeMap = computed(() => MapsStore.activeMap)
 // pointerEventでマルチタップを検出するためのログ配列
 let evCache: PointerEvent[] = []
 
+// watchストップハンドラ
+const stopWatch = ref<WatchStopHandle>()
+
 // svgSheetは$refsで取得したv-sheetを格納するためのプロパティ
 export const svgSheet = ref<Vue | null>(null)
 
-export const mounted = () => {
+export const setup = () => {
   onMounted(() => {
     const svgSheetEl = svgSheet.value?.$el as HTMLDivElement
     if (!svgSheetEl) SnackbarStore.visible({ color: 'error', message: 'シート初期化に失敗しました' })
@@ -57,7 +60,12 @@ export const mounted = () => {
     width.value = defaultWidth.value
     height.value = defaultHeight.value
     if (isSvgSheetDisplayNone) svgSheetEl.style.display = 'none'
-    watch(activeMap, reset)
+    stopWatch.value = watch(activeMap, reset)
+  })
+  onUnmounted(() => {
+    if(!stopWatch.value) return
+
+    stopWatch.value() 
   })
 }
 
