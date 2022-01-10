@@ -1,8 +1,5 @@
 <template>
-  <g
-    :id="'svg-' + rect.id"
-    :transform="'translate(' + rect.x + ',' + rect.y + ')'"
-  >
+  <g :id="'svg-' + rect.id" :transform="'translate(' + rect.x + ',' + rect.y + ')'">
     <rect
       :width="rect.width"
       :height="rect.height"
@@ -52,20 +49,17 @@
       :class="{ 'left-line': isEditPage && !isSomeTrueModes }"
       @pointerdown.stop="resizeStart"
     />
-    <SvgsText
-      :svg="rect"
-      :text-x="rect.width / 2"
-      :text-y="rect.height / 1.5"
-    ></SvgsText>
+    <SvgsText :svg="rect" :text-x="rect.width / 2" :text-y="rect.height / 1.5"></SvgsText>
+
+    <circle :cx="rect.width" r="20" fill="#333" />
+    <text :x="rect.width" font-size="15" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="white"
+      >{{todoCountText}}</text
+    >
   </g>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  useContext,
-  computed,
-} from '@nuxtjs/composition-api'
+import { defineComponent, useContext, computed } from '@nuxtjs/composition-api'
 import { Rect } from 'interface'
 import { SvgsStore, TodoListsStore, TodoStatusesStore, PlansStore } from '~/store'
 import { dragStart, moveRectArrowKey } from '~/utils/svgs/svg-drag'
@@ -91,25 +85,41 @@ export default defineComponent({
       if (!isEditPage.value) return
       SvgsStore.deleteSvg(e)
     }
-    
+
     const { $config } = useContext()
     const { NO_ATTACH_COLOR, TODO_COLOR, DONE_COLOR, DOING_COLOR } = $config.rectColors
+
+    /** このrectにアタッチされている全てのtodo */
+    const todoStatuses = computed(() => {
+      if(PlansStore.currentPlan?.active) {
+        return TodoStatusesStore.getTodoStatusesBySvgId(rect.id)
+      }
+    })
 
     /** 図形の色をtodoのステータスに合わせて変化させる */
     const fill = computed(() => {
       // 図形にtodoリストがアタッチされていないなければNO_ATTACH_COLORを返す
       if (!rect.todoListId) return NO_ATTACH_COLOR
-      // 計画がアクティブでなければTODO_COLORを返す
-      if (!PlansStore.currentPlan?.active) return TODO_COLOR
+      // 計画がアクティブでないかtodoStatusesが無ければTODO_COLORを返す
+      if (!PlansStore.currentPlan?.active || !todoStatuses.value) return TODO_COLOR
 
-      const todos = TodoStatusesStore.getTodoStatusesBySvgId(rect.id)!
-
-      if (todos.every((todo) => todo.status === 'done')) {
+      if (todoStatuses.value.every((todo) => todo.status === 'done')) {
         return DONE_COLOR
-      } else if (todos.some((todo) => todo.status === 'done')) {
+      } else if (todoStatuses.value.some((todo) => todo.status === 'done')) {
         return DOING_COLOR
       } else {
         return TODO_COLOR
+      }
+    })
+
+    /** todoの総数。計画がアクティブの場合は 1/10 のようにいくつ終了しているかも表示する。 */
+    const todoCountText = computed(() => {
+      if(todoStatuses.value) {
+        const doneLength = todoStatuses.value.filter(todo => todo.status === 'done').length
+        const total = todoStatuses.value?.length
+        return `${doneLength}/${total}`
+      } else {
+        return TodoListsStore.todoLists.find(todoList => todoList.id === rect.todoListId)?.todos?.length || 0
       }
     })
 
@@ -121,9 +131,7 @@ export default defineComponent({
       const targetRect = SvgsStore.targetSvg
       if (!targetRect) return
 
-      const todoListIndex = TodoListsStore.todoLists.findIndex(
-        (todoList) => todoList.id === targetRect.todoListId
-      )
+      const todoListIndex = TodoListsStore.todoLists.findIndex((todoList) => todoList.id === targetRect.todoListId)
       if (todoListIndex === -1) {
         TodoListsStore.setSelectedTodoListIndex(null)
         return
@@ -143,6 +151,7 @@ export default defineComponent({
       selectRect,
       isSomeTrueModes,
       isEditPage,
+      todoCountText
     }
   },
 })
