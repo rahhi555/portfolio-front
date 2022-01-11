@@ -1,7 +1,7 @@
 <template>
   <g
     :id="'svg-' + rect.id"
-    :transform="'translate(' + rect.x + ',' + rect.y + ')'"
+    :transform="`translate(${rect.x},${rect.y}) rotate(0)`"
     @pointerdown.left="selectRectStart"
     @pointerup.left="selectRectEnd"
   >
@@ -15,7 +15,7 @@
       @pointerdown.left="dragStart"
       @keydown="moveRectArrowKey"
       @keydown.delete="deleteSvg"
-      @contextmenu.prevent="showMenu;"
+      @contextmenu.prevent="showMenu"
       @dragenter="attachTodoListEnter"
       @dragleave="attachTodoListLeave"
     />

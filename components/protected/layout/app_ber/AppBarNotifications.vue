@@ -3,7 +3,7 @@
     <template #activator="{ attrs, on }">
       <!-- client-onlyにしないとSSR時の値で計算されてしまいバッジが表示されない -->
       <client-only>
-        <v-btn v-show="isNotMobile" data-tutorial="add-member" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
+        <v-btn v-show="$device.isDesktop" data-tutorial="add-member" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
           <v-badge bordered color="red" overlap :content="notifications.length" :value="notifications.length">
             <v-icon>mdi-bell</v-icon>
           </v-badge>
@@ -34,6 +34,4 @@ const router = useRouter()
 const pushLink = (link: string) => {
   router.push(link)
 }
-
-const isNotMobile = !useContext().$device.isMobile
 </script>
