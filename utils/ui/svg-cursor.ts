@@ -1,4 +1,4 @@
-import { watchEffect, reactive, onMounted, computed } from '@nuxtjs/composition-api'
+import { watchEffect, onMounted, computed, WatchStopHandle } from '@nuxtjs/composition-api'
 import { isSpaceKeyPress } from '~/utils/helpers/add-event-space-press'
 import { isAddPathMode } from '~/utils/svgs/svg-add-path'
 import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
@@ -13,9 +13,11 @@ const activeMapEnabledGoogleMap = computed(() => {
   return MapsStore.activeMap.isGoogleMap
 })
 
-export const mounted = () => {
+export const setup = () => {
+  let stopHandle: WatchStopHandle
+
   onMounted(() => {
-    watchEffect(() => {
+    stopHandle = watchEffect(() => {
       const svgBase = document.getElementById('svg-base')
 
       if (!svgBase) {
@@ -48,12 +50,18 @@ export const mounted = () => {
       }
     })
   })
+
+  onUnmounted(() => {
+    stopHandle()
+  })
 }
 
+/** ピン立て、マーカー、スペースキー押下のいずれかのモードに該当していればtrueを返す */
 export const isSomeTrueModes = computed(() => {
   return isAddPathMode.value || isAddPolylineMode.value || isSpaceKeyPress.value
 })
 
+/** ピン立て、マーカーどちらかのモードに該当していればtrueを返す */
 export const isAddModes = computed(() => {
   return isAddPathMode.value || isAddPolylineMode.value
 })

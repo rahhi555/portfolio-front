@@ -14,6 +14,8 @@
     </v-btn>
 
     <v-col max-width="100%" rounded cols="12" style="position: relative">
+      <v-banner v-if="!hasActiveMap" color="info" icon="mdi-alert-circle-outline">マップが作成されていません</v-banner>
+
       <MapsGoogleMap v-show="hasActiveMap" />
       <SvgsBase v-show="hasActiveMap" />
     </v-col>
@@ -29,7 +31,7 @@
     </v-tooltip>
     <v-tooltip top>
       <template #activator="{ on }">
-        <v-btn @click="toggleMapMode" absolute style="bottom: 120px" v-on="on"
+        <v-btn v-show="isGoogleMap" @click="toggleMapMode" absolute style="bottom: 120px" v-on="on"
           ><v-icon>mdi-compare-horizontal</v-icon></v-btn
         >
       </template>
@@ -77,9 +79,7 @@ export default {
 <script setup lang="ts">
 import { PlansStore, MapsStore } from '~/store'
 import { IsVisibleAppBarKey } from '~/types/injection-key'
-import { SvgsStore } from '~/store'
-import { isAddPathMode } from '~/utils/svgs/svg-add-path'
-import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
+import { isTodoListExpand } from '~/utils/ui/todolist-expand'
 
 /** 計画のアクティブ判定。アクティブならマーカーとピン立てのスイッチを持つフッターを表示させる */
 const isPlanActive = computed(() => PlansStore.currentPlan?.active)
@@ -95,24 +95,6 @@ const toggleVisibleAppBar = () => {
   isVisibleAppBar.value = !isVisibleAppBar.value
 }
 
-/** todoリスト開閉フラグ */
-const isTodoListExpand = ref(false)
-
-/**
- * Rectをクリックした時に自動でtodoリストを開く処理
- * 図形の上にマーカーやパスを重ねることができるよう、マーカー及びパス挿入モードでは発生させない
- * */
-const targetSvg = computed(() => SvgsStore.targetSvg)
-watch(targetSvg, () => {
-  if (isAddPathMode.value || isAddPolylineMode.value || !targetSvg.value) return
-
-  // targetSvgはpointerdown(クリックしている間)で取得するため、長押しすると保持し続けてしまう
-  // ドラッグする場合は上記の動作で問題ないが、今回はクリックしたかどうかを取得したいため、すぐにtargetIdを初期化して
-  // todoリスト編集中にRectを保持し続けないようにする
-  SvgsStore.setTargetId(0)
-  isTodoListExpand.value = true
-})
-
 /** マップ選択ダイアログ表示フラグ */
 const isVisibleMapDialog = ref(false)
 
@@ -126,6 +108,9 @@ const toggleMapMode = () => {
   const { ROADMAP, SATELLITE } = google.maps.MapTypeId
   mapTypeId === ROADMAP ? map.setMapTypeId(SATELLITE) : map.setMapTypeId(ROADMAP)
 }
+
+/** 現在表示しているマップがグーグルマップを使用するか */
+const isGoogleMap = computed(() => !!MapsStore.activeMap?.isGoogleMap)
 </script>
 
 <style scoped lang="sass">

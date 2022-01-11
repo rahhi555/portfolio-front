@@ -16,11 +16,12 @@
     :class="{ 'tooltip-visible': isEditPage && !isAnyMode }"
     text-anchor="middle"
     @dblclick="editSvgName(svg)"
-    @pointerdown.left="selectRectStart"
-    @pointerup.left="selectRectEnd($event, svg.id)"
+    @pointerdown.left="expandTodoListStart"
+    @pointerup.left="expandTodoListEnd($event, svg.id)"
+    :fill="strokeColor"
   >
     <tspan :x="textX" :y="textY" font-weight="bold" font-size="14px">{{ svg.name }}</tspan>
-    <tspan :x="textX" :y="textY + 20" font-style="italic" stroke="gray" font-size="14px">{{ todoListTitle }}</tspan>
+    <tspan :x="textX" :y="textY + 20" font-style="italic" font-size="14px">{{ todoListTitle }}</tspan>
 
     <tspan class="text-tooltip" :x="textX" :y="textY - 20" font-weight="lighter" font-size="12px">
       ダブルクリックで名前変更
@@ -33,14 +34,13 @@ import { AllSvgType } from 'interface'
 import { TodoListsStore } from '~/store'
 import { isEditSvgName, isAnyMode, editSvgName, updateSvgName } from '~/utils/svgs/svg-edit-name'
 import { isEditPage } from '~/utils/ui/common'
-import { selectRectStart, selectRectEnd } from '~/utils/ui/todolist-expand'
+import { expandTodoListStart, expandTodoListEnd } from '~/utils/ui/todolist-expand'
+import { strokeColor } from '~/utils/svgs/svg-stroke-color'
 
 const props = defineProps<{ svg: AllSvgType; textX: number; textY: number }>()
 
 const todoListTitle = computed(() => {
-  const todoList = TodoListsStore.todoLists.find(
-    (todoList) => todoList.id === props.svg.todoListId
-  )
+  const todoList = TodoListsStore.todoLists.find((todoList) => todoList.id === props.svg.todoListId)
   return todoList?.title
 })
 </script>

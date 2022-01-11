@@ -14,14 +14,11 @@ const unSpaceKeyPress = (e: KeyboardEvent) => {
 
 export const isSpaceKeyPress = ref(false)
 
-export const mounted = () => {
+export const setup = () => {
   onMounted(() => {
     window.addEventListener('keypress', spaceKeyPress, false)
     window.addEventListener('keyup', unSpaceKeyPress, false)
-  })
-}
-
-export const unMounted = () => {
+  })  
   onUnmounted(() => {
     window.removeEventListener('keypress', spaceKeyPress, false)
     window.removeEventListener('keyup', unSpaceKeyPress, false)

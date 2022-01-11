@@ -7,34 +7,17 @@
     style="cursor: pointer"
   >
     <defs>
-      <style>
-        #triangle, #dot {
-          fill-opacity: 0.8;
-        }
-      </style>
-      <marker
-        id="triangle"
-        viewBox="0 0 10 10"
-        refX="1"
-        refY="5"
-        markerUnits="strokeWidth"
-        orient="auto"
-      >
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="royalblue" />
+      <marker id="triangle" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="red" fill-opacity="1" />
       </marker>
-      <marker
-        id="dot"
-        viewBox="0 0 10 10"
-        refX="5"
-        refY="5"
-      >
-        <circle cx="5" cy="5" r="5" fill="royalblue" />
+      <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5">
+        <circle cx="5" cy="5" r="5" fill="firebrick" fill-opacity="0.8" />
       </marker>
     </defs>
 
     <polyline
       fill="none"
-      stroke="black"
+      :stroke="strokeColor"
       stroke-opacity="0.5"
       stroke-width="3"
       :points="polyline.drawPoints"
@@ -42,21 +25,17 @@
       marker-end="url(#triangle)"
     />
 
-    <SvgsText :svg="polyline" :text-x="namePosition.x" :text-y="namePosition.y" />
+    <SvgsText :svg="polyline" :text-x="namePosition.x" :text-y="namePosition.y" :fill="strokeColor" />
   </g>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  ref,
-  onMounted,
-} from '@nuxtjs/composition-api'
+import { computed, defineComponent, ref, onMounted } from '@nuxtjs/composition-api'
 import { Polyline } from 'interface'
 import { SvgsStore, MembersStore } from '~/store'
 import { isShowPage } from '~/utils/ui/common'
 import { isEditSvgName } from '~/utils/svgs/svg-edit-name'
+import { strokeColor } from '~/utils/svgs/svg-stroke-color'
 
 export default defineComponent({
   props: {
@@ -75,9 +54,7 @@ export default defineComponent({
     }
 
     const avatar = computed(() => {
-      const member = MembersStore.members?.find(
-        (member) => member.userId === polyline.userId
-      )
+      const member = MembersStore.members?.find((member) => member.userId === polyline.userId)
       return member?.avatar
     })
 
@@ -103,7 +80,8 @@ export default defineComponent({
       deletePolyline,
       avatar,
       isDisplay,
-      namePosition
+      namePosition,
+      strokeColor,
     }
   },
 })

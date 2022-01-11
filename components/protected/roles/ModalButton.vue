@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { Role } from 'interface'
 import { RolesStore, SnackbarStore } from '~/store'
-const { role } = defineProps<{ role: Role }>()
+const props = defineProps<{ role: Role }>()
 
 const dialog = ref(false)
 
@@ -62,16 +62,16 @@ const deleteRole = (role: Role) => {
   RolesStore.deleteRole(role.id)
 }
 
-const roleParams = reactive(Object.assign({}, role))
+const roleParams = reactive(Object.assign({}, props.role))
 
 watch(dialog, () => {
-  roleParams.name = role.name
-  roleParams.description = role.description
+  roleParams.name = props.role.name
+  roleParams.description = props.role.description
 })
 
 const updateRole = async () => {
   const { id, name, description } = roleParams
-  const { name: propsName, description: propsDescription } = role
+  const { name: propsName, description: propsDescription } = props.role
 
   if (name === propsName && description === propsDescription) {
     SnackbarStore.visible({ color: 'warning', message: '値が更新されていません' })

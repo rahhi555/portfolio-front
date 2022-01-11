@@ -148,19 +148,28 @@ onMounted(() => {
   })
 })
 
-// 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
-const activeMapId = computed(() => {
-  if (!activeMap.value) return false
-  return activeMap.value.id
-})
-const stopAutoNormalMode = watch(activeMapId, () => {
-  $googleMap.isGoogleMapEditMode.value = false
-  const bounds = activeMapBounds.value
+/**
+ * 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
+ * また、最後のmapTypeIdがSATELLITEかつ次のマップがgoogleMapを使用しない場合表示がおかしくなるためROADMAPにする
+ * **/
+const stopAutoNormalMode = watch(activeMap, (newMap, oldMap) => {
+  // 変更前のマップがグーグルマップ対応の場合、エディットモードを解除し、マップ表示をROADMAPにする
+  if(oldMap?.isGoogleMap) {
+    $googleMap.isGoogleMapEditMode.value = false
 
-  // mapのdom要素が表示されてからじゃないと失敗する
-  nextTick(() => {
-    map.value.fitBounds(bounds, 0)
-  })
+    const { ROADMAP } = google.maps.MapTypeId
+    $googleMap.map.value.setMapTypeId(ROADMAP)
+  }
+
+  // 次表示するマップがグーグルマップ対応の場合boundsをセットする
+  if (newMap?.isGoogleMap) {
+    const bounds = activeMapBounds.value
+
+    // mapのdom要素が表示されてからじゃないと失敗する
+    nextTick(() => {
+      map.value.fitBounds(bounds, 0)
+    })
+  }
 })
 
 // モード切替時に自動で見た目を整える

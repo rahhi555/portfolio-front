@@ -2,20 +2,23 @@ import { isSomeTrueModes } from '~/utils/ui/svg-cursor'
 import { isEditPage } from '~/utils/ui/common'
 import { SvgsStore, TodoListsStore } from '~/store'
 
-/** Rect選択処理に使用する座標変数。startとendで差が5pxあればスクロールとみなし、setTargetIdを実行しない */
-const selectStartXY = reactive({ x: 0, y: 0 })
+/** todoリスト開閉フラグ */
+export const isTodoListExpand = ref(false)
 
-export const selectRectStart = (e: PointerEvent) => {
+/** Rect選択処理に使用する座標変数。startとendで差が5pxあればスクロールとみなし、setTargetIdを実行しない */
+const expandStartXY = reactive({ x: 0, y: 0 })
+
+export const expandTodoListStart = (e: PointerEvent) => {
   if (isEditPage.value || isSomeTrueModes.value) return
 
-  selectStartXY.x = e.x
-  selectStartXY.y = e.y
+  expandStartXY.x = e.x
+  expandStartXY.y = e.y
 }
 
-export const selectRectEnd = (e: PointerEvent, id?: number) => {
+export const expandTodoListEnd = (e: PointerEvent, id?: number) => {
   if (isEditPage.value || isSomeTrueModes.value) return
 
-  if (Math.abs(e.x - selectStartXY.x) > 4 || Math.abs(e.y - selectStartXY.y) > 4) return
+  if (Math.abs(e.x - expandStartXY.x) > 4 || Math.abs(e.y - expandStartXY.y) > 4) return
 
   SvgsStore.setTargetId(id || e)
   const targetRect = SvgsStore.targetSvg
@@ -27,4 +30,6 @@ export const selectRectEnd = (e: PointerEvent, id?: number) => {
     return
   }
   TodoListsStore.setSelectedTodoListIndex(todoListIndex)
+
+  isTodoListExpand.value = true
 }

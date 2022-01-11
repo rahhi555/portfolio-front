@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-btn-toggle v-model="selected" :class="{'show-page-btns': isShowPage}">
+    <v-btn-toggle v-model="selected" :class="{ 'show-page-btns': isShowPage }">
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-btn>
@@ -22,43 +22,27 @@
   </span>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { isAddPathMode } from '~/utils/svgs/svg-add-path'
 import { isAddPolylineMode } from '~/utils/svgs/svg-add-polyline'
 import { isShowPage } from '~/utils/ui/common'
 
-export default defineComponent({
-  props: {
-    hasActiveMap: {
-      type: Boolean,
-    },
-  },
-
-  setup() {
-    const selected = ref<number | undefined>(undefined)
-    watch(selected, () => {
-      switch (selected.value) {
-        case 0:
-          isAddPathMode.value = true
-          isAddPolylineMode.value = false
-          break
-        case 1:
-          isAddPathMode.value = false
-          isAddPolylineMode.value = true
-          break
-        default:
-          isAddPathMode.value = false
-          isAddPolylineMode.value = false
-          break
-      }
-    })
-
-    return {
-      selected,
-      isShowPage
-    }
-  },
+const selected = ref<number | undefined>(undefined)
+watch(selected, () => {
+  switch (selected.value) {
+    case 0:
+      isAddPathMode.value = true
+      isAddPolylineMode.value = false
+      break
+    case 1:
+      isAddPathMode.value = false
+      isAddPolylineMode.value = true
+      break
+    default:
+      isAddPathMode.value = false
+      isAddPolylineMode.value = false
+      break
+  }
 })
 </script>
 

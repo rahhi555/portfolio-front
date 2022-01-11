@@ -2,14 +2,14 @@
   <g
     :id="'svg-' + rect.id"
     :transform="`translate(${rect.x},${rect.y}) rotate(${rect.rotate})`"
-    @pointerdown.left="selectRectStart"
-    @pointerup.left="selectRectEnd"
+    @pointerdown.left="expandTodoListStart"
+    @pointerup.left="expandTodoListEnd"
   >
     <rect
       :width="rect.width"
       :height="rect.height"
       :fill="fill"
-      :stroke="rect.stroke"
+      :stroke="strokeColor"
       tabindex="0"
       :class="{ grabbable: isEditPage && !isSomeTrueModes }"
       @pointerdown.left="dragStart"
@@ -73,7 +73,10 @@
       class="rotate-text-visible"
       >{{ todoCountText }}
     </text>
-    <text :x="rect.width" y="-25" font-size="12" class="rotate-text">左右クリックで回転</text>
+    
+    <client-only>
+      <text v-if="isEditPage" :x="rect.width" y="-25" font-size="12" class="rotate-text" :fill="strokeColor">左右クリックで回転</text>
+    </client-only>
   </g>
 </template>
 
@@ -85,8 +88,9 @@ import { resizeStart } from '~/utils/svgs/svg-resize'
 import { attachTodoListEnter, attachTodoListLeave } from '~/utils/helpers/todo-list-attach'
 import { showMenu } from '~/utils/ui/svg-context-menu'
 import { isSomeTrueModes } from '~/utils/ui/svg-cursor'
-import { isEditPage } from '~/utils/ui/common'
-import { selectRectStart, selectRectEnd } from '~/utils/ui/todolist-expand'
+import { isEditPage, isShowPage } from '~/utils/ui/common'
+import { expandTodoListEnd, expandTodoListStart } from '~/utils/ui/todolist-expand'
+import { strokeColor } from '~/utils/svgs/svg-stroke-color'
 
 const { rect: propsRect } = defineProps<{ rect: Rect }>()
 
@@ -133,7 +137,10 @@ const todoCountText = computed(() => {
   }
 })
 
+/** 傾き処理 */
 const updateRotate = (addRotate: number) => {
+  if(isShowPage.value) return
+
   SvgsStore.changeSvg({ status: 'rotate', value: propsRect.rotate + addRotate, otherTargetId: propsRect.id })
 }
 </script>

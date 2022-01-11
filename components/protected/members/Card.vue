@@ -2,13 +2,7 @@
   <v-card tile elevation="3">
     <v-tooltip v-if="member.accept && !isAuthorCard" bottom>
       <template #activator="{ on, attrs }">
-        <v-icon
-          color="success"
-          large
-          class="accept-icon"
-          v-bind="attrs"
-          v-on="on"
-          @click="acceptToggle(member)"
+        <v-icon color="success" large class="accept-icon" v-bind="attrs" v-on="on" @click="acceptToggle(member)"
           >mdi-account</v-icon
         >
       </template>
@@ -45,13 +39,7 @@
       <v-btn v-if="currentUserAccept" text icon @click="dialog = true">
         <v-icon>mdi-square-edit-outline</v-icon>
       </v-btn>
-      <v-btn
-        v-if="isMyCard && !isAuthorCard"
-        text
-        icon
-        color="error"
-        @click="exitMembers(member)"
-      >
+      <v-btn v-if="isMyCard && !isAuthorCard" text icon color="error" @click="exitMembers(member)">
         <v-icon>mdi-account-arrow-right-outline</v-icon>
       </v-btn>
     </v-list-item>
@@ -71,14 +59,10 @@
               <td>{{ role.name }}</td>
               <td>{{ role.description }}</td>
               <td>
-                <v-icon
-                  v-if="member.roleId === role.id"
-                  @click="updateMember(member.id, null)"
+                <v-icon v-if="member.roleId === role.id" @click="updateMember(member.id)"
                   >mdi-checkbox-marked</v-icon
                 >
-                <v-icon v-else @click="updateMember(member.id, role.id)"
-                  >mdi-checkbox-blank-outline</v-icon
-                >
+                <v-icon v-else @click="updateMember(member.id, role.id)">mdi-checkbox-blank-outline</v-icon>
               </td>
             </tr>
           </tbody>
@@ -88,72 +72,50 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, computed, useContext } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { Member } from 'interface'
 import { MembersStore, PlansStore, RolesStore, UserStore } from '~/store'
 
-export default defineComponent({
-  props: {
-    member: {
-      type: Object,
-      default: () => {},
-    },
-  },
+const props = defineProps<{ member: Member }>()
 
-  setup(props) {
-    const exitMembers = (member: Member) => {
-      if (!confirm('メンバーを脱退してよろしいですか？')) {
-        alert('キャンセルしました')
-        return
-      }
+const exitMembers = (member: Member) => {
+  if (!confirm('メンバーを脱退してよろしいですか？')) {
+    alert('キャンセルしました')
+    return
+  }
 
-      MembersStore.exitMembers(member)
-    }
+  MembersStore.exitMembers(member)
+}
 
-    const updateMember = (id: number, roleId: number) => {
-      MembersStore.updateMember({ id, roleId })
-    }
+const updateMember = (id: number, roleId?: number) => {
+  MembersStore.updateMember({ id, roleId })
+}
 
-    const { $tutorial } = useContext()
-    const acceptToggle = (member: Member) => {
-      if (PlansStore.currentPlan!.userId !== UserStore.currentUser.id) {
-        alert('承認および承認解除は作成者しか実行できません')
-        return
-      }
-      if($tutorial.isRunningTutorial.value) return
-      
-      const accept = !member.accept
-      MembersStore.updateMember({ id: member.id, accept })
-    }
+const { $tutorial } = useContext()
+const acceptToggle = (member: Member) => {
+  if (PlansStore.currentPlan!.userId !== UserStore.currentUser.id) {
+    alert('承認および承認解除は作成者しか実行できません')
+    return
+  }
+  if ($tutorial.isRunningTutorial.value) return
 
-    const isAuthorCard = computed(() => {
-      return PlansStore.currentPlan?.userId === props.member.userId
-    })
+  const accept = !member.accept
+  MembersStore.updateMember({ id: member.id, accept })
+}
 
-    const isMyCard = computed(() => {
-      return UserStore.currentUser.id === props.member.userId
-    })
-
-    return {
-      exitMembers,
-      dialog: ref(false),
-      updateMember,
-      acceptToggle,
-      isAuthorCard,
-      isMyCard,
-    }
-  },
-
-  computed: {
-    roles() {
-      return RolesStore.roles
-    },
-    currentUserAccept() {
-      return MembersStore.currentUserAccept
-    },
-  },
+const isAuthorCard = computed(() => {
+  return PlansStore.currentPlan?.userId === props.member.userId
 })
+
+const isMyCard = computed(() => {
+  return UserStore.currentUser.id === props.member.userId
+})
+
+const dialog = ref(false)
+
+const roles = computed(() => RolesStore.roles)
+
+const currentUserAccept = computed(() => MembersStore.currentUserAccept)
 </script>
 
 <style scoped lang="sass">

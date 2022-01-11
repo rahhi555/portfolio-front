@@ -76,12 +76,12 @@ import {
   zoomInOut,
   reset,
 } from '~/utils/svgs/svg-viewbox'
-import { mounted as spaceKeyMounted, unMounted as spaceKeyUnMounted } from '~/utils/helpers/add-event-space-press'
+import { setup as spaceKeySetup } from '~/utils/helpers/add-event-space-press'
 import { dragMiddle, dragStop } from '~/utils/svgs/svg-drag'
 import { resizeMiddle, resizeStop } from '~/utils/svgs/svg-resize'
 import { addPath } from '~/utils/svgs/svg-add-path'
 import { addPolylineStart, addPolylineMiddle, addPolylineStop } from '~/utils/svgs/svg-add-polyline'
-import { mounted as cursorMounted } from '~/utils/ui/svg-cursor'
+import { setup as cursorSetup } from '~/utils/ui/svg-cursor'
 import { isEditPage, isShowPage } from '~/utils/ui/common'
 import { pinchInOut } from '~/utils/svgs/svg-pinch'
 
@@ -90,9 +90,8 @@ const paths = computed(() => SvgsStore.activeMapSvgs('Path'))
 const polylines = computed(() => SvgsStore.activeMapSvgs('Polyline'))
 
 viewBoxSetup()
-spaceKeyMounted()
-spaceKeyUnMounted()
-cursorMounted()
+spaceKeySetup()
+cursorSetup()
 
 const { $googleMap, $tutorial } = useContext()
 // 編集ページかつGoogleMap編集ページかどうか
@@ -141,7 +140,7 @@ const save = () => {
   height: map-get($svgbase-and-googlemap-vh, 'expand')
 
 .mysvg-edit
-  background-image: linear-gradient(90deg, transparent 19px, #ddd 20px), linear-gradient(0deg, transparent 19px, #ddd 20px)
+  background-image: linear-gradient(90deg, transparent 19px, #A9A9A9 20px), linear-gradient(0deg, transparent 19px, #A9A9A9 20px)
   background-size: 20px 20px
   background-repeat: repeat
 
