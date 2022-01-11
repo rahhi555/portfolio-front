@@ -1,7 +1,7 @@
 <template>
   <v-menu bottom left min-width="200" offset-y origin="top right" transition="scale-transition">
     <template #activator="{ attrs, on }">
-      <v-btn v-show="isNotMobile" data-cypress="logout" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
+      <v-btn v-show="$device.isDesktop" data-cypress="logout" class="ml-2" min-width="0" text v-bind="attrs" v-on="on">
         <v-avatar>
           <v-img v-if="currentUser.avatar" height="100%" width="100%" :src="currentUser.avatar" />
           <v-icon v-else class="mx-auto">mdi-account</v-icon>
@@ -66,6 +66,4 @@ const confirmStartTutorial = async () => {
 }
 
 const currentUser = computed(() => UserStore.currentUser)
-
-const isNotMobile = !useContext().$device.isMobile
 </script>

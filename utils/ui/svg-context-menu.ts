@@ -9,11 +9,11 @@ export const isShowMenu = ref(false)
 export const position = { x: 0, y: 0 }
 
 /** コンテキストメニュー表示 */
-export const showMenu = (e: PointerEvent) => {
+export const showMenu = (e: MouseEvent) => {
   if (!isEditPage.value) return
 
   isShowMenu.value = false
-  SvgsStore.setTargetId(e)
+  SvgsStore.setTargetId(e as PointerEvent)
   position.x = e.clientX
   position.y = e.clientY
   nextTick(() => {

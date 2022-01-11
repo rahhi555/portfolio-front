@@ -79,9 +79,10 @@ const resizeMiddleLeft = (e: PointerEvent) => {
 
 // --- リサイズ処理 ---
 export const resizeStart = (e: PointerEvent): void => {
+  if (!isEditPage.value || isSomeTrueModes.value) return
+
   SvgsStore.setTargetId(e)
   if (typeof SvgsStore.targetSvg === 'undefined') return
-  if (!isEditPage.value || isSomeTrueModes.value) return
 
   isShowMenu.value = false
   isResizing = true

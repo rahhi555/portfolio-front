@@ -11,9 +11,9 @@
     :value="isVisibleAppBar"
     style="z-index: 3;"
   >
-    <go-home v-show="!isMobile" />
+    <go-home v-show="$device.isDesktop" />
 
-    <drawer-toggle v-show="isMobile" />
+    <drawer-toggle v-show="$device.isMobileOrTablet" />
 
     <v-spacer />
 
@@ -35,8 +35,6 @@ import Account from './AppBarAccount.vue'
 import Tab from './AppBarTab.vue'
 import { isPlanActive } from '~/utils/ui/common'
 import { IsVisibleAppBarKey } from '~/types/injection-key'
-
-const isMobile = useContext().$device.isMobile
 
 const isVisibleAppBar = inject(IsVisibleAppBarKey)
 </script>

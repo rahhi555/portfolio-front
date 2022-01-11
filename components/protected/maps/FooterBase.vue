@@ -19,39 +19,21 @@
   </v-col>
 </template>
 
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import { MapsStore } from '~/store'
 
-export default defineComponent({
-  props: {
-    justifyContent: {
-      type: String,
-      default: 'justify-start',
-    },
+withDefaults(defineProps<{ justifyContent: string, isSpacer: boolean }>(), {
+  justifyContent: 'justify-start',
+  isSpacer: false
+})
 
-    isSpacer: {
-      type: Boolean,
-      default: false
-    }
-  },
+const maps = computed(() => MapsStore.maps)
 
-  computed: {
-    maps() {
-      return MapsStore.maps
-    },
-    activeMap() {
-      return MapsStore.activeMap
-    },
-    activeIndex: {
-      get() {
-        return MapsStore.activeIndex + 1
-      },
-      set(value: number) {
-        MapsStore.setActiveIndex(value - 1)
-      },
-    },
-  },
+const activeMap = computed(() => MapsStore.activeMap)
+
+const activeIndex = computed({
+  get: () => MapsStore.activeIndex + 1,
+  set: (value: number) => MapsStore.setActiveIndex(value - 1)
 })
 </script>
 

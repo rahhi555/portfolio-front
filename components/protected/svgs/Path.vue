@@ -5,6 +5,7 @@
     style="cursor: pointer"
     tabindex="0"
     @keydown.delete="deletePath(path.id)" 
+    :fill="strokeColor"
   >
     <path
       fill="black"
@@ -34,6 +35,7 @@ import { Path } from 'interface'
 import { SvgsStore, MembersStore } from '~/store'
 import { isShowPage } from '~/utils/ui/common'
 import { isEditSvgName } from '~/utils/svgs/svg-edit-name'
+import { strokeColor } from '~/utils/svgs/svg-stroke-color'
 
 export default defineComponent({
   props: {
@@ -72,6 +74,7 @@ export default defineComponent({
       deletePath,
       avatar,
       isDisplay,
+      strokeColor
     }
   },
 })

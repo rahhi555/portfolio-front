@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 import { Loader } from '@googlemaps/js-api-loader'
-import { defineNuxtPlugin, ref, Ref } from '@nuxtjs/composition-api'
+import { defineNuxtPlugin, ref, Ref, computed } from '@nuxtjs/composition-api'
 
 export default defineNuxtPlugin(({ $config }, inject) => {
   const isGoogleMapEditMode = ref(false)
@@ -22,7 +22,7 @@ export default defineNuxtPlugin(({ $config }, inject) => {
   const googleMap = {
     loader,
     isGoogleMapEditMode,
-    map
+    map,
   }
 
   inject('googleMap', googleMap)

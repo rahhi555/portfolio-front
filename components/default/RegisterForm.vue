@@ -125,31 +125,11 @@
   </ValidationObserver>
 </template>
 
-<script lang="ts">
-import { defineComponent } from '@nuxtjs/composition-api'
+<script setup lang="ts">
 import TearmsOfService from '~/components/default/TermsOfService.vue'
 
-export default defineComponent({
-  components: {
-    TearmsOfService
-  },
-  props: {
-    name: String,
-    email: String,
-    password: String,
-    passwordConfirm: String,
-  },
-
-  setup() {
-    const isShowPassword = false
-    const isShowDialog = false
-    const isCheckToS = false
-
-    return {
-      isShowPassword,
-      isShowDialog,
-      isCheckToS
-    }
-  },
-})
+defineProps<{ name: string, email: string, password: string, passwordConfirm: string }>()
+const isShowPassword = false
+const isShowDialog = false
+const isCheckToS = false
 </script>

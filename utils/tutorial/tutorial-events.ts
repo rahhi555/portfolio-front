@@ -33,6 +33,7 @@ import {
 import { tutorialTooltip } from '~/utils/tutorial/tutorial-tooltip'
 import { analytics } from '~/plugins/firebase'
 import { logEvent } from 'firebase/analytics'
+import { isTodoListExpand } from '~/utils/ui/todolist-expand'
 
 /** 次のシナリオキー */
 const nextKey = computed(() => {
@@ -266,7 +267,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
   'show-map': () =>
     nextStepAddEventListener({
       func: async () => {
-        await sleep(2000)
+        await sleep(1000)
         return true
       },
     }),
@@ -274,12 +275,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
   'click-rect': async () => {
     await sleep(1000)
     setMarkersInTutorial()
-    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)!, event: 'mousedown', func: (e) => {
-      // todoリストによってclickが阻まれてしまうのでmousedownにする
-      // @ts-ignore
-      const mouseEvent = e as MouseEvent
-      return (mouseEvent.button === 0)
-    }})
+    nextStepAddEventListener({ target: document.getElementById(`svg-${MAIN_BIG_NUMBER}`)! })
   },
 
   'check-todo-0': () =>
@@ -294,6 +290,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
       chackAnotherTodoInTutorial()
       await sleep(1000)
       stop()
+      isTodoListExpand.value = false
       nowScenarioKey.value = nextKey.value!
     })
   },
@@ -302,7 +299,7 @@ export const nextStepEvents: { [key in DataTutorialKey]: () => void } = {
 
   'progress-bar': () => {
     const stop = watch(isFinishedDisplayMsg, async () => {
-      await sleep(2000)
+      await sleep(1500)
       stop()
       nowScenarioKey.value = nextKey.value!
     })

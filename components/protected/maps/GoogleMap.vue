@@ -40,50 +40,13 @@
       <span>中心座標をセット</span>
     </v-tooltip>
 
-    <v-tooltip top>
-      <template #activator="{ on, attrs }">
-        <v-btn
-          v-show="isGoogleMapEditMode"
-          id="rotate-left-icon"
-          class="ml-3"
-          fab
-          small
-          v-bind="attrs"
-          v-on="on"
-          @click="rotateMap(5)"
-          ><v-icon>mdi-rotate-left</v-icon></v-btn
-        >
-      </template>
-      <span>マップを左に回転</span>
-    </v-tooltip>
-
-    <v-tooltip top>
-      <template #activator="{ on, attrs }">
-        <v-btn
-          v-show="isGoogleMapEditMode"
-          id="rotate-right-icon"
-          class="mr-3"
-          fab
-          small
-          v-bind="attrs"
-          v-on="on"
-          @click="rotateMap(-5)"
-          ><v-icon>mdi-rotate-right</v-icon></v-btn
-        >
-      </template>
-      <span>マップを右に回転</span>
-    </v-tooltip>
-
     <v-chip id="active-map-address" :active="isInitMap && enabledGoogleMap" class="ml-2">{{ address }}</v-chip>
     <div
       v-show="enabledGoogleMap"
       id="google-map"
       :class="[isGoogleMapEditMode ? 'active-map' : 'non-active-map', { 'google-map-expand': isShowPage }]"
     ></div>
-    <div
-      v-show="!enabledGoogleMap"
-      :class="['disabled-google-map', { 'google-map-expand': isShowPage }]"
-    ></div>
+    <div v-show="!enabledGoogleMap" :class="['disabled-google-map', { 'google-map-expand': isShowPage }]"></div>
   </div>
 </template>
 
@@ -126,8 +89,8 @@ const enabledGoogleMap = computed(() => {
   return !!activeMap.value && activeMap.value.isGoogleMap
 })
 
-const activeMapBoundsHeading = computed(() => {
-  // マップ初期値
+const activeMapBounds = computed(() => {
+  // bounds初期値
   const DEFAULT_BOUNDS: google.maps.LatLngBoundsLiteral = {
     south: 35.68124705175614,
     west: 139.7670591199903,
@@ -135,18 +98,7 @@ const activeMapBoundsHeading = computed(() => {
     east: 139.7681749189405,
   }
 
-  let bounds: google.maps.LatLngBoundsLiteral
-  let heading: number
-
-  if (!activeMap.value) {
-    bounds = DEFAULT_BOUNDS
-    heading = 0
-    return { bounds, heading }
-  }
-
-  bounds = activeMap.value.bounds || DEFAULT_BOUNDS
-  heading = activeMap.value.heading || 0
-  return { bounds, heading }
+  return activeMap.value?.bounds || DEFAULT_BOUNDS
 })
 
 // マップの初期化処理終了フラグ
@@ -156,7 +108,7 @@ const initMap = () => {
   window.$nuxt.$loading.start()
 
   setCurrentPosition(true)
-  const { bounds, heading } = activeMapBoundsHeading.value
+  const bounds = activeMapBounds.value
 
   $googleMap.loader.load().then(() => {
     map.value = new google.maps.Map(document.getElementById('google-map') as HTMLDivElement, {
@@ -166,15 +118,12 @@ const initMap = () => {
       fullscreenControl: false,
       rotateControl: false,
       mapId: $config.mapId,
-      heading,
     })
 
     const buttons: [string, google.maps.ControlPosition][] = [
       ['set-current-position-icon', google.maps.ControlPosition.RIGHT_BOTTOM],
       ['set-center-icon', google.maps.ControlPosition.RIGHT_BOTTOM],
       ['active-map-address', google.maps.ControlPosition.LEFT_BOTTOM],
-      ['rotate-left-icon', google.maps.ControlPosition.LEFT_CENTER],
-      ['rotate-right-icon', google.maps.ControlPosition.RIGHT_CENTER],
     ]
 
     buttons.forEach(([id, position]) => {
@@ -186,13 +135,9 @@ const initMap = () => {
       Marker.onMounted(map.value)
     }
 
-    // 初回起動時にすぐfitBoundsとsetHeadingを実行するとズームレベルが縮小されてしまうため、マップを遅延して描写する。
-    setTimeout(() => {
-      map.value.fitBounds(bounds, 0)
-      map.value.setHeading(heading)
-      isInitMap.value = true
-      window.$nuxt.$loading.finish()
-    }, 500)
+    map.value.fitBounds(bounds, 0)
+    isInitMap.value = true
+    window.$nuxt.$loading.finish()
   })
 }
 
@@ -203,20 +148,28 @@ onMounted(() => {
   })
 })
 
-// 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
-const activeMapId = computed(() => {
-  if (!activeMap.value) return false
-  return activeMap.value.id
-})
-const stopAutoNormalMode = watch(activeMapId, () => {
-  $googleMap.isGoogleMapEditMode.value = false
-  const { bounds, heading } = activeMapBoundsHeading.value
+/**
+ * 現在表示しているマップが変更されたらisGoogleMapEditModeをfalseにする
+ * また、最後のmapTypeIdがSATELLITEかつ次のマップがgoogleMapを使用しない場合表示がおかしくなるためROADMAPにする
+ * **/
+const stopAutoNormalMode = watch(activeMap, (newMap, oldMap) => {
+  // 変更前のマップがグーグルマップ対応の場合、エディットモードを解除し、マップ表示をROADMAPにする
+  if(oldMap?.isGoogleMap) {
+    $googleMap.isGoogleMapEditMode.value = false
 
-  // mapのdom要素が表示されてからじゃないと失敗する
-  nextTick(() => {
-    map.value.fitBounds(bounds, 0)
-    map.value.setHeading(heading)
-  })
+    const { ROADMAP } = google.maps.MapTypeId
+    $googleMap.map.value.setMapTypeId(ROADMAP)
+  }
+
+  // 次表示するマップがグーグルマップ対応の場合boundsをセットする
+  if (newMap?.isGoogleMap) {
+    const bounds = activeMapBounds.value
+
+    // mapのdom要素が表示されてからじゃないと失敗する
+    nextTick(() => {
+      map.value.fitBounds(bounds, 0)
+    })
+  }
 })
 
 // モード切替時に自動で見た目を整える
@@ -229,8 +182,7 @@ const stopDefaultUI = watch($googleMap.isGoogleMapEditMode, () => {
     map.value.setOptions({
       disableDefaultUI: true,
     })
-    map.value.fitBounds(activeMapBoundsHeading.value.bounds, 0)
-    map.value.setHeading(activeMapBoundsHeading.value.heading)
+    map.value.fitBounds(activeMapBounds.value, 0)
   }
 })
 
@@ -246,22 +198,11 @@ onUnmounted(() => {
 const updatePosition = async () => {
   if ($tutorial.isRunningTutorial.value) return
 
-  const heading = map.value?.getHeading()!
-
-  // 傾きが0と180のときは変化なし。その他は90と270に近いほどズームアウトしてしまうので、差をなくすためズームインする
-  if (heading === 0 || heading === 180) {
-    // empty
-  } else if ((40 < heading && heading < 140) || (220 < heading && heading < 320)) {
-    map.value.setZoom(map.value.getZoom()! + 1)
-  } else {
-    map.value.setZoom(map.value.getZoom()! + 0.5)
-  }
-  // ズームインしてからboundsを取得する
   const bounds = map.value?.getBounds()?.toJSON()
 
   const location = map.value?.getCenter()
 
-  if (!bounds || !Number.isInteger(heading) || !location) return
+  if (!bounds || !location) return
   const geocoding = new google.maps.Geocoder()
 
   // 逆ジオで住所文字列取得
@@ -281,18 +222,10 @@ const updatePosition = async () => {
     id: activeMap.value.id,
     address,
     bounds,
-    heading,
     width,
     height,
   })
   $googleMap.isGoogleMapEditMode.value = false
-}
-
-const heading = ref()
-// マップの回転処理
-const rotateMap = (amount: number) => {
-  map.value.setHeading(map.value.getHeading()! + amount)
-  heading.value = map.value.getHeading()
 }
 
 const isGoogleMapEditMode = $googleMap.isGoogleMapEditMode

@@ -1,18 +1,12 @@
 <template>
-  <foreignObject
-    v-if="isEditSvgName"
-    :x="textX - 30"
-    :y="textY - 10"
-    width="100"
-    height="50"
-  >
+  <foreignObject v-if="isEditSvgName" :x="textX - 30" :y="textY - 10" width="100" height="50">
     <div xmlns="http://www.w3.org/1999/xhtml">
       <input
         :id="`edit-svg-form-${svg.id}`"
         :value="svg.name"
         type="text"
         @blur="isEditSvgName = false"
-        @keydown.enter="updateSvgName"
+        @keydown.enter="updateSvgName($event, svg)"
       />
     </div>
   </foreignObject>
@@ -21,71 +15,33 @@
     v-else
     :class="{ 'tooltip-visible': isEditPage && !isAnyMode }"
     text-anchor="middle"
-    @dblclick="editSvgName"
+    @dblclick="editSvgName(svg)"
+    @pointerdown.left="expandTodoListStart"
+    @pointerup.left="expandTodoListEnd($event, svg.id)"
+    :fill="strokeColor"
   >
-    <tspan :x="textX" :y="textY" font-weight="bold">{{ svg.name }}</tspan>
-    <tspan :x="textX" :y="textY + 20" font-style="italic" stroke="gray">{{
-      todoListTitle
-    }}</tspan>
+    <tspan :x="textX" :y="textY" font-weight="bold" font-size="14px">{{ svg.name }}</tspan>
+    <tspan :x="textX" :y="textY + 20" font-style="italic" font-size="14px">{{ todoListTitle }}</tspan>
 
-    <tspan
-      class="text-tooltip"
-      :x="textX"
-      :y="textY - 20"
-      font-weight="lighter"
-      font-size="small"
-    >
+    <tspan class="text-tooltip" :x="textX" :y="textY - 20" font-weight="lighter" font-size="12px">
       ダブルクリックで名前変更
     </tspan>
   </text>
 </template>
 
-<script lang="ts">
-import {
-  defineComponent,
-} from '@nuxtjs/composition-api'
-import { Rect } from 'interface'
+<script setup lang="ts">
+import { AllSvgType } from 'interface'
 import { TodoListsStore } from '~/store'
 import { isEditSvgName, isAnyMode, editSvgName, updateSvgName } from '~/utils/svgs/svg-edit-name'
 import { isEditPage } from '~/utils/ui/common'
+import { expandTodoListStart, expandTodoListEnd } from '~/utils/ui/todolist-expand'
+import { strokeColor } from '~/utils/svgs/svg-stroke-color'
 
-export default defineComponent({
-  props: {
-    svg: {
-      type: Object,
-      default: null,
-    },
-    textX: {
-      type: Number,
-      default: 0
-    },
-    textY: {
-      type: Number,
-      default: 0
-    }
-  },
+const props = defineProps<{ svg: AllSvgType; textX: number; textY: number }>()
 
-  setup(props) {
-    const svg = props.svg as Rect
-
-    return {
-      isEditSvgName,
-      isAnyMode,
-      isEditPage,
-      editSvgName: () => editSvgName(svg),
-      updateSvgName: (e: KeyboardEvent) => updateSvgName(e, svg),
-    }
-  },
-
-  computed: {
-    todoListTitle() {
-      const svg = this.svg as Rect
-      const todoList = TodoListsStore.todoLists.find(
-        (todoList) => todoList.id === svg.todoListId
-      )
-      return todoList?.title
-    },
-  },
+const todoListTitle = computed(() => {
+  const todoList = TodoListsStore.todoLists.find((todoList) => todoList.id === props.svg.todoListId)
+  return todoList?.title
 })
 </script>
 
