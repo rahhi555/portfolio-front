@@ -15,10 +15,10 @@
       :viewBox="viewBoxStr().value"
       xmlns="http://www.w3.org/2000/svg"
       style="border: solid 2px black"
-      @pointerdown.left.self="scrollBegin($event)"
       @pointerdown.left="
         addPath($event);
         addPolylineStart($event)
+        scrollBegin($event)
       "
       @pointermove="
         scrollMiddle($event);

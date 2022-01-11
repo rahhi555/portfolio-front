@@ -12,11 +12,12 @@ const gapXY = { x: 0, y: 0 }
 
 // --- ドラッグ処理 ---
 export const dragStart = (e: PointerEvent): void => {
+  if (!isEditPage.value || isSomeTrueModes.value) return
+
   SvgsStore.setTargetId(e)
   if (typeof SvgsStore.targetSvg === 'undefined') {
     return
   }
-  if (!isEditPage.value || isSomeTrueModes.value) return
 
   isShowMenu.value = false
   isDragging = true
