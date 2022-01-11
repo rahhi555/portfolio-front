@@ -12,6 +12,7 @@ declare module 'interface' {
     planId: string | number
     name: string
     displayOrder: number
+    rotate: number
     isUpdated?: boolean
     createdAt?: Date
     updatedAt?: Date
@@ -71,7 +72,6 @@ declare module 'interface' {
     isGoogleMap: boolean
     address?: string
     bounds?: google.maps.LatLngBoundsLiteral
-    heading?: number
     width?: number
     height?: number
   }

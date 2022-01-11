@@ -1,6 +1,7 @@
 <template>
   <v-row>
     <v-btn
+      v-if="$device.isMobileOrTablet"
       dark
       @click="toggleVisibleAppBar"
       class="toggle-visible-appbar-btn"
@@ -17,8 +18,23 @@
       <SvgsBase v-show="hasActiveMap" />
     </v-col>
 
-    <MapsFooterShow v-if="isPlanActive" class="maps-footer-show" />
-    <v-btn @click="isVisibleMapDialog = true" class="map-visible-btn"><v-icon>mdi-map-legend</v-icon></v-btn>
+    <MapsFooterShow v-if="isPlanActive" style="position: absolute; bottom: 280px" />
+    <v-tooltip top>
+      <template #activator="{ on }">
+        <v-btn @click="isVisibleMapDialog = true" absolute style="bottom: 200px" v-on="on"
+          ><v-icon>mdi-map-legend</v-icon></v-btn
+        >
+      </template>
+      <span>マップ切り替え</span>
+    </v-tooltip>
+    <v-tooltip top>
+      <template #activator="{ on }">
+        <v-btn @click="toggleMapMode" absolute style="bottom: 120px" v-on="on"
+          ><v-icon>mdi-compare-horizontal</v-icon></v-btn
+        >
+      </template>
+      <span>地図表示切り替え</span>
+    </v-tooltip>
 
     <transition name="slide">
       <v-row v-show="isTodoListExpand" class="todolist-sideber" cols="12">
@@ -34,7 +50,7 @@
         <v-card-title>
           <span class="text-h5">マップ選択</span>
         </v-card-title>
-        <v-card-text style='padding: 0;'>
+        <v-card-text style="padding: 0">
           <MapsFooterBase :justify-content="'justify-center'" :is-spacer="true" />
         </v-card-text>
         <v-card-actions>
@@ -82,13 +98,13 @@ const toggleVisibleAppBar = () => {
 /** todoリスト開閉フラグ */
 const isTodoListExpand = ref(false)
 
-/** 
- * Rectをクリックした時に自動でtodoリストを開く処理 
+/**
+ * Rectをクリックした時に自動でtodoリストを開く処理
  * 図形の上にマーカーやパスを重ねることができるよう、マーカー及びパス挿入モードでは発生させない
  * */
 const targetSvg = computed(() => SvgsStore.targetSvg)
 watch(targetSvg, () => {
-  if(isAddPathMode.value || isAddPolylineMode.value || !targetSvg.value) return
+  if (isAddPathMode.value || isAddPolylineMode.value || !targetSvg.value) return
 
   // targetSvgはpointerdown(クリックしている間)で取得するため、長押しすると保持し続けてしまう
   // ドラッグする場合は上記の動作で問題ないが、今回はクリックしたかどうかを取得したいため、すぐにtargetIdを初期化して
@@ -99,6 +115,17 @@ watch(targetSvg, () => {
 
 /** マップ選択ダイアログ表示フラグ */
 const isVisibleMapDialog = ref(false)
+
+const { $googleMap } = useContext()
+/** 航空写真と通常写真のトグル処理 */
+const toggleMapMode = () => {
+  const map = $googleMap.map.value
+  if (!map) return
+
+  const mapTypeId = map.getMapTypeId()
+  const { ROADMAP, SATELLITE } = google.maps.MapTypeId
+  mapTypeId === ROADMAP ? map.setMapTypeId(SATELLITE) : map.setMapTypeId(ROADMAP)
+}
 </script>
 
 <style scoped lang="sass">
@@ -115,16 +142,8 @@ const isVisibleMapDialog = ref(false)
   inset: 0
   width: 100%
   height: 100%
-  z-index: 2
+  z-index: 3
   background-color: rgba(0,0,0, .4)
-
-.maps-footer-show
-  position: absolute
-  bottom: 200px
-
-.map-visible-btn
-  position: absolute
-  bottom: 100px
 
 .slide-enter
   transform: translateX(-50%)

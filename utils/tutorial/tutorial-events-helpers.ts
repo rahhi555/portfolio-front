@@ -66,7 +66,6 @@ export const createMapInTutorial = () => {
     isGoogleMap: true,
     address: undefined,
     bounds: undefined,
-    heading: undefined,
     height: undefined,
     width: undefined
   }
@@ -86,7 +85,6 @@ export const updatePositionInTutorial = () => {
     isGoogleMap: true,
     address,
     bounds,
-    heading: 0,
     height,
     width
   }
@@ -112,7 +110,8 @@ export const addRectInTutorial = () => {
     mapId: MAIN_BIG_NUMBER,
     userId: MAIN_BIG_NUMBER,
     stroke: 'black',
-    todoListId: undefined
+    todoListId: undefined,
+    rotate: 0
   }
   // @ts-ignore
   SvgsStore.addSvgMutation(rect)

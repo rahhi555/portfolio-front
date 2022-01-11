@@ -1,7 +1,7 @@
 <template>
   <g
     :id="'svg-' + rect.id"
-    :transform="`translate(${rect.x},${rect.y}) rotate(0)`"
+    :transform="`translate(${rect.x},${rect.y}) rotate(${rect.rotate})`"
     @pointerdown.left="selectRectStart"
     @pointerup.left="selectRectEnd"
   >
@@ -51,13 +51,16 @@
       :class="{ 'left-line': isEditPage && !isSomeTrueModes }"
       @pointerdown.stop="resizeStart"
     />
-    <SvgsText
-      :svg="rect"
-      :text-x="rect.width / 2"
-      :text-y="rect.height / 1.5"
-    ></SvgsText>
+    <SvgsText :svg="rect" :text-x="rect.width / 2" :text-y="rect.height / 1.5"></SvgsText>
 
-    <circle :cx="rect.width" r="20" fill="#333" />
+    <circle
+      :cx="rect.width"
+      r="15"
+      fill="#333"
+      @click="updateRotate(5)"
+      @contextmenu.prevent="updateRotate(-5)"
+      class="rotate-text-visible"
+    />
     <text
       :x="rect.width"
       font-size="15"
@@ -65,8 +68,12 @@
       text-anchor="middle"
       dominant-baseline="central"
       fill="white"
-      >{{ todoCountText }}</text
-    >
+      @click="updateRotate(5)"
+      @contextmenu.prevent="updateRotate(-5)"
+      class="rotate-text-visible"
+      >{{ todoCountText }}
+    </text>
+    <text :x="rect.width" y="-25" font-size="12" class="rotate-text">左右クリックで回転</text>
   </g>
 </template>
 
@@ -125,6 +132,10 @@ const todoCountText = computed(() => {
     return TodoListsStore.todoLists.find((todoList) => todoList.id === propsRect.todoListId)?.todos?.length || 0
   }
 })
+
+const updateRotate = (addRotate: number) => {
+  SvgsStore.changeSvg({ status: 'rotate', value: propsRect.rotate + addRotate, otherTargetId: propsRect.id })
+}
 </script>
 
 <style scoped lang="sass">
@@ -142,4 +153,15 @@ const todoCountText = computed(() => {
   cursor: col-resize
   stroke-width: 15
   stroke: transparent
+
+.rotate-text-visible
+  cursor: pointer
+
+.rotate-text
+  display: none
+  text-anchor: middle
+  font-weight: lighter
+
+.rotate-text-visible:hover ~ .rotate-text
+  display: block
 </style>

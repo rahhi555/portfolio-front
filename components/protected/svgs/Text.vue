@@ -19,10 +19,10 @@
     @pointerdown.left="selectRectStart"
     @pointerup.left="selectRectEnd($event, svg.id)"
   >
-    <tspan :x="textX" :y="textY" font-weight="bold">{{ svg.name }}</tspan>
-    <tspan :x="textX" :y="textY + 20" font-style="italic" stroke="gray">{{ todoListTitle }}</tspan>
+    <tspan :x="textX" :y="textY" font-weight="bold" font-size="14px">{{ svg.name }}</tspan>
+    <tspan :x="textX" :y="textY + 20" font-style="italic" stroke="gray" font-size="14px">{{ todoListTitle }}</tspan>
 
-    <tspan class="text-tooltip" :x="textX" :y="textY - 20" font-weight="lighter" font-size="small">
+    <tspan class="text-tooltip" :x="textX" :y="textY - 20" font-weight="lighter" font-size="12px">
       ダブルクリックで名前変更
     </tspan>
   </text>

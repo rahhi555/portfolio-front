@@ -57,10 +57,10 @@ const onMounted = (map: google.maps.Map) => {
   /** 現在位置が変更されるたびに作動し、マーカーを設置し直す */
   stopMarkerSet = watch(currentPosition, () => {
     if (!marker) return
+    
     const { lat, lng } = currentPosition
     marker.setPosition({ lat, lng })
-    const activeMapHeading = MapsStore.activeMap?.heading || 0
-    svgMarker.rotation! = Math.abs(activeMapHeading - currentPosition.heading)
+    svgMarker.rotation! = currentPosition.heading
     marker.setIcon(svgMarker)
   })
 
