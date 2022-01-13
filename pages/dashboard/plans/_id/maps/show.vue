@@ -20,10 +20,10 @@
       <SvgsBase v-show="hasActiveMap" />
     </v-col>
 
-    <MapsFooterShow v-if="isPlanActive" style="position: absolute; bottom: 280px" />
+    <MapsFooterShow v-if="isPlanActive" style="position: absolute; bottom: 200px" />
     <v-tooltip top>
       <template #activator="{ on }">
-        <v-btn @click="isVisibleMapDialog = true" absolute style="bottom: 200px" v-on="on"
+        <v-btn @click="isVisibleMapDialog = true" absolute style="bottom: 150px" v-on="on"
           ><v-icon>mdi-map-legend</v-icon></v-btn
         >
       </template>
@@ -31,7 +31,7 @@
     </v-tooltip>
     <v-tooltip top>
       <template #activator="{ on }">
-        <v-btn v-show="isGoogleMap" @click="toggleMapMode" absolute style="bottom: 120px" v-on="on"
+        <v-btn v-show="isGoogleMap" @click="toggleMapMode" absolute style="bottom: 100px" v-on="on"
           ><v-icon>mdi-compare-horizontal</v-icon></v-btn
         >
       </template>
