@@ -57,8 +57,8 @@
       :cx="rect.width"
       r="15"
       fill="#333"
-      @click="updateRotate(5)"
-      @contextmenu.prevent="updateRotate(-5)"
+      @mousedown.left="addRotate(1)"
+      @contextmenu.prevent="addRotate(-1)"
       class="rotate-text-visible"
     />
     <text
@@ -68,14 +68,14 @@
       text-anchor="middle"
       dominant-baseline="central"
       fill="white"
-      @click="updateRotate(5)"
-      @contextmenu.prevent="updateRotate(-5)"
+      @mousedown.left="addRotate(1)"
+      @contextmenu.prevent="addRotate(-1)"
       class="rotate-text-visible"
       >{{ todoCountText }}
     </text>
     
     <client-only>
-      <text v-if="isEditPage" :x="rect.width" y="-25" font-size="12" class="rotate-text" :fill="strokeColor">左右クリックで回転</text>
+      <text v-if="isEditPage" :x="rect.width" y="-25" font-size="12" class="rotate-text" :fill="strokeColor">左右ホールドで回転</text>
     </client-only>
   </g>
 </template>
@@ -137,11 +137,17 @@ const todoCountText = computed(() => {
   }
 })
 
-/** 傾き処理 */
-const updateRotate = (addRotate: number) => {
+/** 傾き処理。マウスを押下している間傾き続ける。 */
+const addRotate = (addedValue: number) => {
   if(isShowPage.value) return
 
-  SvgsStore.changeSvg({ status: 'rotate', value: propsRect.rotate + addRotate, otherTargetId: propsRect.id })
+  const addRotateIntervalID = setInterval(() => {
+    SvgsStore.changeSvg({ status: 'rotate', value: propsRect.rotate + addedValue, otherTargetId: propsRect.id })
+  }, 50)
+
+  window.addEventListener('mouseup', () => {
+    clearInterval(addRotateIntervalID)
+  }, { once: true })
 }
 </script>
 
