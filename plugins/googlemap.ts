@@ -13,7 +13,7 @@ export default defineNuxtPlugin(({ $config }, inject) => {
       language: 'ja',
       region: 'JP',
       libraries: ['places', 'geometry'],
-      version: 'beta'
+      version: 'weekly'
     })
   }
 
